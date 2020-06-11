@@ -3,6 +3,8 @@ I conceptualized this personal project back in January 2020. In this project, I'
 
 ## 6/11/2020
 
+Originally, my plan was to complete this project solely in Python. The final product for the Austin portion, however, included such a small dataset that I decided to complete the analysis part in Excel. (DUCKS FOR COVER!!!) :D just kidding...I hope :P 
+
 So far, I've reached the following findings which are included in the aus_final workbook: 
 
 ### Anti-lgbt oriented hate crimes accounted for 35.85% of all reported hate crimes, in Austin, TX, between 2017 and present. 
