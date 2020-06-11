@@ -7,12 +7,13 @@ Originally, my plan was to complete this project solely in Python. The final pro
 
 So far, I've reached the following findings which are included in the aus_final workbook: 
 
-### Anti-lgbt oriented hate crimes accounted for 35.85% of all reported hate crimes, in Austin, TX, between 2017 and present. 
+## **Update -- 6/11/2020**
+### Presently anti-lgbt oriented hate crimes, in Austin, TX, have accounted for 32.73% of all reported hate crimes, since the beginning of 2017. 
 #### By year, of the total amount of reported hate crimes, anti-lgbt occurrences accounted for:
 ##### 29.41% in 2017
 ##### 26.32% in 2018
 ##### 41.67% in 2019
-##### 60% for the present, so far
+##### 50% for the year 2020, to date
 
 These are disturbing figures but the project is still incomplete... :( 
 
