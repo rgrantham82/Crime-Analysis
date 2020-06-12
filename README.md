@@ -1,8 +1,6 @@
 # Hate Crimes Analysis
 I conceptualized this personal project back in January 2020. In this project, I'll analyze hate crimes trends for Austin against the entire USA from 2017 to present. In particular, I'm focusing on the affects of hate crime against the LGBT community. 
 
-## 6/11/2020
-
 Originally, my plan was to complete this project solely in Python. The final product for the Austin portion, however, included such a small dataset that I decided to complete the analysis part in Excel. (DUCKS FOR COVER!!!) :D just kidding...I hope :P 
 
 So far, I've reached the following findings which are included in the aus_final workbook: 
