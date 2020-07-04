@@ -15,6 +15,6 @@ So far, I've reached the following findings which are included in the excel work
 ##### 36.36% in 2019
 ##### 37.50% for the year 2020 so far
 
-Evidently, the rate of incidents motivated by Anti-LGBT bias is rising every year. This is particularly alarming, coupled with the current Covid crisis and who knows how the pandemic will affect or stir already alarming rates scape-goating against several minority communities. 
+Evidently, the rate of incidents motivated by Anti-LGBT bias is rising every year. This is particularly alarming, coupled with the current Covid crisis and who knows how the pandemic will affect or stir the already disturbing trend of scape-goating against several minority communities. 
 
 Needless to say, stay safe everyone! I hope this project is insightful and, as always, I look forward to your review and/or critique and advice. 
