@@ -12,10 +12,10 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-plt.style.use('fivethirtyeight')
+plt.style.use('seaborn')
 
 
-# In[2]:
+# In[10]:
 
 
 # Importing & examining the cleaned dataset
@@ -23,10 +23,6 @@ df = pd.read_csv(r"C:\Users\Robert\OneDrive\Desktop\aus_final.csv")
 display(df.head())
 print('----------------------------------')
 display(df.tail())
-print('----------------------------------')
-display(df.describe())
-print('----------------------------------')
-display(df.shape)
 
 
 # In[3]:
@@ -52,7 +48,7 @@ display(df.dtypes)
 
 # ### Question 1. How are reported incidences in Austin distributed according to motivation? 
 
-# In[18]:
+# In[15]:
 
 
 # Creating a dataframe of the biases
@@ -79,7 +75,7 @@ plt.show()
 
 # ### Question 2. How are hate crimes perpetuated? 
 
-# In[20]:
+# In[16]:
 
 
 # Create a dataframe for the offense values
@@ -88,19 +84,25 @@ display(offense_count)
 
 # Displaying the offense values as proportions
 print('----------------------------------')
-display(df.offense.value_counts(normalize=True))
+offense_count_pct = df.offense.value_counts(normalize=True)
+display(offense_count_pct)
 
 
-# Plotting the offense values
+# Visualizing the offense values
 offense_count.plot.bar()
 plt.ylabel('Total Crimes since 2017')
+plt.title('Distribution of Offenses')
+plt.show()
+
+# Visualizing the offense values as proportions
+offense_count_pct.plot.pie()
 plt.title('Distribution of Offenses')
 plt.show()
 
 
 # ### Question 3. What is the race/ethnicity of the offenders?      
 
-# In[21]:
+# In[18]:
 
 
 # Create a dataframe for the offender ethnicity values
@@ -109,11 +111,17 @@ display(offenders_count)
 print('----------------------------------')
 
 # Displaying the offender ethnicity values as proportions
-display(df.offender_race_ethnicity.value_counts(normalize=True))
+offenders_count_pct = df.offender_race_ethnicity.value_counts(normalize=True)
+display(offenders_count_pct)
 
 # Visualizing the offender ethnicity values
 offenders_count.plot.bar()
 plt.ylabel('Total Crimes since 2017')
+plt.title('Offender Race/Ethnicity')
+plt.show()
+
+# Visualizing the offender ethnicity values as proportions
+offenders_count_pct.plot.pie()
 plt.title('Offender Race/Ethnicity')
 plt.show()
 
@@ -122,19 +130,24 @@ plt.show()
 
 # ### Question 4. Where in Austin do hate crimes often take place? 
 
-# In[13]:
+# In[23]:
 
 
-# Displaying the top 5 locations where hate crimes take place in Austin.
-location = df.offense_location.value_counts().head(5)
+# Displaying the locations where hate crimes take place in Austin
+location = df.offense_location.value_counts()
 display(location)
 print('----------------------------------')
-# Displaying 'offense location' as percentages
-display(df.offense_location.value_counts(normalize=True).head(5))
+# Displaying 'offense location' as proportions
+location_pct = df.offense_location.value_counts(normalize=True)
+display(location_pct)
 
 location.plot.bar()
 plt.ylabel('Total Crimes since 2017')
-plt.title('Top 5 Crime Location Types')
+plt.title('Crime Locations')
+plt.show()
+
+location_pct.plot.pie()
+plt.title('Crime Locations')
 plt.show()
 
 
