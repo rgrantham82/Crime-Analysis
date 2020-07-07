@@ -2,7 +2,9 @@
 # coding: utf-8
 
 # # Exploratory Analysis
-# In between this notebook, and the first, I cleaned the data further in Excel since the dataset was small enough to begin with. The resulting dataset lists 56 separate alleged hate crimes, in Austin, TX, since 2017. Out of the total number of reported, alleged incidents, 32.14% were directed at the LGBT Community. 
+# In between this notebook, and the first, I cleaned the data further in Excel since the dataset was small enough to begin with. First, I combined the various LGBT related biases into one as 'Anti-LGBT'. I also, cleaned up some other biases to make the entire column uniform as possible. Second, I cleaned the offender ethnicity column for the same reason. The resulting dataset lists 56 separate alleged hate crimes, in Austin, TX, since 2017. 
+# 
+# Out of the total number of reported, alleged incidents, 32.14% were directed at the LGBT Community. 
 
 # In[1]:
 
@@ -17,130 +19,128 @@ plt.style.use('fivethirtyeight')
 
 
 # Importing & examining the cleaned dataset
-df = pd.read_csv(r"C:\Users\Robert\OneDrive\Desktop\aus_final_clean.csv")
+df = pd.read_csv(r"C:\Users\Robert\OneDrive\Desktop\aus_final.csv")
 display(df.head())
 print('----------------------------------')
-print(df.info())
+display(df.tail())
 print('----------------------------------')
-print(df.isnull().sum())
+display(df.describe())
+print('----------------------------------')
+display(df.shape)
 
 
 # In[3]:
 
 
-# Creating an index from the dates and performing the necessary conversions
-df['date'] = df['date'].astype('datetime64')
-df = df.set_index('date')
+# Creating an index out of the 'date' column annd converting the non-numeric columns into categories
+df['date_of_incident'] = df['date_of_incident'].astype('datetime64')
+df.set_index(['date_of_incident'], inplace=True)
 df['bias'] = df['bias'].astype('category')
 df['offense'] = df['offense'].astype('category')
 df['offense_location'] = df['offense_location'].astype('category')
-df['offender_ethnicity'] = df['offender_ethnicity'].astype('category')
+df['offender_race_ethnicity'] = df['offender_race_ethnicity'].astype('category')
 
 # Reexamining the dataset
-print(df.info())
-print('----------------------------------')
-print(df.index)
+display(df.index)
 print('----------------------------------')
 display(df.head())
 print('----------------------------------')
 display(df.tail())
+print('----------------------------------')
+display(df.dtypes)
 
 
-# We'll look at the numerical data in the victims & offenders columns later. First, I want to explore the categorical data.
-# 
 # ### Question 1. How are reported incidences in Austin distributed according to motivation? 
 
-# In[4]:
+# In[18]:
 
 
-bias = df.bias.value_counts()
-bias_pct = df.bias.value_counts(normalize=True)
-print(bias)
+# Creating a dataframe of the biases
+bias = df['bias'].value_counts()
+display(bias)
+
+bias_pct = df['bias'].value_counts(normalize=True)
+
+# Displaying the bias values as proportions
 print('----------------------------------')
-print('Total number of reported hate crimes since 2017 = 56')
-print('----------------------------------')
-print('Incident Biases as Percentages:')
-print(bias_pct)
+display(df['bias'].value_counts(normalize=True))
 
+# Visualizing the bias dataframe
 bias.plot.bar()
-plt.xlabel('Motivation')
-plt.ylabel('Total')
-plt.title('Distribution of Incidents according to Motivation')
+plt.ylabel('Total Crimes since 2017')
+plt.title('Distribution of Bias')
+plt.show()
+
+# Visualizing bias values as proportions
+bias_pct.plot.pie()
+plt.title('Distribution of Bias')
 plt.show()
 
 
-# ### Question 2. How are the offense-types distributed? 
+# ### Question 2. How are hate crimes perpetuated? 
 
-# In[5]:
+# In[20]:
 
 
+# Create a dataframe for the offense values
 offense_count = df.offense.value_counts()
 display(offense_count)
+
+# Displaying the offense values as proportions
 print('----------------------------------')
-print('Offense Percentages:')
 display(df.offense.value_counts(normalize=True))
 
 
+# Plotting the offense values
 offense_count.plot.bar()
-
-plt.xlabel('Offense')
-plt.ylabel('Total')
+plt.ylabel('Total Crimes since 2017')
 plt.title('Distribution of Offenses')
 plt.show()
 
 
-# ### Question 3. How are the offenders distributed according to race/ethnicity?      
+# ### Question 3. What is the race/ethnicity of the offenders?      
 
-# In[6]:
+# In[21]:
 
 
-print(df.number_of_offenders_under_18.sum())
-print(df.number_of_offenders_over_18.sum())
+# Create a dataframe for the offender ethnicity values
+offenders_count = df['offender_race_ethnicity'].value_counts()
+display(offenders_count)
 print('----------------------------------')
-print('Total # of offenders = 64')
 
+# Displaying the offender ethnicity values as proportions
+display(df.offender_race_ethnicity.value_counts(normalize=True))
 
-# In[7]:
-
-
-offenders_count = df['offender_ethnicity'].value_counts()
-print(offenders_count)
-print('----------------------------------')
-print('Percentages of offender(s) ethnicity:')
-print(df.offender_ethnicity.value_counts(normalize=True))
-
+# Visualizing the offender ethnicity values
 offenders_count.plot.bar()
-
-plt.xlabel('Ethnicity')
-plt.ylabel('Total')
-plt.title('Distribution of Offender(s) Ethnicity')
+plt.ylabel('Total Crimes since 2017')
+plt.title('Offender Race/Ethnicity')
 plt.show()
 
 
 # Note...the above 'Offender' graph has an instance of 'Hispanic (2), Caucasian (2)' as a single column because of an incident that occurred on 1/19/19 https://www.statesman.com/news/20200124/confrontation-that-ignited-attack-on-austin-gay-couple-questioned-by-detective -- 2 of the offenders were white, and the other 2 were hispanic. 
 
-# ### Question 4. How are the offenses (type) distributed? 
+# ### Question 4. Where in Austin do hate crimes often take place? 
 
-# In[8]:
+# In[13]:
 
 
-# Examining the 'offense location' column
-location = df.offense_location.value_counts()
-print(location)
+# Displaying the top 5 locations where hate crimes take place in Austin.
+location = df.offense_location.value_counts().head(5)
+display(location)
 print('----------------------------------')
-print(df.offense_location.value_counts(normalize=True))
+# Displaying 'offense location' as percentages
+display(df.offense_location.value_counts(normalize=True).head(5))
 
 location.plot.bar()
+plt.ylabel('Total Crimes since 2017')
+plt.title('Top 5 Crime Location Types')
 plt.show()
 
 
-# Interestingly, the 2nd highest percentage of crimes take place within the home (19.64%).
-# 
-# The victim columns only contain numbers and no indicators of the victims' ethnicity/race. Really, all we can do with these columns is see how they correlate with the offender columns. 
+# ### Question 5. Any correlations between victims and offenders? 
 
-# ### Question 5. Any correlations? 
-
-# In[9]:
+# In[8]:
 
 
 # Examining correlations between victims & offenders
@@ -149,4 +149,3 @@ df_corr = df.corr()
 display(df_corr)
 df_corr.plot.bar()
 plt.show()
-
