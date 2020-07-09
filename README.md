@@ -1,4 +1,7 @@
 # Hate Crimes Analysis
+
+*** This project is ongoing & will be updated frequently
+
 I conceptualized this project beginning in  January 2020. The goal is to analyze hate crimes trends for Austin, TX, from 2017 to present. In particular, I'm focusing on the affects of hate crime on the LGBT community. 
 
 So far, I am using datasets provided by the Austin PD's publicly available databases, found at data.austintexas.gov. 
