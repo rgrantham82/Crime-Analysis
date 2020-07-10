@@ -1,0 +1,61 @@
+bias,date_of_incident,number_of_offenders_over_18,number_of_offenders_under_18,number_of_victims_over_18,number_of_victims_under_18,offense,offense_location,offender_ethnicity
+anti-african american,1/1/2017,1,0,1,0,Aggravated Assault,Park/Playground,caucasian
+anti-caucasian,2/1/2017,1,0,1,0,Aggravated Assault,Highway/Road/Alley/Street/Sidewalk,african american
+anti-jewish,3/21/2017,0,0,0,0,Destruction,Highway/Road/Alley/Street/Sidewalk,unknown
+anti-jewish,4/12/2017,0,0,0,0,Simple Assault,Air/Bus/Train Terminal,caucasian
+anti-lgbt,5/15/2017,2,1,0,1,Simple Assault,Residence/Home,caucasian
+anti-lgbt,6/4/2017,2,0,1,0,Simple Assault,Highway/Road/Alley/Street/Sidewalk,caucasian 
+anti-hispanic,6/15/2017,1,0,1,0,Intimidation,Bank/Savings and Loan,caucasian
+anti-african american,6/17/2017,1,0,1,0,Simple Assault,Highway/Road/Alley/Street/Sidewalk,caucasian
+anti-african american,7/1/2017,1,0,1,0,Simple Assault,Highway/Road/Alley/Street/Sidewalk,unknown
+anti-african american,7/5/2017,1,0,1,0,Intimidation,Residence/Home,unknown
+anti-lgbt,7/20/2017,1,0,1,0,Robbery,Residence/Home,unknown
+anti-lgbt,7/21/2017,1,0,1,0,Destruction,Residence/Home,caucasian
+anti-african american,10/15/2017,1,0,1,0,Simple Assault,Highway/Road/Alley/Street/Sidewalk,hispanic
+anti-lgbt,10/24/2017,0,2,1,0,Intimidation,Residence/Home,hispanic
+anti-muslim,11/10/2017,1,0,1,0,Simple Assault,Restaurant,caucasian
+anti-muslim,11/16/2017,1,0,1,0,Simple Assault,Other/unknown,caucasian
+anti-hispanic,11/26/2017,0,0,1,0,Intimidation,Parking/Drop Lot,unknown
+anti-african american,1/19/2018,0,0,0,0,Vandalism,Parking Lot/Garage,unknown
+anti-lgbt,1/25/2018,1,0,2,0,Burglary/Assault,Residence/Home,caucasian
+anti-lgbt,2/8/2018,1,0,1,0,Assault,Parking Lot/Garage,caucasian
+anti-african american,2/22/2018,1,0,1,0,Vandalism,Highway/Road/Street,caucasian
+anti-hispanic,3/2/2018,4,0,1,0,Assault,Highway/Road/Street,african american
+anti-muslim,3/6/2018,1,1,0,0,Vandalism,Convenience Store,caucasian
+anti-african american,3/8/2018,1,0,1,0,Assault,Highway/Road/Street,caucasian
+anti-african american,4/1/2018,1,0,1,0,Intimidation,Parking Lot/Garage,caucasian
+anti-caucasian,4/30/2018,1,0,1,0,Assault,Streets/Highway/Road/Alley,hispanic
+anti-lgbt,5/21/2018,1,0,1,0,Assault,Bar/Nightclub,hispanic
+anti-lgbt,6/16/2018,1,0,1,0,Assault,Parking Lot/Garage,hispanic
+anti-african american,6/28/2018,1,0,1,0,Assault,Convenience Store,caucasian
+anti-african american,8/13/2018,1,0,1,0,Assault,Residence/Home,caucasian
+anti-african american,8/25/2018,1,0,1,0,Assault,Convenience Store,asian
+anti-disability,9/9/2018,1,0,1,0,Theft,Bar/Nightclub,hispanic
+anti-african american,9/11/2018,1,0,1,0,Aggravated Assault,Church/Synagogue,caucasian
+anti-hispanic,10/11/2018,1,0,0,1,Assault,Park/Playground,caucasian
+anti-lgbt,10/19/2018,1,0,1,0,Assault,Highway/Road/Street,african american
+anti-hispanic,12/15/2018,1,0,1,0,Assault,Streets/Highway/Road/Alley,hispanic
+anti-lgbt,12/29/2018,0,0,1,0,Assault,Bar/Nightclub,unknown
+anti-lgbt,1/19/2019,4,0,2,0,Assault,Streets/Highway/Road/Alley,hispanic (2) hispanic (2)
+anti-jewish,2/22/2019,0,0,1,0,Vandalism,Residence/Home,unknown
+anti-lgbt,3/31/2019,1,0,1,0,Assault,Bar/Nightclub,hispanic
+anti-hispanic,4/4/2019,3,0,1,0,Assault,School-Elementary/Secondary,hispanic
+anti-caucasian,6/11/2019,2,0,1,0,Criminal Mischief,Hotel/Motel,african american
+anti-muslim,8/6/2019,0,3,0,1,Assault,Parking Lot/Garage,hispanic
+anti-african american,8/12/2019,1,0,1,0,Intimidation,Drug Store/Dr.'s office/Hospital,caucasian
+anti-lgbt,8/24/2019,1,0,1,0,Assault,Bar/Nightclub,hispanic
+anti-lgbt,11/23/2019,1,0,1,0,Assault,Streets/Highway/Road/Alley,caucasian
+anti-african american,12/19/2019,1,0,1,0,Intimidation,Shelter-Mission/Homeless,caucasian
+anti-african american,12/30/2019,1,0,1,0,Assault,Streets/Highway/Road/Alley,caucasian
+anti-african american,3/1/2020,1,0,1,0,Criminal Mischief,Residence/Home,caucasian
+anti-lgbt,3/8/2020,2,0,1,0,Assault,Parking Lot,hispanic
+anti-lgbt,3/22/2020,0,0,1,0,Criminal Mischief,Residence/Home,unknown
+anti-jewish,3/22/2020,0,0,1,0,Criminal Mischief,Residence/Home,unknown
+anti-buddhist,4/20/2020,0,0,1,0,Criminal Mischief,Church/Synagogue/Temple/Mosque,unknown
+anti-lgbt,4/29/2020,1,0,1,0,Assault by Threat,Department/Discount Store,african american
+anti-african american,5/17/2020,1,0,1,0,Assault by Contact,Convenience Store,caucasian
+anti-hispanic,5/20/2020,1,0,1,0,Assault with Injury,Streets/Highway/Road/Alley,caucasian
+anti-african american,6/4/2020,1,0,1,0,Criminal Mischief,Residence/Home,unknown
+anti-african american,6/9/2020,1,0,1,0,Criminal Mischief,Streets/Highway/Road/Alley,unknown
+anti-african american,6/17/2020,1,0,1,0,Criminal Mischief,Parking Lot,unknown
+anti-african american,6/23/2020,1,0,1,0,Criminal Mischief,Streets/Highway/Road/Alley,unknown
