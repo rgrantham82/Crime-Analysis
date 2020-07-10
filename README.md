@@ -11,7 +11,7 @@ Originally, my plan was to complete this project solely in Python. The final pro
 So far, I've reached the following findings which are included in the excel workbook: 
 
 ## **Update -- 7/10/2020**
-### Presentl,y Anti-LGBT motivated hate crimes, in Austin, TX, account for 30% of all reported incidents since 2017. 
+### Presently Anti-LGBT motivated hate crimes, in Austin, TX, account for 30% of all reported incidents since 2017. 
 #### By year, of the total amount of reported incidents, anti-lgbt occurrences accounted for:
 ##### 29.41% in 2017
 ##### 30% in 2018
