@@ -2,9 +2,11 @@
 
 ***This project is ongoing & will be updated frequently***
 
-## Update -- 7/19/2020
-I added a notebook to this repo in which I am analyzing OVERALL crimes data for the Austin, TX area. The dataset for this analysis is available at https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. This dataset covers all reported crimes from the beginning of 2003 to the present so it is a large dataset with over 2 million records. 
+### Update -- 7/19/2020
+I added a notebook to this repo, labeled "Austin Crime Reports Analysis," in which I am analyzing OVERALL crimes data for the Austin, TX area. The dataset for this analysis is available at https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. This dataset covers all reported crimes from the beginning of 2003 to the present so it is a large dataset with over 2 million records. 
 
+
+## Introduction
 I conceptualized this project beginning in  January 2020. The goal is to analyze hate crimes trends for Austin, TX, from 2017 to present. In particular, I'm focusing on the affects of hate crime on the LGBT community. 
 
 So far, I am using datasets provided by the Austin PD's publicly available databases, found at data.austintexas.gov. 
@@ -13,7 +15,7 @@ Originally, my plan was to complete this project solely in Python. The final pro
 
 So far, I've reached the following findings which are included in the excel workbook: 
 
-## **Update -- 7/10/2020**
+### **Update -- 7/10/2020**
 ### Presently Anti-LGBT motivated hate crimes, in Austin, TX, account for 30% of all reported incidents since 2017. 
 #### By year, of the total amount of reported incidents, anti-lgbt occurrences accounted for:
 ##### 29.41% in 2017
