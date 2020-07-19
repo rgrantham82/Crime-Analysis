@@ -2,6 +2,9 @@
 
 ***This project is ongoing & will be updated frequently***
 
+## Update -- 7/19/2020
+I added a notebook to this repo in which I am analyzing OVERALL crimes data for the Austin, TX area. The dataset for this analysis is available at https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. This dataset covers all reported crimes from the beginning of 2003 to the present so it is a large dataset with over 2 million records. 
+
 I conceptualized this project beginning in  January 2020. The goal is to analyze hate crimes trends for Austin, TX, from 2017 to present. In particular, I'm focusing on the affects of hate crime on the LGBT community. 
 
 So far, I am using datasets provided by the Austin PD's publicly available databases, found at data.austintexas.gov. 
