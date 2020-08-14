@@ -3,7 +3,7 @@
 
 # # Analyzing Austin PD's Crime Reports Dataset
 # 
-# The dataset is available from the Austin Police Department on https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. It is updated weekly and I last downloaded the dataset on 8/7/2020.  
+# The dataset is available from the Austin Police Department on https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. It is updated weekly and I last downloaded the dataset on 8/10/2020.  
 # 
 # 
 # 
@@ -29,10 +29,10 @@
 # 
 # I originally attempted importing the data into this notebook using Sodapy's Socrata API method but found it cumbersome. Mainly, it didn't want to work with importing the entire dataset, and added several redundant columns. I, therefore, prefer to manually download the entire dataset and re-download each week after it's updated.
 
-# In[1]:
+# In[18]:
 
 
-# Importing libraries and configurations
+# Importing essential libraries and configurations
 get_ipython().magic('matplotlib inline')
 
 import pandas as pd
@@ -42,10 +42,14 @@ import seaborn as sns
 import warnings
 warnings.filterwarnings('ignore')
 
+
+# In[2]:
+
+
 pd.set_option('display.max_columns', None)
 
-# Configuring the dataset to remove duplicates, initially
-df = pd.read_csv(r'C:\Users\Robert\Downloads\crime_reports.csv')
+# Loading the data
+df = pd.read_csv('crime_reports.csv')
 
 # Examining the dataframe
 display(df.head())
@@ -63,83 +67,76 @@ display(df.isnull().sum())
 # 
 # There are several columns of data we won't be using in the analysis, mainly other date and geodata columns. So we'll drop those and also scrub some others. Mainly, we want the zip code and address columns to be free of nulls and duplicates. 
 
-# In[2]:
-
-
-# Setting 'Report Date Time' as the index after converting it to datetime64 format
-df.dropna(subset=['Report Date Time'], inplace=True) 
-df.rename(columns = {'Report Date Time':'report_date_time'}, inplace=True)
-df.report_date_time = df.report_date_time.astype('datetime64')
-df.set_index(['report_date_time'], inplace=True)
-df.sort_index(inplace=True)
-
-# Cleaning essential columns and converting them to the appropriate data type
-df.dropna(subset=['Address'], inplace=True)
-df.dropna(subset=['Zip Code'], inplace=True)
-df['Occurred Date'] = df['Occurred Date'].astype('datetime64')
-df['Clearance Date'] = df['Clearance Date'].astype('datetime64')
-
-# Dropping unnecessary columns 
-df.drop(['Incident Number', 'Occurred Date Time', 'Occurred Time', 'Report Date', 'Report Time', 'Census Tract', 
-         'UCR Category', 'X-coordinate', 'Category Description', 'Y-coordinate', 'Location'], axis=1, inplace=True)
-
-#changing column names
-df.rename(columns = {'Highest Offense Description': 'highest_offense_description', 'Highest Offense Code':
-                     'highest_offense_code', 'Family Violence':'family_violence', 'Occurred Date':'occurred_date', 
-                     'Location Type':'location_type', 'Address':'address', 'Zip Code':'zip_code', 'Council District':
-                     'council_district', 'APD Sector':'apd_sector', 'APD District':'apd_district', 'PRA':'pra', 
-                     'Clearance Status':'clearance_status', 'Clearance Date':'clearance_date', 'Latitude':'latitude', 
-                     'Longitude':'longitude'}, inplace=True)
-
-# Sorting and showing the index 
-display(df.index)
-
-# Rechecking null values
-print('----------------------------------')
-display(df.isnull().sum())
-
-
 # In[3]:
 
 
-# rechecking/removing duplicates
-display(df.duplicated().sum())
+# Making the column names easier for analysis and coding
+df.rename(columns=lambda x: x.strip().lower().replace(" ", "_"), inplace=True)
+
+# Create a helper function to aid in data scrubbing
+def clean_data(df):
+
+    drop_col = ['occurred_date_time', 'occurred_time', 'report_date', 'report_time', 'census_tract', 'ucr_category', 
+                'category_description', 'x-coordinate', 'y-coordinate', 'location']
+    df = df.drop(drop_col, 1)
+
+    clean_col = ['report_date_time', 'zip_code', 'address']
+    df = df.dropna(subset=clean_col, how='all')
+
+    return df 
+
+df = clean_data(df)
 
 
 # In[4]:
 
 
-df.drop_duplicates(inplace=True)
-display(df.duplicated().sum())
+# Setting 'Report Date Time' as the index after converting it to datetime64 format
+df.report_date_time = df.report_date_time.astype('datetime64')
+df.set_index(['report_date_time'], inplace=True)
+df.sort_index(inplace=True)
+
+df['occurred_date'] = df['occurred_date'].astype('datetime64')
+df['clearance_date'] = df['clearance_date'].astype('datetime64')
+
+
+# In[34]:
+
+
+# Showing the index 
+display(df.index)
+
+# Rechecking null values
+print('----------------------------------')
+display(df.dtypes)
 
 
 # ## III. Exploratory Analysis
-# 
-# ***Note: I am only including zipcodes and crimes, for questions 1 - 3, that equal or are greater than 1%. Any areas or crime percentages, below 1%, will be discluded to simplify analysis and visualizations.***
-# 
-# 
-# <a id='q1'></a>
-# ### A. Question 1. What areas of Austin have the highest rate of crime? 
 
-# In[5]:
+# In[6]:
 
 
 # Reexamining the dataframe 
+display(df.shape)
+print('----------------------------------')
 display(df.head())
 print('----------------------------------')
 display(df.tail())
-print('----------------------------------')
-display(df.shape)
 
 
-# In[6]:
+# ***Note: I am only including zipcodes and crimes, for questions 1 - 3, that >= 1%. Any zipcodes or crime percentages, below 1%, will be discluded to simplify analysis and visualizations.***
+# 
+# <a id='q1'></a>
+# ### A. Question 1. What areas of Austin have the highest crime rates? 
+
+# In[7]:
 
 
 # Create and show dataframe for crime rates by zipcode
 zip_codes = df.zip_code.value_counts().head(24)
 display(zip_codes)
 
-# Showing the dataframe as percentages
+# Showing the results as percentages
 print('----------------------------------')
 display(df.zip_code.value_counts(normalize=True).head(24))
 
@@ -148,7 +145,6 @@ zip_codes.plot.bar(figsize=(20,10), fontsize=12, rot=60)
 plt.xlabel('Zip Code')
 plt.ylabel('Police Reports Taken')
 plt.title('Crime Rate by Zipcode')
-plt.savefig('crime_rates.png')
 
 
 # Out of all the areas in Austin, 78741 has the highest percentage of overall crime at 9.08%. This is a significant 1.3 percentage points higher than the number 2 area 78753 which hosts 7.78% of overall crime.
@@ -162,7 +158,7 @@ plt.savefig('crime_rates.png')
 # <a id='q2'></a>
 # ### B. Question 2. How is crime distributed in 78753? 
 
-# In[7]:
+# In[8]:
 
 
 # Examining crime in the 78753 area
@@ -178,13 +174,12 @@ display(df_53.highest_offense_description.value_counts(normalize=True).head(22))
 
 df_53_off.plot.pie(figsize=(10,10), fontsize=12, rot=60)
 plt.title('Crime Distribution (78753)')
-plt.savefig('crime_distribution_78753.png')
 
 
 # <a id='q3'></a>
 # ### C. Question 3. How is crime distributed in 78741? 
 
-# In[8]:
+# In[9]:
 
 
 # Create a dataframe for crime in the 78741 area (the highest amount of crime of any Austin zip code)
@@ -200,15 +195,14 @@ display(df_41.highest_offense_description.value_counts(normalize=True).head(21))
 
 df_41_off.plot.pie(figsize=(10,10), fontsize=12)
 plt.title('Crime Distribution (78741)')
-plt.savefig('crime_distribution_78741.png')
 
 
 # <a id='q4'></a>
-# ### D. Question 4. How are violent crimes, in particular murder and rape, distributed? 
+# ### D. Question 4. How are violent crimes, in particular murder, capital murder, and rape, distributed? 
 # 
-# ***Note: Rape distribution will include only areas in which rape >= 1%.***
+# ***Note: Only including areas where rape crimes >= 1%.***
 
-# In[9]:
+# In[33]:
 
 
 # Create a dataframe for murders, capital murders, and rapes
@@ -246,74 +240,55 @@ display(df_rape.zip_code.value_counts(normalize=True).head(21))
 df_mur_val.plot.bar(figsize=(20,10), rot=60, fontsize=12)
 plt.title('Murder')
 plt.show()
-plt.savefig('murder.png')
 
 df_mur_cap_val.plot.bar(figsize=(20,10), rot=60, fontsize=12)
 plt.title('Capital Murder')
 plt.show()
-plt.savefig('capital_murder.png')
 
 df_rape_val.plot.bar(figsize=(20,10), fontsize=12, rot=60)
 plt.title('Rape')
 plt.show()
-plt.savefig('rape.png')
-
-print('------------------------------------------------------------------------------------------')
-print('Plotting Murder and Capital Murder in Seaborn Jointplots using Latitude and Longitude Data')
-print('------------------------------------------------------------------------------------------')
 
 
-# Plotting the two murder dataframes latitude and longitude. The rape dataframe cannot be plotted since it contains no coordinates.
-sns.jointplot('latitude', 'longitude', data=df_mur, color='b', height=10).plot_joint(sns.kdeplot, zorder=0, n_levels=10), 
-sns.jointplot('latitude', 'longitude', data=df_mur_cap, color='r', height=10).plot_joint(sns.kdeplot, zorder=0, n_levels=10)
+# #### Showing Murder and Capital Murder on the map...
+# 
+# ***Note: I attempted to use the Contextily library in order to add a basemap to the following plots but was unsuccessful.***
+
+# In[35]:
+
+
+df_mur_all = df.query('highest_offense_description == ["MURDER", "CAPITAL MURDER"]') 
+
+display(df_mur_all.zip_code.value_counts().head(22))
+display(df_mur_all.zip_code.value_counts(normalize=True).head(22))
+
+# Showing Capital Murder latitude and longitude plots
+crime_types = df_mur_all.groupby(df_mur_all['highest_offense_description'])
+crime_types = dict(list(crime_types))
+keys = list(crime_types.keys())
+
+# Try and use this in a scatter plot to visualize locations
+for key in keys:
+    plt.figure(figsize=(10,10))
+    plt.scatter(crime_types[key].longitude, crime_types[key].latitude, marker='.')
+    plt.title(key)
+    plt.ylabel('Latitude')
+    plt.xlabel('Longitude')
+    plt.show()
 
 
 # So far, 78753 and 78741 are the top hotspots for all sorts of crime in Austin, including violent crime.
 # 
-# For murders, 78741 comes in at number 1 with 10.91%. 
+# For non-capital murder, 78741 comes in at number 1 with 10.91%. 
 # 
-# #### ***It is important to note that murder does not necessarily make the defendant(s) automatically eligible for the death penalty. Under Texas law, we distinguish capital murder, through the motives and actions of the defendant(s) during the commission of a homicide, as automatically warranting an eventual date with the executioner. This includes such things as premeditation, murdering a police officer, etc.***
+# #### ***It is important to note that murder does not necessarily make the defendant(s) automatically eligible for the death penalty. Under Texas law, we distinguish capital murder, through the motives and actions of the defendant(s) during the commission of a homicide, as whether or not automatically warranting an eventual date with the executioner. This includes such things as if the homicide was premeditated or not, if the defendant(s) murdered a police officer, etc.***
 # 
+# Regarding capital murder, 78723 comes in to share the number one spot with 78753, with a rate of 13.92% each. The 78741 area drops to the number 3 spot, carrying 8.97%.
 # 
-# Regarding capital murder, 78723 comes in to share the number one spot with 78753, with a rate of 13.92% each. The 78741 area drops to the number 3 spot, carrying 8.97%. 
+# So, if we're honest, 78753 actually is the number 1 hotspot for murder because it has played host to 40 non-capital murders and 11 capital murders in total, meaning it has hosted 11% of all murders. 78741, if we combine all murders, only accounts for 10.56% of the total since 2003. 
 # 
 # Next, 78741 climbs back to claim the number 1 spot for rape at 12.09% -- 3.43 percentage points higher than the number 2 spot 78753 carrying 8.66% which is quite a significant lead when you look at it on the graph!! Why does rape occur so much more often in this area than in others? 
 # 
 # 
 # 
 # In the next part of the analysis, we'll look even closer at all the above data... 
-
-# In[12]:
-
-
-# 8/8/2020, APD Sector crosstab with Offenses Code for Crime Reports Analysis
-apd_sectors = df.apd_sector.value_counts()
-display(apd_sectors)
-
-df1 = df.query('(zip_code <= 78759) and (zip_code >= 78701)')
-
-display(df1.head())
-print('----------------------------------')
-display(df1.tail())
-print('----------------------------------')
-display(df1.shape)
-
-
-# In[11]:
-
-
-# Dropping the zipcode columns from the two zipcode datasets since we already know what the zipcodes are 
-df_41.drop(['zip_code'], axis=1, inplace=True)
-df_53.drop(['zip_code'], axis=1, inplace=True)
-
-# Dropping unnecessary columns from the other datasets
-df_mur.drop(['highest_offense_description', 'highest_offense_code'], axis=1, inplace=True)
-df_mur_cap.drop(['highest_offense_description', 'highest_offense_code'], axis=1, inplace=True)
-df_rape.drop(['highest_offense_description', 'highest_offense_code'], axis=1, inplace=True)
-
-
-# In[ ]:
-
-
-
-
