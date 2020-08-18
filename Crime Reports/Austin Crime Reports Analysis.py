@@ -304,12 +304,6 @@ viol_freq = pd.crosstab(df_viol.zip_code, df_viol.highest_offense_description)
 display(viol_freq)
 
 
-# In[59]:
-
-
-viol_freq.to_csv('datasets\viol_freq.csv')
-
-
 # In[46]:
 
 
@@ -356,12 +350,3 @@ viol_freq.corr()
 # 
 # 
 # In the next part of the analysis, we'll look even closer at all the above data... 
-
-# In[58]:
-
-
-df.to_csv('datasets\crime_reports_copy.csv')
-df_53.to_csv('datasets\df_53.csv')
-df_41.to_csv('datasets\df_41.csv')
-df_viol.to_csv('datasets\df_viol.csv')
-
