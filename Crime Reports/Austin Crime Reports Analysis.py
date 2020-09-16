@@ -3,7 +3,7 @@
 
 # # Analyzing Austin PD's Crime Reports Dataset
 # 
-# The dataset is available from the Austin Police Department on https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. It is updated weekly and I last downloaded the dataset on 8/10/2020.  
+# The dataset is available from the Austin Police Department on https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. It is updated weekly and I last downloaded the dataset on 9/14/2020.  
 # 
 # 
 # 
@@ -36,38 +36,27 @@
 
 
 # Importing essential libraries and configurations
-import mplleaflet as mpll
-import contextily as cxt
 import geopandas as gp
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
-from shapely import speedups
 
 get_ipython().magic('matplotlib inline')
 warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', 
               None)
 
-color = ['magenta', 'red', 'blue', 'yellow']
-
 
 # In[2]:
 
 
-plt.style.use('seaborn-dark-palette')
+# Loading the data
+df = pd.read_csv('crime_reports.csv')
 
 
 # In[3]:
-
-
-# Loading the data
-df = pd.read_csv('datasets\crime_reports.csv')
-
-
-# In[4]:
 
 
 # Examining the dataframe
@@ -84,7 +73,7 @@ display(df.isnull().sum())
 # 
 # The Clearance Status column contains 3 types of statuses: Y for Yes, N for No, and O which stands for "cleared by other means than arrest." Therefore, I changed the column to bool with Y and O as True, and N as False. However, you may note that areas, where there is no clearance status at all, may or may not contain a corresponding date in the clearance date column. I am incompletely sure how best to handle this so I am open to suggestions or advice.   
 
-# In[5]:
+# In[4]:
 
 
 # Helper function for scrubbing the data
@@ -132,8 +121,6 @@ def clean_data(df):
     int_col = ['zip_code', 
                'pra']
     df[int_col] = df[int_col].astype('int64')
-    """Create a month column for later use in the analysis"""
-    df['month'] = df['report_date_time'].dt.month
     """Set the index"""
     df.set_index(['report_date_time'], 
                  inplace=True)
@@ -142,7 +129,7 @@ def clean_data(df):
 df = clean_data(df)
 
 
-# In[6]:
+# In[5]:
 
 
 # Rechecking the dataframe 
@@ -155,6 +142,12 @@ print('----------------------------------')
 display(df.tail())
 
 
+# In[ ]:
+
+
+
+
+
 # ## III. Exploratory Analysis
 
 # <a id='q1'></a>
@@ -164,7 +157,7 @@ display(df.tail())
 # 
 # Question 4 regards violent crime. For violent crime, I chose to examine 4 categories: aggrivated assault, rape, murder, and capital murder. I realize there are other types of violent crime, but for now I am sticking with these 4 categories. 
 
-# In[7]:
+# In[6]:
 
 
 figsize = [20,10]
@@ -200,7 +193,7 @@ zip_off_desc = pd.crosstab(df.zip_code,
 # <a id='q2'></a>
 # ### B. Question 2. How is crime distributed in 78753? 
 
-# In[8]:
+# In[7]:
 
 
 # Examining crime in the 78753 area
@@ -221,7 +214,7 @@ plt.title('Crime Distribution (78753)')
 # <a id='q3'></a>
 # ### C. Question 3. How is crime distributed in 78741? 
 
-# In[9]:
+# In[8]:
 
 
 # Create a dataframe for crime in the 78741 area (the highest amount of crime of any Austin zip code)
@@ -244,7 +237,7 @@ plt.title('Crime Distribution (78741)')
 
 # ***The following line of code shows crime rates only >= 1% per zipcode.***
 
-# In[10]:
+# In[9]:
 
 
 df_viol = df.query('highest_offense_description == ["MURDER", "CAPITAL MURDER", "RAPE", "AGG ASSAULT"]') 
@@ -257,7 +250,7 @@ df_rape = df[df.highest_offense_description == 'RAPE']
 df_viol_zip = df_viol.zip_code.value_counts()
 
 df_viol_zip.plot.bar(figsize=figsize, 
-                     fontsize=16,  
+                     fontsize=12,  
                      rot=60)
 plt.title('Violent Crime Distribution by Zipcode since 2003')
 plt.show()
@@ -265,44 +258,61 @@ plt.show()
 viol_freq = pd.crosstab(df_viol.zip_code, df_viol.highest_offense_description)
 display(viol_freq)
 
-viol_freq.plot.bar(stacked=True, 
-                   figsize=figsize, 
-                   color=color, 
-                   fontsize=16,  
+viol_freq.plot.bar(figsize= figsize, 
+                   fontsize=12, 
+                   stacked=True, 
                    rot=60)
 plt.title('Violent Crime Distribution by Zipcode and Type since 2003')
 plt.show()
 
 viol_mur_freq = pd.crosstab(df_viol_mur.zip_code, df_viol_mur.highest_offense_description)
-#display(viol_mur_freq)
 
-viol_mur_freq.plot.bar(stacked=True, 
-                       figsize=figsize,
-                       fontsize=16, 
-                       color=color,  
+#display(viol_mur_freq)
+viol_mur_freq.plot.bar(figsize=figsize,
+                       fontsize=12, 
+                       stacked=True,  
                        rot=60)
 plt.title('Murder Distribution by Zipcode and Type since 2003')
 plt.show()
 
 
 # <a id='q5'></a>
-# ### E. Question 5. What significance has the family violence factor, in violent crime, played over time? 
+# ### E. Question 5. What significance has the family violence factor played over time? 
+
+# In[10]:
+
+
+# Taking a look at first at the overall crime set
+display(df.family_violence.mean())
+
+print('----------------------------------')
+display(df.groupby(df.index.year).family_violence.mean())
+
+hrly_fam_viol_occurrences = df.groupby(df.index.year).family_violence.mean()
+
+fam_viol_avg = df.groupby(df.index.year).family_violence.mean()
+
+fam_viol_avg.plot(rot=60, 
+                  figsize=(10,6))
+
+plt.show()
+
 
 # In[11]:
 
 
+# Now taking a look at violent crime specifically 
 display(df_viol.family_violence.mean())
 
 print('----------------------------------')
 display(df_viol.groupby(df_viol.index.year).family_violence.mean())
 
-hrly_fam_viol_occurrences = df_viol.groupby(df_viol.index.year).family_violence.mean()
+viol_hrly_fam_viol_occurrences = df_viol.groupby(df_viol.index.year).family_violence.mean()
 
-fam_viol_avg = df_viol.groupby(df_viol.index.year).family_violence.mean()
+viol_fam_viol_avg = df_viol.groupby(df_viol.index.year).family_violence.mean()
 
-fam_viol_avg.plot(rot=60, 
-                  figsize=(10,6.25), 
-                  fontsize=16)
+viol_fam_viol_avg.plot(rot=60, 
+                       figsize=(10,6))
 
 plt.show()
 
@@ -336,13 +346,14 @@ gdf_mur_cap.crs = {'init': 'epsg:3857'}
 
 # Plot geodataframes on the "map"
 ax = gdf_mur.plot(label='Murder', 
-                  figsize=(12,12),  
                   alpha=0.85, 
-                  markersize=3)  
+                  color='r',  
+                  markersize=3, 
+                  figsize=(12,12))  
 gdf_mur_cap.plot(label='Capital Murder', 
-                 figsize=(12,12),  
                  alpha=1, 
                  markersize=15, 
+                 figsize=(12,12),  
                  ax=ax)
 ax.legend()
 
