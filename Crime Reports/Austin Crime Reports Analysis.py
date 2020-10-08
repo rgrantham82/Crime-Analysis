@@ -3,7 +3,7 @@
 
 # # Analyzing Austin PD's Crime Reports Dataset
 # 
-# The dataset is available from the Austin Police Department on https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. It is updated weekly and I last downloaded the dataset on 9/14/2020.  
+# The dataset is available from the Austin Police Department on https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. It is updated weekly and I last downloaded the dataset on 10/6/2020.  
 # 
 # 
 # 
@@ -32,7 +32,7 @@
 # 
 # I originally attempted importing the data into this notebook using Sodapy's Socrata API method but found it cumbersome. Mainly, it didn't want to work with importing the entire dataset, and added several redundant columns. I, therefore, prefer to manually download the entire dataset and re-download each week after it's updated.
 
-# In[27]:
+# In[1]:
 
 
 # Importing essential libraries and configurations
@@ -42,23 +42,23 @@ import matplotlib.pyplot as plt
 import warnings
 import folium
 from folium import plugins
+import seaborn as sns 
 
 get_ipython().magic('matplotlib inline')
 warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', 
               None)
+plt.style.use('seaborn-white')
 
-plt.style.use('seaborn-colorblind')
 
-
-# In[15]:
+# In[2]:
 
 
 # Loading the data
 df = pd.read_csv('crime_reports.csv')
 
 
-# In[16]:
+# In[3]:
 
 
 # Examining the dataframe
@@ -75,7 +75,7 @@ display(df.isnull().sum())
 # 
 # The Clearance Status column contains 3 types of statuses: Y for Yes, N for No, and O which stands for "cleared by other means than arrest." Therefore, I changed the column to bool with Y and O as True, and N as False. However, you may note that areas, where there is no clearance status at all, may or may not contain a corresponding date in the clearance date column. I am unsure how best to handle this so I am open to suggestions or advice.   
 
-# In[17]:
+# In[4]:
 
 
 # Helper function for scrubbing the data
@@ -98,7 +98,9 @@ def clean_data(df):
                  'Occurred Date Time'] 
     df.dropna(subset=clean_col, 
               inplace=True)
-    df.rename(columns=lambda x: x.strip().lower().replace(" ", "_"), inplace=True)
+    df.rename(columns=lambda x: x.strip().lower().replace(" ", 
+                                                          "_"), 
+              inplace=True)
     """Convert the following to bools"""
     d = {'Y': True, 
          'N': False}
@@ -136,7 +138,7 @@ def clean_data(df):
 df = clean_data(df)
 
 
-# In[18]:
+# In[5]:
 
 
 # Rechecking the dataframe 
@@ -153,18 +155,32 @@ display(df.tail())
 
 # First, let's get an overall look at crime rates and how they trend over time...
 
-# In[28]:
+# In[6]:
 
 
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 crimes_per_year = df['year'].value_counts().sort_index() 
 
-crimes_per_year.plot.bar(rot=60, 
-                         title='Annual Crime Rates')
+g = sns.barplot(x=crimes_per_year.index, 
+                y=crimes_per_year.values)
+g.set_xticklabels(g.get_xticklabels(), 
+                  rotation=60)
+g.set(xlabel='Year', 
+      ylabel='Crimes reported', 
+      title='Annual Crime Rates')
 plt.show()
 
-# Creating a dataframe for monthly crime rates (2003-Now)
-crimes_per_month = df['month'].value_counts().sort_index()
+# Overall hourly crime rates as well
+crimes_per_hour = df['hour'].value_counts().sort_index()
+
+e = sns.barplot(x=crimes_per_hour.index, 
+                y=crimes_per_hour.values)
+e.set_xticklabels(e.get_xticklabels(), 
+                  rotation=60)
+e.set(xlabel='hour', 
+      ylabel='Crimes Reported', 
+      title='Hourly Crime Rates')
+plt.show()
 
 
 # Between 2003 and now, crime peaked in 2008 and continued a downward trend until 2019 when it rose again. Since we're still in 2020, we have to wait until the end of the year to see what 2020 yields. 
@@ -176,7 +192,7 @@ crimes_per_month = df['month'].value_counts().sort_index()
 # 
 # Question 4 regards violent crime. For violent crime, I chose to examine 4 categories: aggrivated assault, rape, murder, and capital murder. I realize there are other types of violent crime, but for now I am sticking with these 4 categories. 
 
-# In[29]:
+# In[7]:
 
 
 # Create and show dataframe for crime rates by zipcode and then as percentages
@@ -188,14 +204,12 @@ display(df.zip_code.value_counts(normalize=True).head(25))
 
 # Visualizing the top 25 areas for crime 
 df.zip_code.value_counts().head(25).plot.bar(fontsize=12, 
-                                             figsize=(10,6), 
                                              rot=60, 
                                              title='Top 25 Zip Codes (2003-Now)')
-
 plt.show()
 
 
-# Out of all the areas in Austin, 78741 has the highest percentage of overall crime at 9.05%. This is a significant 1.25 percentage points higher than the number 2 area 78753 which hosts 7.81% of overall crime.
+# Out of all the areas in Austin, 78741 has the highest percentage of overall crime at 9.05%. This is a significant 1.24 percentage points higher than the number 2 area 78753 which hosts 7.81% of overall crime.
 
 # #### Taking a closer look at particular areas... 
 # 
@@ -203,12 +217,10 @@ plt.show()
 # 
 # Next, I'll examine 78741. 
 
-# For questions 2 & 3, I included crime types that composed >= 1% of overall crime in the graphics, only. 
-
 # <a id='q2'></a>
 # ### B. Question 2. How is crime distributed in 78753? 
 
-# In[30]:
+# In[8]:
 
 
 # Examining crime in the 78753 area
@@ -229,7 +241,7 @@ plt.title('Crime Distribution (78753)')
 # <a id='q3'></a>
 # ### C. Question 3. How is crime distributed in 78741? 
 
-# In[31]:
+# In[9]:
 
 
 # Create a dataframe for crime in the 78741 area (the highest amount of crime of any Austin zip code)
@@ -252,9 +264,10 @@ plt.title('Crime Distribution (78741)')
 
 # ***The following line of code shows crime rates only >= 1% per zipcode.***
 
-# In[32]:
+# In[10]:
 
 
+# Creating an overall and separate dataframes for violent crime
 df_viol = df.query('highest_offense_description == ["MURDER", "CAPITAL MURDER", "RAPE", "AGG ASSAULT"]') 
 df_viol_mur = df.query('highest_offense_description == ["MURDER", "CAPITAL MURDER"]')
 df_mur = df[df.highest_offense_description == 'MURDER']
@@ -262,35 +275,62 @@ df_mur_cap = df[df.highest_offense_description == 'CAPITAL MURDER']
 df_agg_asslt = df[df.highest_offense_description == 'AGG ASSAULT']
 df_rape = df[df.highest_offense_description == 'RAPE']
 
-viol_per_year = df_viol['year'].value_counts().sort_index()
-
-viol_per_year.plot.line(rot=60,
-                        title='Annual Violent Crime Rates', 
-                        figsize=(10,6))
-plt.show()
-
-viol_mur_per_year = df_viol_mur['year'].value_counts().sort_index()
-
-viol_mur_per_year.plot.line(rot=60, 
-                            title='Annual Murder Rates', 
-                            figsize=(10,6))
-plt.show()
-
+#Violent Crime by Zipcode
 df_viol_zip = df_viol.zip_code.value_counts().head(25)
 
-df_viol_zip.plot.bar(figsize=(10,6), 
-                     title='top zip codes for violent crime', 
+df_viol_zip.plot.bar(title='top zip codes for violent crime', 
                      fontsize=12,  
                      rot=60)
 plt.show()
 
-df_viol_mur.zip_code.value_counts().head(25).plot.bar(title='top zip codes for murder', 
-                                                      rot=60, 
-                                                      figsize=(10,6))
+# Murder by Zipcode
+df_viol_mur.zip_code.value_counts().head(25).plot.bar(fontsize=12, 
+                                                      title='top zip codes for murder', 
+                                                      rot=60)
+plt.show()
+
+# Visualizing violent crimes per year
+viol_per_year = df_viol['year'].value_counts().sort_index()
+
+viol_per_year.plot.bar(rot=60,
+                        title='Annual Violent Crime Rates', 
+                        fontsize=12)
+plt.show()
+
+viol_by_hour = df_viol['hour'].value_counts().sort_index()
+
+h = sns.barplot(x=viol_by_hour.index, 
+                y=viol_by_hour.values)
+h.set_xticklabels(h.get_xticklabels(), 
+                  rotation=60)
+h.set(xlabel='hour', 
+      ylabel='crimes reported', 
+      title='hourly violent crime rates')
+plt.show()
+
+# Visualizing murders per year
+viol_mur_per_year = df_viol_mur['year'].value_counts().sort_index()
+
+viol_mur_per_year.plot.bar(rot=60, 
+                            title='Annual Murder Rates', 
+                            fontsize=12)
 plt.show()
         
+mur_by_hour = df_viol_mur['hour'].value_counts().sort_index()
 
-viol_freq = pd.crosstab(df_viol.zip_code, df_viol.highest_offense_description)
+# Visualizing hourly murder rate with Seaborn
+f = sns.barplot(x=mur_by_hour.index, 
+                y=mur_by_hour.values)
+f.set_xticklabels(f.get_xticklabels(), 
+                  rotation=60)
+f.set(xlabel='hour', 
+      ylabel='crimes reported', 
+      title='hourly murder rates')
+plt.show()
+
+# Calculating and visualizing frequency rate of violent crimes by zipcode
+viol_freq = pd.crosstab(df_viol.zip_code, 
+                        df_viol.highest_offense_description)
 
 display(viol_freq)
 
@@ -311,10 +351,12 @@ viol_mur_freq.plot.bar(figsize=(20,10),
 plt.show()
 
 
+# According to the data , 2010 and 2016 had the most number of murders . Alarmingly, this year so far has already become the 3rd most prevalent year.
+
 # <a id='q5'></a>
 # ### E. Question 5. What significance has the family violence factor played over time? 
 
-# In[33]:
+# In[11]:
 
 
 # Taking a look at first at the overall crime set
@@ -328,9 +370,8 @@ hrly_fam_viol_occurrences = df.groupby(df.index.year).family_violence.mean()
 fam_viol_avg = df.groupby(df.index.year).family_violence.mean()
 
 fam_viol_avg.plot(rot=60, 
-                  figsize=(10,6), 
+                  fontsize=12, 
                   title='Overall Family Violence Occurrences (2003-Now)')
-
 plt.show()
 
 # Now taking a look at violent crime specifically 
@@ -344,9 +385,8 @@ viol_hrly_fam_viol_occurrences = df_viol.groupby(df_viol.index.year).family_viol
 viol_fam_viol_avg = df_viol.groupby(df_viol.index.year).family_violence.mean()
 
 viol_fam_viol_avg.plot(rot=60, 
-                       figsize=(10,6), 
+                       fontsize=12, 
                        title='Violent Crime and Family Violence (2003-Now)')
-
 plt.show()
 
 # Now taking a look at murder with the family violence factor included 
@@ -360,9 +400,8 @@ mur_hrly_fam_viol_occurrences = df_viol_mur.groupby(df_viol_mur.index.year).fami
 mur_fam_viol_avg = df_viol_mur.groupby(df_viol_mur.index.year).family_violence.mean()
 
 mur_fam_viol_avg.plot(rot=60, 
-                      figsize=(10,6), 
+                      fontsize=12, 
                       title='Murder and Family Violence (2003-Now)')
-
 plt.show()
 
 # Now taking a look at rape with the family violence factor included 
@@ -376,9 +415,8 @@ rape_hrly_fam_viol_occurrences = df_rape.groupby(df_rape.index.year).family_viol
 rape_fam_viol_avg = df_rape.groupby(df_rape.index.year).family_violence.mean()
 
 rape_fam_viol_avg.plot(rot=60, 
-                       figsize=(10,6), 
+                       fontsize=12, 
                        title='Rape and Family Violence(2003-Now)')
-
 plt.show()
 
 # Now taking a look at aggrivated assault with the family violence factor included 
@@ -390,24 +428,24 @@ display(df_agg_asslt.groupby(df_agg_asslt.index.year).family_violence.mean())
 agg_asslt_fam_viol_avg = df_agg_asslt.groupby(df_agg_asslt.index.year).family_violence.mean()
 
 agg_asslt_fam_viol_avg.plot(rot=60, 
-                            figsize=(10,6), 
+                            fontsize=12, 
                             title='Aggrivated Assault and Family Violence (2003-Now)')
-
 plt.show()
 
 
-# Overall, family violence is seeing an upward trend in overall crime. Violent crime has also seen an alarming upward trend of family violence. Rapes, for example, were part of incidents involving family violence a 3rd of the time in 2016 whereas in 2004, family violence was involved less than 1% of the time. 
+# Overall, family violence is seeing an upward trend as a crime factor. Violent crime saw an alarming upward trend of the family violence factor, as well. Rapes, for example, involved the family violence factor a 3rd of the time in 2016 whereas in 2004, family violence was involved less than 1% of the time. 
 
 # <a id='q6'></a>
 # ### F. Question 6. How does murder appear on the map? 
 
-# In[25]:
+# In[12]:
 
 
+# This won't work if there are NaN values in the coordinate columns
 df_viol_mur.dropna(subset=['latitude', 'longitude'], 
                    inplace=True)
 
-# Making a folium map using the murder plots
+# Making a folium map using incident lat and lon
 m = folium.Map([30.2672, -97.7431], 
                tiles='Stamen Toner', 
                zoom_level=12)
@@ -416,7 +454,8 @@ for index, row in df_viol_mur.iterrows():
 	lat = row['latitude']
 	lon = row['longitude']
 	name= row['address']
-	folium.Marker([lat, lon], popup=name).add_to(m)
+	folium.Marker([lat, lon], 
+                  popup=name).add_to(m)
     
 m.save(outfile='aus_mur_map.html')
 
