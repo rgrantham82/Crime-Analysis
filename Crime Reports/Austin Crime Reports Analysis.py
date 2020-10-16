@@ -3,8 +3,7 @@
 
 # # Analyzing Austin PD's Crime Reports Dataset
 # 
-# The dataset is available from the Austin Police Department on https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. It is updated weekly and I last downloaded the dataset on 10/6/2020.  
-# 
+# The dataset is available from the Austin Police Department on https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu.
 # 
 # 
 # ## Table of Contents 
@@ -48,6 +47,7 @@ get_ipython().magic('matplotlib inline')
 warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', 
               None)
+plt.style.use('seaborn-white')
 
 
 # In[2]:
@@ -108,8 +108,8 @@ def clean_data(df):
          'N': False}
     df.clearance_status = df.clearance_status.map(e)
     df.clearance_status = df.clearance_status.astype('bool')
-    df.family_violence = df.family_violence.map(d)
-    df.family_violence = df.family_violence.astype('bool') 
+    df.family_violence  = df.family_violence.map(d)
+    df.family_violence  = df.family_violence.astype('bool') 
     """Convert the following to datetime type"""
     date_col = ['occurred_date_time', 
                 'clearance_date', 
@@ -119,14 +119,14 @@ def clean_data(df):
                'location_type', 
                'apd_sector'] 
     df[date_col] = df[date_col].astype('datetime64') 
-    df[cat_col] = df[cat_col].astype('category') 
+    df[cat_col]  = df[cat_col].astype('category') 
     """Convert the following to integer type"""
-    int_col = ['zip_code']
-    df['year'] = pd.to_datetime(df['occurred_date_time'], 
+    int_col     = ['zip_code']
+    df['year']  = pd.to_datetime(df['occurred_date_time'], 
                                 format='%m/%d/%Y').dt.year 
     df['month'] = pd.to_datetime(df['occurred_date_time'], 
                                  format='%m/%d/%Y').dt.month 
-    df['hour'] = pd.to_datetime(df['occurred_date_time'], 
+    df['hour']  = pd.to_datetime(df['occurred_date_time'], 
                                 format='%m/%d/%Y').dt.hour
     df[int_col] = df[int_col].astype('int64')
     """Set the index"""
@@ -166,7 +166,7 @@ g.set_xticklabels(g.get_xticklabels(),
                   rotation=60)
 g.set(xlabel='Year', 
       ylabel='Crimes reported', 
-      title='Annual Crime Rates')
+      title ='Annual Crime Rates')
 plt.show()
 
 # Overall hourly crime rates as well
@@ -178,7 +178,7 @@ e.set_xticklabels(e.get_xticklabels(),
                   rotation=60)
 e.set(xlabel='hour', 
       ylabel='Crimes Reported', 
-      title='Hourly Crime Rates')
+      title ='Hourly Crime Rates')
 plt.show()
 
 
@@ -262,52 +262,45 @@ plt.title('Crime Distribution (78741)')
 
 # ***The following line of code shows crime rates only >= 1% per zipcode.***
 
-# In[10]:
+# In[16]:
 
 
 # Creating an overall and separate dataframes for violent crime
-df_viol = df.query('highest_offense_description == ["MURDER", "CAPITAL MURDER", "RAPE", "AGG ASSAULT"]') 
+df_viol = df.query('highest_offense_description     == ["MURDER", "CAPITAL MURDER", "RAPE", "AGG ASSAULT"]') 
 df_viol_mur = df.query('highest_offense_description == ["MURDER", "CAPITAL MURDER"]')
-df_mur = df[df.highest_offense_description == 'MURDER']
-df_mur_cap = df[df.highest_offense_description == 'CAPITAL MURDER']
-df_agg_asslt = df[df.highest_offense_description == 'AGG ASSAULT']
-df_rape = df[df.highest_offense_description == 'RAPE']
-
-#Violent Crime by Zipcode
-df_viol_zip = df_viol.zip_code.value_counts().head(25)
-
-df_viol_zip.plot.bar(title='Top Zipcodes for Violent Crime', 
-                     rot=60)
-plt.show()
-
-# Murder by Zipcode
-df_viol_mur.zip_code.value_counts().head(25).plot.bar(title='Top Zipcodes for Murder', 
-                                                      rot=60)
-plt.show()
+df_mur = df[df.highest_offense_description          == 'MURDER']
+df_mur_cap = df[df.highest_offense_description      == 'CAPITAL MURDER']
+df_agg_asslt = df[df.highest_offense_description    == 'AGG ASSAULT']
+df_rape = df[df.highest_offense_description         == 'RAPE']
 
 # Visualizing violent crimes per year
 viol_per_year = df_viol['year'].value_counts().sort_index()
 
-viol_per_year.plot.bar(rot=60,
-                        title='Annual Violent Crime Rates')
-plt.show()
-
-viol_by_hour = df_viol['hour'].value_counts().sort_index()
-
-h = sns.barplot(x=viol_by_hour.index, 
-                y=viol_by_hour.values)
-h.set_xticklabels(h.get_xticklabels(), 
-                  rotation=60)
-h.set(xlabel='hour', 
-      ylabel='crimes reported', 
-      title='Hourly Violent Crime Rates')
+viol_per_year.plot.line(rot=60,
+                        title='Annual Violent Crime Rates', 
+                        fontsize=12)
 plt.show()
 
 # Visualizing murders per year
 viol_mur_per_year = df_viol_mur['year'].value_counts().sort_index()
 
-viol_mur_per_year.plot.bar(rot=60, 
-                           title='Annual Murder Rates')
+viol_mur_per_year.plot.line(rot=60, 
+                            title='Annual Murder Rates', 
+                            fontsize=12)
+plt.show()
+
+#Violent Crime by Zipcode
+df_viol_zip = df_viol.zip_code.value_counts().head(25)
+
+df_viol_zip.plot.bar(title='top zip codes for violent crime', 
+                     fontsize=12,  
+                     rot=60)
+plt.show()
+
+# Murder by Zipcode
+df_viol_mur.zip_code.value_counts().head(25).plot.bar(fontsize=12, 
+                                                      title='top zip codes for murder', 
+                                                      rot=60)
 plt.show()
         
 mur_by_hour = df_viol_mur['hour'].value_counts().sort_index()
@@ -319,7 +312,7 @@ f.set_xticklabels(f.get_xticklabels(),
                   rotation=60)
 f.set(xlabel='hour', 
       ylabel='crimes reported', 
-      title='Hourly Murder Rates')
+      title='hourly murder rates')
 plt.show()
 
 # Calculating and visualizing frequency rate of violent crimes by zipcode
@@ -328,17 +321,19 @@ viol_freq = pd.crosstab(df_viol.zip_code,
 
 display(viol_freq)
 
-viol_freq.plot.bar(title='Violent Crime Distribution by Zipcode and Type since 2003', 
+viol_freq.plot.bar(figsize=(20,10), 
+                   title='violent crime distribution by zipcode and type since 2003', 
+                   fontsize=12, 
                    stacked=True, 
-                   figsize=(12,8),  
                    rot=60)
 plt.show()
 
 viol_mur_freq = pd.crosstab(df_viol_mur.zip_code, df_viol_mur.highest_offense_description)
 
-viol_mur_freq.plot.bar(title='Murder Distribution by Zipcode and Type since 2003', 
-                       stacked=True, 
-                       figsize=(12,8),   
+viol_mur_freq.plot.bar(figsize=(20,10), 
+                       title='murder distribution by Zipcode and type since 2003', 
+                       fontsize=12, 
+                       stacked=True,  
                        rot=60)
 plt.show()
 
