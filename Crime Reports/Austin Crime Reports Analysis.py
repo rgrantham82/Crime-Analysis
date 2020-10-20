@@ -43,11 +43,11 @@ from folium import plugins
 import seaborn as sns 
 import warnings
 
+plt.style.use('fivethirtyeight')
 get_ipython().magic('matplotlib inline')
 warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', 
               None)
-plt.style.use('seaborn-white')
 
 
 # In[2]:
@@ -211,7 +211,7 @@ df.zip_code.value_counts().head(25).plot.bar(rot=60,
 plt.show()
 
 
-# Out of all the areas in Austin, 78741 has the highest percentage of overall crime at 9.05%. This is a significant 1.24 percentage points higher than the number 2 area 78753 which hosts 7.81% of overall crime.
+# Out of all the areas in Austin, 78741 has the highest percentage of overall crime at 9.14%. This is a significant 1.29 percentage points higher than the number 2 area 78753 which hosts 7.85% of overall crime.
 
 # #### Taking a closer look at particular areas... 
 # 
@@ -343,7 +343,7 @@ viol_mur_freq.plot.bar(figsize=(20,10),
 plt.show()
 
 
-# According to the data , 2010 and 2016 had the most number of murders . Alarmingly, this year so far has already become the 3rd most prevalent year.
+# According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 10/19/2020, murders already totaled 34--the same amount for 2016 and 2010!!
 
 # <a id='q5'></a>
 # ### E. Question 5. What significance has the family violence factor played over time? 
@@ -425,10 +425,30 @@ plt.show()
 # <a id='q6'></a>
 # ### F. Question 6. How does murder appear on the map? 
 
-# In[12]:
+# In[16]:
 
 
-# This won't work if there are NaN values in the coordinate columns
+# As a heatmap
+mur_coords = df_viol_mur[(df_viol_mur['latitude'].isnull() == False) 
+                         & (df_viol_mur['longitude'].isnull() == False)]
+
+k = folium.Map(location=[30.285516,-97.736753], 
+               tiles='OpenStreetMap', 
+               zoom_start=11) 
+                         
+k.add_child(plugins.HeatMap(mur_coords[['latitude', 
+                                        'longitude']].values, 
+                            radius=15))
+
+k.save(outfile='aus_mur_heatmap.html')
+
+k
+
+
+# In[13]:
+
+
+# Pinpointing individual addresses
 df_viol_mur.dropna(subset=['latitude', 'longitude'], 
                    inplace=True)
 
@@ -449,7 +469,7 @@ m.save(outfile='aus_mur_map.html')
 m
 
 
-# In[13]:
+# In[14]:
 
 
 display(df.apd_sector.value_counts())
@@ -458,11 +478,11 @@ display(df.council_district.value_counts())
 
 pd.crosstab(df.council_district, 
             df.apd_sector).plot.bar(stacked =True, 
-                                    figsize=(12,8), 
-                                    title ='Incidents per Council Districts by APD Sector')
+                                    figsize =(12,8), 
+                                    title   ='Incidents per Council Districts by APD Sector')
 
 
-# In[16]:
+# In[15]:
 
 
 # Checking outliers between variables 
