@@ -43,7 +43,7 @@ from folium import plugins
 import seaborn as sns 
 import warnings
 
-plt.style.use('fivethirtyeight')
+plt.style.use('classic')
 get_ipython().magic('matplotlib inline')
 warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', 
@@ -65,7 +65,7 @@ display(df.info())
 print('----------------------------------')
 display(df.duplicated().sum())
 print('----------------------------------')
-display(df.isnull().sum())
+print(df.isnull().sum())
 
 
 # ## II. Data Scrubbing
@@ -266,7 +266,7 @@ df_41_off.plot.pie(figsize=(8,8),
 
 # ***The following line of code shows crime rates only >= 1% per zipcode.***
 
-# In[10]:
+# In[36]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -294,14 +294,15 @@ viol_mur_per_year.plot.line(rot=60,
 plt.show()
 
 #Violent Crime by Zipcode
-df_viol_zip = df_viol.zip_code.value_counts().head(25)
-
+df_viol_zip = df_viol.zip_code.value_counts(normalize =True).head(25)
+display(df_viol_zip)
 df_viol_zip.plot.bar(title='Top Zipcodes for Violent Crime', 
                      fontsize=12,  
                      rot=60)
 plt.show()
 
 # Murder by Zipcode
+display (df_viol_mur.zip_code.value_counts(normalize =True).head(25))
 df_viol_mur.zip_code.value_counts().head(25).plot.bar(fontsize=12, 
                                                       title='Top Zipcodes for Murder', 
                                                       rot=60)
@@ -425,7 +426,7 @@ plt.show()
 # <a id='q6'></a>
 # ### F. Question 6. How does murder appear on the map? 
 
-# In[16]:
+# In[12]:
 
 
 # As a heatmap
@@ -482,39 +483,14 @@ pd.crosstab(df.council_district,
                                     title   ='Incidents per Council Districts by APD Sector')
 
 
-# In[15]:
-
-
-# Checking outliers between variables 
-df.plot.scatter('zip_code', 
-                'council_district', 
-                title='zipcode and council district',  
-                alpha = 0.5)
-plt.show()
-
-df.plot.scatter('zip_code', 
-                'pra', 
-                title='zipcode and pra',  
-                alpha = 0.5)
-plt.show()
-
-df.plot.scatter('council_district', 
-                'pra', 
-                title='council district and pra',  
-                alpha = 0.5)
-plt.show()
-
-
 # ## IV. Summary
 # Needless to say, violent crimes go hand-in-hand with other violent crimes.
 # 
-# So far, 78753 and 78741 are the top hotspots for all sorts of crime in Austin, including violent crime.
-# 
-# For non-capital murder, 78741 comes in at number 1 with 10.91%. 
+# So far, 78753 and 78741 are the top hotspots for all sorts of crime in Austin, including violent crime. 78753 accounts for 10.85% while  78741 accounts for 10.64% of total murders.
 # 
 # #### ***It is important to note that murder does not necessarily make the defendant(s) automatically eligible for the death penalty. Under Texas law, we distinguish capital murder, through the motives and actions of the defendant(s) during the commission of a homicide, as whether or not automatically warranting an eventual date with the executioner. This includes such things as if the homicide was premeditated or not, if the defendant(s) murdered a police officer, etc.***
 # 
-# Regarding capital murder, 78723 comes in to share the number one spot with 78753, with a rate of 13.92% each. The 78741 area drops to the number 3 spot, carrying 8.97%. So, if we're honest, 78753 actually is the number 1 hotspot for murder because it has played host to 40 non-capital murders and 11 capital murders in total, meaning it has hosted 11% of all murders. 78741, if we combine all murders, only accounts for 10.56% of the total since 2003. 
+# 78723 comes in at number one with 14.1% of total capital murders. 
 # 
 # Next, 78741 climbs back to claim the number 1 spot for rape at 12.09% -- 3.43 percentage points higher than the number 2 spot 78753 carrying 8.66% which is quite a significant lead when you look at it on the graph!! Why does rape occur so much more often in this area than in others?
 # 
