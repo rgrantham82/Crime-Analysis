@@ -29,7 +29,7 @@
 # 
 # This is a self-paced project, conceived outside of both work and the educational arenas. It is my hope that this project will reveal some actionable insights that will benefit the Austin law enforcement community, news outlets, and anyone else interested in gaining knowledge on how best to combat the problem of crime in the Austin area.
 # 
-# I originally attempted importing the data into this notebook using Sodapy's Socrata API method but found it cumbersome. Mainly, it didn't want to work with importing the entire dataset, and added several redundant columns. I, therefore, prefer to manually download the entire dataset and re-download each week after it's updated.
+# I first attempted importing the data into this notebook using Sodapy's Socrata API method but found it lacking. It didn't import the entire dataset, and added several redundant columns. I, therefore, prefer to manually download the entire dataset and re-download each week after it's updated.
 
 # In[1]:
 
@@ -43,7 +43,7 @@ from folium import plugins
 import seaborn as sns 
 import warnings
 
-plt.style.use('classic')
+plt.style.use('seaborn-white')
 get_ipython().magic('matplotlib inline')
 warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', 
@@ -70,9 +70,9 @@ print(df.isnull().sum())
 
 # ## II. Data Scrubbing
 # 
-# There are several columns of data we won't be using in the analysis, mainly other date and geodata columns. So we'll drop those and also scrub some others. Mainly, we want the zip code and address columns to be free of nulls and duplicates. 
+# There are several columns of data we don't need. We'll drop those and also scrub the Columns were keeping for analysis. Mainly, we want the zip code and address columns to be free of nulls and duplicates. 
 # 
-# The Clearance Status column contains 3 types of statuses: Y for Yes, N for No, and O which stands for "cleared by other means than arrest." Therefore, I changed the column, as well as the family_violence column, to boolean type. In other words, Y and O as True, and N as False. However, you may note that areas, where there is no clearance status at all, may or may not contain a corresponding date in the clearance date column. I am unsure how best to handle this so I am open to suggestions or advice.   
+# The 'clearance status' column contains 3 types of statuses: Y for Yes, N for No, and O which stands for "cleared by other means than arrest." Therefore, I changed it to boolean type:  Y and O as True, and N as False. However, you may note that areas, where there is no clearance status at all, may or may not contain a corresponding date in the clearance date column. I am unsure how best to handle this so I am open to suggestions or advice. I also converted the 'family violence' column to boolean type.  
 
 # In[4]:
 
@@ -94,9 +94,7 @@ def clean_data(df):
             inplace=True)
     clean_col = ['Zip Code', 
                  'Report Date Time', 
-                 'Occurred Date Time', 
-                 'Council District', 
-                 'PRA'] 
+                 'Occurred Date Time'] 
     df.dropna(subset=clean_col, 
               inplace=True)
     df.rename(columns=lambda x: x.strip().lower().replace(" ", 
@@ -119,21 +117,19 @@ def clean_data(df):
     """Convert the following to category type"""
     cat_col = ['highest_offense_description', 
                'location_type', 
-               'apd_sector'] 
+               'apd_sector', 
+               'pra', 
+               'council_district'] 
     df[date_col] = df[date_col].astype('datetime64') 
     df[cat_col]  = df[cat_col].astype('category') 
-    """Convert the following to integer type"""
-    int_col     = ['zip_code', 
-                   'pra', 
-                   'council_district']
+    df.zip_code = df.zip_code.astype('int64')
+    """Creating new time columns and an index out of the 'occured date time' column"""
     df['year']  = pd.to_datetime(df['occurred_date_time'], 
                                 format='%m/%d/%Y').dt.year 
     df['month'] = pd.to_datetime(df['occurred_date_time'], 
                                  format='%m/%d/%Y').dt.month 
     df['hour']  = pd.to_datetime(df['occurred_date_time'], 
                                 format='%m/%d/%Y').dt.hour
-    df[int_col] = df[int_col].astype('int64')
-    """Set the index"""
     df.set_index(['occurred_date_time'], 
                  inplace=True)
     df.sort_index(inplace=True)
@@ -190,10 +186,6 @@ plt.show()
 
 # <a id='q1'></a>
 # ### A. Question 1. What areas of Austin have the highest crime rates? 
-# 
-# ***Note: I am only including zipcodes and crimes, for questions 1 - 3, that >= 1%. Any zipcodes or crime percentages, below 1%, will be discluded to simplify analysis and visualizations.***
-# 
-# Question 4 regards violent crime. For violent crime, I chose to examine 4 categories: aggrivated assault, rape, murder, and capital murder. I realize there are other types of violent crime, but for now I am sticking with these 4 categories. 
 
 # In[7]:
 
@@ -266,7 +258,7 @@ df_41_off.plot.pie(figsize=(8,8),
 
 # ***The following line of code shows crime rates only >= 1% per zipcode.***
 
-# In[36]:
+# In[10]:
 
 
 # Creating an overall and separate dataframes for violent crime
