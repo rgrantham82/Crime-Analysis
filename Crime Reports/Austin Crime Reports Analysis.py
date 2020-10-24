@@ -44,7 +44,7 @@ import seaborn as sns
 import warnings
 
 plt.style.use('seaborn-white')
-get_ipython().magic('matplotlib inline')
+get_ipython().run_line_magic('matplotlib', 'inline')
 warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', 
               None)
@@ -157,9 +157,12 @@ display(df.tail())
 # In[6]:
 
 
+figsize=(10,5)
+
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 crimes_per_year = df['year'].value_counts().sort_index() 
 
+plt.figure(figsize=figsize)
 g = sns.barplot(x=crimes_per_year.index, 
                 y=crimes_per_year.values)
 g.set_xticklabels(g.get_xticklabels(), 
@@ -169,9 +172,26 @@ g.set(xlabel='Year',
       title ='Annual Crime Rates')
 plt.show()
 
+crime_month = df.groupby(df.month).incident_number.count()
+
+plt.figure(figsize=figsize)
+# Creating and visualizing a data frame for the overall yearly crime rate since 2003
+crimes_per_month = df['month'].value_counts().sort_index() 
+
+plt.figure(figsize=figsize)
+d = sns.barplot(x=crimes_per_month.index, 
+                y=crimes_per_month.values)
+d.set_xticklabels(d.get_xticklabels(), 
+                  rotation=60)
+d.set(xlabel='Month', 
+      ylabel='Crimes Reported', 
+      title ='Monthly Crime Rates')
+plt.show()
+
 # Overall hourly crime rates as well
 crimes_per_hour = df['hour'].value_counts().sort_index()
 
+plt.figure(figsize=figsize)
 e = sns.barplot(x=crimes_per_hour.index, 
                 y=crimes_per_hour.values)
 e.set_xticklabels(e.get_xticklabels(), 
@@ -199,6 +219,7 @@ display(df.zip_code.value_counts(normalize=True).head(25))
 
 # Visualizing the top 25 areas for crime 
 df.zip_code.value_counts().head(25).plot.bar(rot=60, 
+                                             figsize=figsize, 
                                              title='Top 25 Zipcodes (2003-Present)')
 plt.show()
 
@@ -258,7 +279,7 @@ df_41_off.plot.pie(figsize=(8,8),
 
 # ***The following line of code shows crime rates only >= 1% per zipcode.***
 
-# In[10]:
+# In[16]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -269,12 +290,14 @@ df_mur_cap = df[df.highest_offense_description      == 'CAPITAL MURDER']
 df_agg_asslt = df[df.highest_offense_description    == 'AGG ASSAULT']
 df_rape = df[df.highest_offense_description         == 'RAPE']
 
+
 # Visualizing violent crimes per year
 viol_per_year = df_viol['year'].value_counts().sort_index()
 
 viol_per_year.plot.line(rot=60,
                         title='Annual Violent Crime Rates', 
-                        fontsize=12)
+                        fontsize=12, 
+                        figsize=figsize)
 plt.show()
 
 # Visualizing murders per year
@@ -282,27 +305,41 @@ viol_mur_per_year = df_viol_mur['year'].value_counts().sort_index()
 
 viol_mur_per_year.plot.line(rot=60, 
                             title='Annual Murder Rates', 
-                            fontsize=12)
+                            fontsize=12, 
+                            figsize=figsize)
 plt.show()
 
 #Violent Crime by Zipcode
-df_viol_zip = df_viol.zip_code.value_counts(normalize =True).head(25)
-display(df_viol_zip)
-df_viol_zip.plot.bar(title='Top Zipcodes for Violent Crime', 
+display(df_viol.zip_code.value_counts(normalize =True).head(25))
+df_viol.zip_code.value_counts().head(25).plot.bar(title='Top Zipcodes for Violent Crime', 
                      fontsize=12,  
-                     rot=60)
+                     rot=60, 
+                     figsize=figsize)
 plt.show()
 
 # Murder by Zipcode
 display (df_viol_mur.zip_code.value_counts(normalize =True).head(25))
 df_viol_mur.zip_code.value_counts().head(25).plot.bar(fontsize=12, 
                                                       title='Top Zipcodes for Murder', 
-                                                      rot=60)
+                                                      rot=60, 
+                                                      figsize=figsize)
 plt.show()
         
+mur_by_month = df_viol_mur['month'].value_counts().sort_index()
 mur_by_hour = df_viol_mur['hour'].value_counts().sort_index()
 
-# Visualizing hourly murder rate with Seaborn
+# Visualizing monthly & hourly murder rate with Seaborn
+plt.figure(figsize=figsize)
+v = sns.barplot(x=mur_by_month.index, 
+                y=mur_by_month.values)
+v.set_xticklabels(v.get_xticklabels(), 
+                  rotation=60)
+v.set(xlabel='Month', 
+      ylabel='Crimes Reported', 
+      title ='Monthly Murder Rates')
+plt.show()
+
+plt.figure(figsize=figsize)
 f = sns.barplot(x=mur_by_hour.index, 
                 y=mur_by_hour.values)
 f.set_xticklabels(f.get_xticklabels(), 
@@ -336,12 +373,19 @@ viol_mur_freq.plot.bar(figsize=(20,10),
 plt.show()
 
 
+# In[11]:
+
+
+df_viol.to_csv('datasets\df_viol.csv')
+df_viol_mur.to_csv('datasets\df_viol_mur.csv')
+
+
 # According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 10/19/2020, murders already totaled 34--the same amount for 2016 and 2010!!
 
 # <a id='q5'></a>
 # ### E. Question 5. What significance has the family violence factor played over time? 
 
-# In[11]:
+# In[12]:
 
 
 # Taking a look at first at the overall crime set
@@ -355,6 +399,7 @@ hrly_fam_viol_occurrences = df.groupby(df.index.year).family_violence.mean()
 fam_viol_avg = df.groupby(df.index.year).family_violence.mean()
 
 fam_viol_avg.plot(rot=60, 
+                  figsize=figsize, 
                   title='Overall Family Violence Percentages (2003-Present)')
 plt.show()
 
@@ -369,6 +414,7 @@ viol_hrly_fam_viol_occurrences = df_viol.groupby(df_viol.index.year).family_viol
 viol_fam_viol_avg = df_viol.groupby(df_viol.index.year).family_violence.mean()
 
 viol_fam_viol_avg.plot(rot=60, 
+                       figsize=figsize, 
                        title='Violent Crime and Family Violence (2003-Present)')
 plt.show()
 
@@ -383,6 +429,7 @@ mur_hrly_fam_viol_occurrences = df_viol_mur.groupby(df_viol_mur.index.year).fami
 mur_fam_viol_avg = df_viol_mur.groupby(df_viol_mur.index.year).family_violence.mean()
 
 mur_fam_viol_avg.plot(rot=60, 
+                      figsize=figsize,
                       title='Murder and Family Violence (2003-Present)')
 plt.show()
 
@@ -397,6 +444,7 @@ rape_hrly_fam_viol_occurrences = df_rape.groupby(df_rape.index.year).family_viol
 rape_fam_viol_avg = df_rape.groupby(df_rape.index.year).family_violence.mean()
 
 rape_fam_viol_avg.plot(rot=60, 
+                       figsize=figsize, 
                        title='Rape and Family Violence(2003-Present)')
 plt.show()
 
@@ -409,6 +457,7 @@ display(df_agg_asslt.groupby(df_agg_asslt.index.year).family_violence.mean())
 agg_asslt_fam_viol_avg = df_agg_asslt.groupby(df_agg_asslt.index.year).family_violence.mean()
 
 agg_asslt_fam_viol_avg.plot(rot=60, 
+                            figsize=figsize,
                             title='Aggrivated Assault and Family Violence (2003-Present)')
 plt.show()
 
@@ -418,7 +467,7 @@ plt.show()
 # <a id='q6'></a>
 # ### F. Question 6. How does murder appear on the map? 
 
-# In[12]:
+# In[13]:
 
 
 # As a heatmap
@@ -438,7 +487,7 @@ k.save(outfile='aus_mur_heatmap.html')
 k
 
 
-# In[13]:
+# In[14]:
 
 
 # Pinpointing individual addresses
@@ -462,7 +511,7 @@ m.save(outfile='aus_mur_map.html')
 m
 
 
-# In[14]:
+# In[15]:
 
 
 display(df.apd_sector.value_counts())
@@ -471,7 +520,7 @@ display(df.council_district.value_counts())
 
 pd.crosstab(df.council_district, 
             df.apd_sector).plot.bar(stacked =True, 
-                                    figsize =(12,8), 
+                                    figsize =(15,7.5), 
                                     title   ='Incidents per Council Districts by APD Sector')
 
 
