@@ -43,7 +43,7 @@ from folium import plugins
 import seaborn as sns 
 import warnings
 
-plt.style.use('seaborn-white')
+plt.style.use('seaborn-dark-palette')
 get_ipython().run_line_magic('matplotlib', 'inline')
 warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', 
@@ -77,7 +77,7 @@ print(df.isnull().sum())
 # In[4]:
 
 
-# Helper function for scrubbing the data
+# Script for scrubbing the data
 def clean_data(df):
     drop_col = ['Occurred Time', 
                 'Occurred Date', 
@@ -95,7 +95,7 @@ def clean_data(df):
     clean_col = ['Zip Code', 
                  'Report Date Time', 
                  'Occurred Date Time'] 
-    df.dropna(subset=clean_col, 
+    df.dropna(subset =clean_col, 
               inplace=True)
     df.rename(columns=lambda x: x.strip().lower().replace(" ", 
                                                           "_"), 
@@ -115,14 +115,14 @@ def clean_data(df):
                 'clearance_date', 
                 'report_date_time'] 
     """Convert the following to category type"""
-    cat_col = ['highest_offense_description', 
-               'location_type', 
-               'apd_sector', 
-               'pra', 
-               'council_district'] 
+    cat_col  = ['highest_offense_description', 
+                'location_type', 
+                'apd_sector', 
+                'pra', 
+                'council_district'] 
     df[date_col] = df[date_col].astype('datetime64') 
     df[cat_col]  = df[cat_col].astype('category') 
-    df.zip_code = df.zip_code.astype('int64')
+    df.zip_code  = df.zip_code.astype('int64')
     """Creating new time columns and an index out of the 'occured date time' column"""
     df['year']  = pd.to_datetime(df['occurred_date_time'], 
                                 format='%m/%d/%Y').dt.year 
@@ -157,12 +157,11 @@ display(df.tail())
 # In[6]:
 
 
-figsize=(10,5)
+figsize=(20,10)
 
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 crimes_per_year = df['year'].value_counts().sort_index() 
 
-plt.figure(figsize=figsize)
 g = sns.barplot(x=crimes_per_year.index, 
                 y=crimes_per_year.values)
 g.set_xticklabels(g.get_xticklabels(), 
@@ -174,11 +173,9 @@ plt.show()
 
 crime_month = df.groupby(df.month).incident_number.count()
 
-plt.figure(figsize=figsize)
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 crimes_per_month = df['month'].value_counts().sort_index() 
 
-plt.figure(figsize=figsize)
 d = sns.barplot(x=crimes_per_month.index, 
                 y=crimes_per_month.values)
 d.set_xticklabels(d.get_xticklabels(), 
@@ -191,7 +188,6 @@ plt.show()
 # Overall hourly crime rates as well
 crimes_per_hour = df['hour'].value_counts().sort_index()
 
-plt.figure(figsize=figsize)
 e = sns.barplot(x=crimes_per_hour.index, 
                 y=crimes_per_hour.values)
 e.set_xticklabels(e.get_xticklabels(), 
@@ -219,7 +215,6 @@ display(df.zip_code.value_counts(normalize=True).head(25))
 
 # Visualizing the top 25 areas for crime 
 df.zip_code.value_counts().head(25).plot.bar(rot=60, 
-                                             figsize=figsize, 
                                              title='Top 25 Zipcodes (2003-Present)')
 plt.show()
 
@@ -279,7 +274,7 @@ df_41_off.plot.pie(figsize=(8,8),
 
 # ***The following line of code shows crime rates only >= 1% per zipcode.***
 
-# In[16]:
+# In[10]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -293,11 +288,9 @@ df_rape = df[df.highest_offense_description         == 'RAPE']
 
 # Visualizing violent crimes per year
 viol_per_year = df_viol['year'].value_counts().sort_index()
-
 viol_per_year.plot.line(rot=60,
                         title='Annual Violent Crime Rates', 
-                        fontsize=12, 
-                        figsize=figsize)
+                        fontsize=12)
 plt.show()
 
 # Visualizing murders per year
@@ -305,31 +298,27 @@ viol_mur_per_year = df_viol_mur['year'].value_counts().sort_index()
 
 viol_mur_per_year.plot.line(rot=60, 
                             title='Annual Murder Rates', 
-                            fontsize=12, 
-                            figsize=figsize)
+                            fontsize=12)
 plt.show()
 
 #Violent Crime by Zipcode
-display(df_viol.zip_code.value_counts(normalize =True).head(25))
+display(df_viol.zip_code.value_counts(normalize=True).head(25))
 df_viol.zip_code.value_counts().head(25).plot.bar(title='Top Zipcodes for Violent Crime', 
-                     fontsize=12,  
-                     rot=60, 
-                     figsize=figsize)
+                                                  fontsize=12, 
+                                                  rot=60)
 plt.show()
 
 # Murder by Zipcode
-display (df_viol_mur.zip_code.value_counts(normalize =True).head(25))
+display (df_viol_mur.zip_code.value_counts(normalize=True).head(25))
 df_viol_mur.zip_code.value_counts().head(25).plot.bar(fontsize=12, 
                                                       title='Top Zipcodes for Murder', 
-                                                      rot=60, 
-                                                      figsize=figsize)
+                                                      rot=60)
 plt.show()
         
 mur_by_month = df_viol_mur['month'].value_counts().sort_index()
 mur_by_hour = df_viol_mur['hour'].value_counts().sort_index()
 
 # Visualizing monthly & hourly murder rate with Seaborn
-plt.figure(figsize=figsize)
 v = sns.barplot(x=mur_by_month.index, 
                 y=mur_by_month.values)
 v.set_xticklabels(v.get_xticklabels(), 
@@ -339,7 +328,6 @@ v.set(xlabel='Month',
       title ='Monthly Murder Rates')
 plt.show()
 
-plt.figure(figsize=figsize)
 f = sns.barplot(x=mur_by_hour.index, 
                 y=mur_by_hour.values)
 f.set_xticklabels(f.get_xticklabels(), 
@@ -355,7 +343,7 @@ viol_freq = pd.crosstab(df_viol.zip_code,
 
 display(viol_freq)
 
-viol_freq.plot.bar(figsize=(20,10), 
+viol_freq.plot.bar(figsize=figsize, 
                    title='Violent Crime Distribution by Zipcode and Type since 2003', 
                    fontsize=12, 
                    stacked=True, 
@@ -365,7 +353,7 @@ plt.show()
 viol_mur_freq = pd.crosstab(df_viol_mur.zip_code, 
                             df_viol_mur.highest_offense_description)
 
-viol_mur_freq.plot.bar(figsize=(20,10), 
+viol_mur_freq.plot.bar(figsize=figsize, 
                        title='Murder Distribution by Zipcode and Type since 2003', 
                        fontsize=12, 
                        stacked=True,  
@@ -399,7 +387,6 @@ hrly_fam_viol_occurrences = df.groupby(df.index.year).family_violence.mean()
 fam_viol_avg = df.groupby(df.index.year).family_violence.mean()
 
 fam_viol_avg.plot(rot=60, 
-                  figsize=figsize, 
                   title='Overall Family Violence Percentages (2003-Present)')
 plt.show()
 
@@ -414,7 +401,6 @@ viol_hrly_fam_viol_occurrences = df_viol.groupby(df_viol.index.year).family_viol
 viol_fam_viol_avg = df_viol.groupby(df_viol.index.year).family_violence.mean()
 
 viol_fam_viol_avg.plot(rot=60, 
-                       figsize=figsize, 
                        title='Violent Crime and Family Violence (2003-Present)')
 plt.show()
 
@@ -429,7 +415,6 @@ mur_hrly_fam_viol_occurrences = df_viol_mur.groupby(df_viol_mur.index.year).fami
 mur_fam_viol_avg = df_viol_mur.groupby(df_viol_mur.index.year).family_violence.mean()
 
 mur_fam_viol_avg.plot(rot=60, 
-                      figsize=figsize,
                       title='Murder and Family Violence (2003-Present)')
 plt.show()
 
@@ -444,7 +429,6 @@ rape_hrly_fam_viol_occurrences = df_rape.groupby(df_rape.index.year).family_viol
 rape_fam_viol_avg = df_rape.groupby(df_rape.index.year).family_violence.mean()
 
 rape_fam_viol_avg.plot(rot=60, 
-                       figsize=figsize, 
                        title='Rape and Family Violence(2003-Present)')
 plt.show()
 
@@ -457,7 +441,6 @@ display(df_agg_asslt.groupby(df_agg_asslt.index.year).family_violence.mean())
 agg_asslt_fam_viol_avg = df_agg_asslt.groupby(df_agg_asslt.index.year).family_violence.mean()
 
 agg_asslt_fam_viol_avg.plot(rot=60, 
-                            figsize=figsize,
                             title='Aggrivated Assault and Family Violence (2003-Present)')
 plt.show()
 
@@ -471,15 +454,15 @@ plt.show()
 
 
 # As a heatmap
-mur_coords = df_viol_mur[(df_viol_mur['latitude'].isnull() == False) 
-                         & (df_viol_mur['longitude'].isnull() == False)]
+mur_coords_heat = df_viol_mur[(df_viol_mur['latitude'].isnull() == False) 
+                           & (df_viol_mur['longitude'].isnull() == False)]
 
-k = folium.Map(location=[30.285516,-97.736753], 
+k = folium.Map(location=[30.2672, -97.7431], 
                tiles='OpenStreetMap', 
                zoom_start=11) 
                          
-k.add_child(plugins.HeatMap(mur_coords[['latitude', 
-                                        'longitude']].values, 
+k.add_child(plugins.HeatMap(mur_coords_heat[['latitude', 
+                                             'longitude']].values, 
                             radius=15))
 
 k.save(outfile='aus_mur_heatmap.html')
@@ -491,15 +474,15 @@ k
 
 
 # Pinpointing individual addresses
-df_viol_mur.dropna(subset=['latitude', 'longitude'], 
-                   inplace=True)
+mur_coords_add  = df_viol_mur[(df_viol_mur['latitude'].isnull() == False) 
+                           & (df_viol_mur['longitude'].isnull() == False)]
 
 # Making a folium map using incident lat and lon
 m = folium.Map([30.2672, -97.7431], 
                tiles='Stamen Toner', 
                zoom_level=12)
 
-for index, row in df_viol_mur.iterrows():
+for index, row in mur_coords_add.iterrows():
 	lat = row['latitude']
 	lon = row['longitude']
 	name= row['address']
@@ -511,7 +494,7 @@ m.save(outfile='aus_mur_map.html')
 m
 
 
-# In[15]:
+# In[17]:
 
 
 display(df.apd_sector.value_counts())
@@ -519,9 +502,11 @@ display(df.apd_sector.value_counts())
 display(df.council_district.value_counts())
 
 pd.crosstab(df.council_district, 
-            df.apd_sector).plot.bar(stacked =True, 
-                                    figsize =(15,7.5), 
-                                    title   ='Incidents per Council Districts by APD Sector')
+            df.apd_sector).plot.bar(stacked=True, 
+                                    fontsize=12, 
+                                    rot=60,
+                                    figsize=figsize, 
+                                    title='Incidents per Council Districts by APD Sector')
 
 
 # ## IV. Summary
