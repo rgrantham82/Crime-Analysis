@@ -43,7 +43,7 @@ from folium import plugins
 import seaborn as sns 
 import warnings
 
-plt.style.use('seaborn-dark-palette')
+plt.style.use('classic')
 get_ipython().run_line_magic('matplotlib', 'inline')
 warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', 
@@ -65,7 +65,7 @@ display(df.info())
 print('----------------------------------')
 display(df.duplicated().sum())
 print('----------------------------------')
-print(df.isnull().sum())
+display(df.isnull().sum())
 
 
 # ## II. Data Scrubbing
@@ -125,11 +125,11 @@ def clean_data(df):
     df.zip_code  = df.zip_code.astype('int64')
     """Creating new time columns and an index out of the 'occured date time' column"""
     df['year']  = pd.to_datetime(df['occurred_date_time'], 
-                                format='%m/%d/%Y').dt.year 
+                                 format='%m/%d/%Y').dt.year 
     df['month'] = pd.to_datetime(df['occurred_date_time'], 
                                  format='%m/%d/%Y').dt.month 
     df['hour']  = pd.to_datetime(df['occurred_date_time'], 
-                                format='%m/%d/%Y').dt.hour
+                                 format='%m/%d/%Y').dt.hour
     df.set_index(['occurred_date_time'], 
                  inplace=True)
     df.sort_index(inplace=True)
@@ -170,8 +170,6 @@ g.set(xlabel='Year',
       ylabel='Crimes Reported', 
       title ='Annual Crime Rates')
 plt.show()
-
-crime_month = df.groupby(df.month).incident_number.count()
 
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 crimes_per_month = df['month'].value_counts().sort_index() 
@@ -288,17 +286,16 @@ df_rape = df[df.highest_offense_description         == 'RAPE']
 
 # Visualizing violent crimes per year
 viol_per_year = df_viol['year'].value_counts().sort_index()
-viol_per_year.plot.line(rot=60,
-                        title='Annual Violent Crime Rates', 
-                        fontsize=12)
+viol_per_year.plot.bar(rot=60,
+                       title='Annual Violent Crime Rates (2003-Present)', 
+                       fontsize=12)
 plt.show()
 
 # Visualizing murders per year
-viol_mur_per_year = df_viol_mur['year'].value_counts().sort_index()
-
-viol_mur_per_year.plot.line(rot=60, 
-                            title='Annual Murder Rates', 
-                            fontsize=12)
+viol_mur_per_year = df_viol_mur.year.value_counts().sort_index()
+viol_mur_per_year.plot.bar(rot=60,
+                           title='Annual Murder Rates (2003-Present)', 
+                           fontsize=12)
 plt.show()
 
 #Violent Crime by Zipcode
@@ -325,16 +322,14 @@ v.set_xticklabels(v.get_xticklabels(),
                   rotation=60)
 v.set(xlabel='Month', 
       ylabel='Crimes Reported', 
-      title ='Monthly Murder Rates')
+      title ='Monthly Murder Rates (2003-Present)')
 plt.show()
 
 f = sns.barplot(x=mur_by_hour.index, 
                 y=mur_by_hour.values)
-f.set_xticklabels(f.get_xticklabels(), 
-                  rotation=60)
 f.set(xlabel='Hour', 
       ylabel='Crimes Reported', 
-      title ='Hourly Murder Rates')
+      title ='Hourly Murder Rates (2003-Present)')
 plt.show()
 
 # Calculating and visualizing frequency rate of violent crimes by zipcode
@@ -361,19 +356,12 @@ viol_mur_freq.plot.bar(figsize=figsize,
 plt.show()
 
 
-# In[11]:
-
-
-df_viol.to_csv('datasets\df_viol.csv')
-df_viol_mur.to_csv('datasets\df_viol_mur.csv')
-
-
 # According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 10/19/2020, murders already totaled 34--the same amount for 2016 and 2010!!
 
 # <a id='q5'></a>
 # ### E. Question 5. What significance has the family violence factor played over time? 
 
-# In[12]:
+# In[11]:
 
 
 # Taking a look at first at the overall crime set
@@ -450,7 +438,7 @@ plt.show()
 # <a id='q6'></a>
 # ### F. Question 6. How does murder appear on the map? 
 
-# In[13]:
+# In[12]:
 
 
 # As a heatmap
@@ -470,7 +458,7 @@ k.save(outfile='aus_mur_heatmap.html')
 k
 
 
-# In[14]:
+# In[13]:
 
 
 # Pinpointing individual addresses
@@ -494,7 +482,15 @@ m.save(outfile='aus_mur_map.html')
 m
 
 
-# In[17]:
+# ## Are there any addresses where murder occurs frequently?
+
+# In[19]:
+
+
+display(df_viol_mur.address.value_counts().head(31))
+
+
+# In[15]:
 
 
 display(df.apd_sector.value_counts())
