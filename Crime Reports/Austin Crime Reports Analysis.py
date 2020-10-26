@@ -43,7 +43,7 @@ from folium import plugins
 import seaborn as sns 
 import warnings
 
-plt.style.use('classic')
+plt.style.use('seaborn-white')
 get_ipython().run_line_magic('matplotlib', 'inline')
 warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', 
@@ -92,11 +92,11 @@ def clean_data(df):
     df.drop(drop_col, 
             axis=1, 
             inplace=True)
-    clean_col = ['Zip Code', 
-                 'Report Date Time', 
-                 'Occurred Date Time'] 
-    df.dropna(subset =clean_col, 
-              inplace=True)
+#    clean_col = ['Zip Code', 
+#                 'Report Date Time', 
+#                 'Occurred Date Time'] 
+#    df.dropna(subset =clean_col, 
+#              inplace=True)
     df.rename(columns=lambda x: x.strip().lower().replace(" ", 
                                                           "_"), 
               inplace=True)
@@ -119,10 +119,10 @@ def clean_data(df):
                 'location_type', 
                 'apd_sector', 
                 'pra', 
-                'council_district'] 
+                'council_district', 
+                'zip_code'] 
     df[date_col] = df[date_col].astype('datetime64') 
     df[cat_col]  = df[cat_col].astype('category') 
-    df.zip_code  = df.zip_code.astype('int64')
     """Creating new time columns and an index out of the 'occured date time' column"""
     df['year']  = pd.to_datetime(df['occurred_date_time'], 
                                  format='%m/%d/%Y').dt.year 
@@ -327,6 +327,8 @@ plt.show()
 
 f = sns.barplot(x=mur_by_hour.index, 
                 y=mur_by_hour.values)
+f.set_xticklabels(f.get_xticklabels(), 
+                  rotation=60)
 f.set(xlabel='Hour', 
       ylabel='Crimes Reported', 
       title ='Hourly Murder Rates (2003-Present)')
@@ -484,25 +486,10 @@ m
 
 # ## Are there any addresses where murder occurs frequently?
 
-# In[19]:
+# In[14]:
 
 
 display(df_viol_mur.address.value_counts().head(31))
-
-
-# In[15]:
-
-
-display(df.apd_sector.value_counts())
-
-display(df.council_district.value_counts())
-
-pd.crosstab(df.council_district, 
-            df.apd_sector).plot.bar(stacked=True, 
-                                    fontsize=12, 
-                                    rot=60,
-                                    figsize=figsize, 
-                                    title='Incidents per Council Districts by APD Sector')
 
 
 # ## IV. Summary
