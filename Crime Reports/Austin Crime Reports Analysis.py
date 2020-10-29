@@ -527,10 +527,39 @@ df2 = df2.fillna(0)
 df_viol_mur.to_csv('datasets\df_viol_mur.csv')
 
 
-# In[24]:
+# In[29]:
 
 
-# looking at relationships between time variables 
+# looking at relationships between time variables for the violent crime dataframe
+sns.relplot(x='week', 
+            y='year', 
+            data=df_viol, 
+            kind='line')
+plt.show()
+
+sns.relplot(x='hour', 
+            y='month', 
+            data=df_viol, 
+            kind='line')
+plt.show()
+
+sns.relplot(x='week', 
+            y='hour', 
+            data=df_viol, 
+            kind='line')
+plt.show()
+
+sns.relplot(x='year', 
+            y='month', 
+            data=df_viol, 
+            kind='line')
+plt.show()
+
+
+# In[30]:
+
+
+# looking at relationships between time variables for the murder dataframe
 sns.relplot(x='week', 
             y='year', 
             data=df_viol_mur, 
