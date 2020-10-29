@@ -43,7 +43,7 @@ from folium import plugins
 import seaborn as sns 
 import warnings
 
-plt.style.use('fivethirtyeight')
+plt.style.use('seaborn-white')
 get_ipython().run_line_magic('matplotlib', 'inline')
 warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', 
@@ -92,11 +92,6 @@ def clean_data(df):
     df.drop(drop_col, 
             axis=1, 
             inplace=True)
-    #clean_col = ['Zip Code', 
-    #            'Report Date Time', 
-    #             'Occurred Date Time'] 
-    #df.dropna(subset =clean_col, 
-    #          inplace=True)
     df.rename(columns=lambda x: x.strip().lower().replace(" ", 
                                                           "_"), 
               inplace=True)
@@ -202,9 +197,21 @@ e.set(xlabel='Hour',
 plt.show()
 
 
+# In[44]:
+
+
+# plotting monthly crime rates over the timeline 
+plt.figure(figsize =(12,7))
+df.resample('W').size().plot()
+plt.title('Weekly Plot of Crime Rates (2003 - Present)')
+plt.xlabel('Weeks')
+plt.ylabel('Total Crimes')
+plt.show()
+
+
 # ### Top 50 crime types 
 
-# In[7]:
+# In[8]:
 
 
 df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(figsize=(9,10), 
@@ -216,7 +223,7 @@ df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(f
 # <a id='q1'></a>
 # ### A. Question 1. What areas of Austin have the highest crime rates? 
 
-# In[8]:
+# In[9]:
 
 
 # Create and show dataframe for crime rates by zipcode and then as percentages
@@ -243,7 +250,7 @@ plt.show()
 # <a id='q2'></a>
 # ### B. Question 2. How is crime distributed in 78753? 
 
-# In[9]:
+# In[10]:
 
 
 # Examining crime in the 78753 area
@@ -264,7 +271,7 @@ df_53_off.plot.pie(figsize=(8,8),
 # <a id='q3'></a>
 # ### C. Question 3. How is crime distributed in 78741? 
 
-# In[10]:
+# In[11]:
 
 
 # Create a dataframe for crime in the 78741 area (the highest amount of crime of any Austin zip code)
@@ -287,7 +294,7 @@ df_41_off.plot.pie(figsize=(8,8),
 
 # ***The following line of code shows crime rates only >= 1% per zipcode.***
 
-# In[11]:
+# In[12]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -373,18 +380,20 @@ viol_mur_freq.plot.bar(figsize=figsize,
 plt.show()
 
 
-# In[12]:
+# In[13]:
 
 
 viol_freq.to_csv('viol_freq.csv')
 
 
 # According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 10/19/2020, murders already totaled 34--the same amount for 2016 and 2010!!
+# 
+# So, you're most likely to get murdered in July, between 1 and 2am, in the 78753 zip code, with 78741 coming in as a very strong alternate. Good to know!
 
 # <a id='q5'></a>
 # ### E. Question 5. What significance has the family violence factor played over time? 
 
-# In[13]:
+# In[14]:
 
 
 # Taking a look at first at the overall crime set
@@ -461,7 +470,7 @@ plt.show()
 # <a id='q6'></a>
 # ### F. Question 6. How does murder appear on the map? 
 
-# In[14]:
+# In[15]:
 
 
 # As a heatmap
@@ -481,7 +490,7 @@ k.save(outfile='aus_mur_heatmap.html')
 k
 
 
-# In[15]:
+# In[16]:
 
 
 # Pinpointing individual addresses
@@ -507,18 +516,10 @@ m
 
 # ## Are there any addresses where murder occurs frequently?
 
-# In[16]:
-
-
-df_viol_mur.address.value_counts().head(31)
-
-
 # In[17]:
 
 
-temp = df.groupby(['zip_code', 'year'])['location_type'].count().sort_values(ascending=False).reset_index()
-df2 = temp.pivot('zip_code', 'year', 'location_type')
-df2 = df2.fillna(0)
+df_viol_mur.address.value_counts().head(31)
 
 
 # In[18]:
@@ -527,7 +528,36 @@ df2 = df2.fillna(0)
 df_viol_mur.to_csv('datasets\df_viol_mur.csv')
 
 
-# In[29]:
+# In[46]:
+
+
+# looking at relationships between time variables for the ovverall dataframe
+sns.relplot(x='week', 
+            y='year', 
+            data=df, 
+            kind='line')
+plt.show()
+
+sns.relplot(x='hour', 
+            y='month', 
+            data=df, 
+            kind='line')
+plt.show()
+
+sns.relplot(x='week', 
+            y='hour', 
+            data=df, 
+            kind='line')
+plt.show()
+
+sns.relplot(x='year', 
+            y='month', 
+            data=df, 
+            kind='line')
+plt.show()
+
+
+# In[47]:
 
 
 # looking at relationships between time variables for the violent crime dataframe
@@ -556,7 +586,7 @@ sns.relplot(x='year',
 plt.show()
 
 
-# In[30]:
+# In[45]:
 
 
 # looking at relationships between time variables for the murder dataframe
