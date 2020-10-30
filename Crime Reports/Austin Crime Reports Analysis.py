@@ -77,7 +77,7 @@ display(df.isnull().sum())
 # In[4]:
 
 
-# Script for scrubbing the data
+# Data-scrubbing script
 def clean_data(df):
     drop_col = ['Occurred Time', 
                 'Occurred Date', 
@@ -89,9 +89,16 @@ def clean_data(df):
                 'X-coordinate', 
                 'Y-coordinate', 
                 'Location']
+    clean_col = ['Report Date Time', 
+                 'Occurred Date Time', 
+                 'PRA', 
+                 'Council District', 
+    			 'Zip Code']
     df.drop(drop_col, 
             axis=1, 
             inplace=True)
+    df.dropna(subset=clean_col, 
+              inplace=True)
     df.rename(columns=lambda x: x.strip().lower().replace(" ", 
                                                           "_"), 
               inplace=True)
@@ -109,27 +116,29 @@ def clean_data(df):
     date_col = ['occurred_date_time', 
                 'clearance_date', 
                 'report_date_time'] 
+    """Convert the following to integer type"""
+    int_col  = ['zip_code', 
+                'pra', 
+                'council_district']
     """Convert the following to category type"""
     cat_col  = ['highest_offense_description', 
                 'location_type', 
-                'apd_sector', 
-                'pra', 
-                'council_district', 
-                'zip_code'] 
+                'apd_sector'] 
     df[date_col] = df[date_col].astype('datetime64') 
     df[cat_col]  = df[cat_col].astype('category') 
-    """Creating new time columns and an index out of the 'occured date time' column"""
-    df['year']  = pd.to_datetime(df['occurred_date_time'], 
+    df[int_col]  = df[int_col].astype('int64')
+    """Creating new time columns and an index out of the 'report date time' column"""
+    df['year']  = pd.to_datetime(df['report_date_time'], 
                                  format='%m/%d/%Y').dt.year 
-    df['month'] = pd.to_datetime(df['occurred_date_time'], 
+    df['month'] = pd.to_datetime(df['report_date_time'], 
                                  format='%m/%d/%Y').dt.month
-    df['week']  = pd.to_datetime(df['occurred_date_time'], 
+    df['week']  = pd.to_datetime(df['report_date_time'], 
                                  format='%m/%d/%Y').dt.week
-    df['day']   = pd.to_datetime(df['occurred_date_time'], 
+    df['day']   = pd.to_datetime(df['report_date_time'], 
                                  format='%m/%d/%Y').dt.day
-    df['hour']  = pd.to_datetime(df['occurred_date_time'], 
+    df['hour']  = pd.to_datetime(df['report_date_time'], 
                                  format='%m/%d/%Y').dt.hour
-    df.set_index(['occurred_date_time'], 
+    df.set_index(['report_date_time'], 
                  inplace=True)
     df.sort_index(inplace=True)
     return df
@@ -197,7 +206,7 @@ e.set(xlabel='Hour',
 plt.show()
 
 
-# In[44]:
+# In[7]:
 
 
 # plotting monthly crime rates over the timeline 
@@ -291,8 +300,6 @@ df_41_off.plot.pie(figsize=(8,8),
 
 # <a id='q4'></a>
 # ### D. Question 4. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
-
-# ***The following line of code shows crime rates only >= 1% per zipcode.***
 
 # In[12]:
 
@@ -528,7 +535,7 @@ df_viol_mur.address.value_counts().head(31)
 df_viol_mur.to_csv('datasets\df_viol_mur.csv')
 
 
-# In[46]:
+# In[19]:
 
 
 # looking at relationships between time variables for the ovverall dataframe
@@ -557,7 +564,7 @@ sns.relplot(x='year',
 plt.show()
 
 
-# In[47]:
+# In[20]:
 
 
 # looking at relationships between time variables for the violent crime dataframe
@@ -586,7 +593,7 @@ sns.relplot(x='year',
 plt.show()
 
 
-# In[45]:
+# In[21]:
 
 
 # looking at relationships between time variables for the murder dataframe
