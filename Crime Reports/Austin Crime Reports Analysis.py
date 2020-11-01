@@ -45,7 +45,7 @@ import warnings
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly, plot_components_plotly
 
-plt.style.use("classic")
+plt.style.use("seaborn-white")
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -149,16 +149,10 @@ print('----------------------------------')
 display(df.tail())
 
 
-# In[6]:
+# In[27]:
 
 
-# Plotting yearly and weekly trends
-plt.figure(figsize=(10,5))
-plt.plot(df.resample('Y').size())
-plt.xlabel('Yearly')
-plt.ylabel('Number of crimes')
-plt.show()
-
+# Plotting and weekly trends
 plt.figure(figsize=(10,5))
 plt.plot(df.resample('W').size())
 plt.xlabel('Weekly')
@@ -294,10 +288,29 @@ display(df_41.highest_offense_description.value_counts(normalize=True).head(21))
 df_41_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78741)")
 
 
-# <a id='q4'></a>
-# ### D. Question 4. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
+# ### D. Question 4. How is crime distributed in 78745?
 
 # In[12]:
+
+
+# Examining crime in the 78745 area
+df_45 = df[df.zip_code == 78745]
+
+# Create a dataframe for the top 10 crime categories in the zipcode
+df_45_off = df_45.highest_offense_description.value_counts().head(22)
+
+# Display the different crime values & then as percentages 
+display(df_45_off)
+print("----------------------------------")
+display(df_45.highest_offense_description.value_counts(normalize=True).head(22))
+
+df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
+
+
+# <a id='q4'></a>
+# ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
+
+# In[13]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -387,12 +400,11 @@ viol_mur_freq.plot.bar(
 plt.show()
 
 
-# In[13]:
+# In[14]:
 
 
-viol_freq.to_csv('viol_freq.csv')
-df_viol.to_csv('df_viol.csv')
-df_viol_mur.to_csv('df_viol_mur.csv')
+df_53.to_csv('df_53.csv')
+df_41.to_csv('df_41.csv')
 
 
 # According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 10/19/2020, murders already totaled 34--the same amount for 2016 and 2010!!
@@ -404,7 +416,7 @@ df_viol_mur.to_csv('df_viol_mur.csv')
 # <a id='q6'></a>
 # ### F. Question 6. How does murder appear on the map? 
 
-# In[14]:
+# In[15]:
 
 
 # As a heatmap
@@ -420,7 +432,7 @@ k.save(outfile='aus_mur_heatmap.html')
 k
 
 
-# In[15]:
+# In[16]:
 
 
 # Pinpointing individual addresses
@@ -440,19 +452,12 @@ m.save(outfile='aus_mur_map.html')
 m
 
 
-# ## Are there any addresses where murder occurs frequently?
-
-# In[16]:
-
-
-df_viol_mur.address.value_counts().head(31)
-
+# #### Are there any addresses where murder occurs frequently?
 
 # In[17]:
 
 
-df2 = df.copy()
-df2.to_csv('df2_crime.csv')
+df_viol_mur.address.value_counts().head(31)
 
 
 # ## IV. Summary
@@ -470,9 +475,51 @@ df2.to_csv('df2_crime.csv')
 # 
 # Astonishingly the family violence factor played an ever increasing role over over time, in regards to violent crime. From 2003 to 2015, family violence increased by nearly 10 percentage points--meaning you were likely to be the victim of a family member, during the commission of a rape, aggrivated assault, murder, or capital murder, only 3.15% of the time in 2003. But by 2015, that same likelihood rose to 12.82%!
 
+# In[28]:
+
+
+df_fbprophet   = df[(df.year >= 2003) & (df.year < 2020)]
+
+df_m_1         = df_fbprophet.resample('M').size().reset_index()
+df_m_1.columns = ['date', 'monthly_crime_count']
+df_m_final_1   = df_m_1.rename(columns = {'date': 'ds', 'monthly_crime_count': 'y'})
+
+df_m_final_1.head(), df_m_final_1.tail()
+
+
+# In[29]:
+
+
+m_1 = Prophet(interval_width=0.95, yearly_seasonality=False)
+m_1.add_seasonality(name='monthly', period=30.5, fourier_order=10)
+m_1.add_seasonality(name='quarterly', period=91.5, fourier_order=10)
+m_1.add_seasonality(name='weekly', period=52.25, fourier_order=10)
+m_1.fit(df_m_final_1)
+
+
+# In[33]:
+
+
+future_1 = m_1.make_future_dataframe(periods=24, 
+                                 freq='M')
+pred_1   = m_1.predict(future_1)
+
+
+# In[34]:
+
+
+fig2_1 = m_1.plot_components(pred_1)
+
+
+# In[35]:
+
+
+plot_plotly(m_1, pred_1)
+
+
 # ### Time Series Modeling of the murder data with Facebook Prophet 
 
-# In[22]:
+# In[18]:
 
 
 df_viol_mur_fbprophet = df_viol_mur[(df_viol_mur.year >= 2003) & (df_viol_mur.year < 2020)]
@@ -484,7 +531,7 @@ df_m_final   = df_m.rename(columns = {'date': 'ds', 'monthly_crime_count': 'y'})
 df_m_final.head(), df_m_final.tail()
 
 
-# In[23]:
+# In[19]:
 
 
 m = Prophet(interval_width=0.95, yearly_seasonality=False)
@@ -494,30 +541,22 @@ m.add_seasonality(name='weekly', period=52.25, fourier_order=10)
 m.fit(df_m_final)
 
 
-# In[28]:
+# In[20]:
 
 
 future = m.make_future_dataframe(periods=24, 
                                  freq='M')
 pred   = m.predict(future)
 
-pred.to_csv('pred.csv')
 
-
-# In[26]:
+# In[21]:
 
 
 fig2 = m.plot_components(pred)
 
 
-# In[27]:
+# In[22]:
 
 
 plot_plotly(m, pred)
-
-
-# In[ ]:
-
-
-
 
