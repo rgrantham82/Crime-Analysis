@@ -81,58 +81,50 @@ display(df.isnull().sum())
 # Data-scrubbing script
 def clean_data(df):
     drop_col = [
-        "Occurred Time",
-        "Occurred Date",
-        "Report Date",
-        "Report Time",
-        "Census Tract",
-        "UCR Category",
-        "Category Description",
-        "X-coordinate",
-        "Y-coordinate",
-        "Location"
-    ]
-    clean_col = [
-        "Report Date Time", 
-        "Occurred Date Time", 
-        "Zip Code"
-    ]
+        'Occurred Time',
+        'Occurred Date',
+        'Report Date',
+        'Report Time',
+        'Census Tract',
+        'UCR Category',
+        'Category Description',
+        'X-coordinate',
+        'Y-coordinate',
+        'Location',
+        ]
+    clean_col = ['Report Date Time', 'Occurred Date Time', 'Zip Code']
     df.drop(drop_col, axis=1, inplace=True)
     df.dropna(subset=clean_col, inplace=True)
-    df.rename(columns=lambda x: x.strip().lower().replace(" ", "_"), inplace=True)
-    """Convert the following to bools"""
-    d = {"Y": True, "N": False}
-    e = {"C": True, "O": True, "N": False}
+    df.rename(columns=lambda x: x.strip().lower().replace(' ', '_'),
+              inplace=True)
+    d = {'Y': True, 'N': False}
+    e = {'C': True, 'O': True, 'N': False}
     df.clearance_status = df.clearance_status.map(e)
-    df.clearance_status = df.clearance_status.astype("bool")
+    df.clearance_status = df.clearance_status.astype('bool')
     df.family_violence  = df.family_violence.map(d)
-    df.family_violence  = df.family_violence.astype("bool")
-    """Convert the following to datetime type"""
-    date_col = [
-        "occurred_date_time", 
-        "clearance_date", 
-        "report_date_time"
-    ]
-    """Convert the following to integer type"""
-    int_col  = ["zip_code"]
-    """Convert the following to category type"""
-    cat_col  = [
-        "highest_offense_description", 
-        "location_type", 
-        "apd_sector"
-    ]
-    df[date_col] = df[date_col].astype("datetime64")
-    df[cat_col]  = df[cat_col].astype("category")
-    df[int_col]  = df[int_col].astype("int64")
-    """Creating new time columns and an index out of the 'occurred date time' column"""
-    df["year"]   = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.year
-    df["month"]  = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.month
-    df["week"]   = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.week
-    df["day"]    = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.day
-    df["hour"]   = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.hour
-    df.set_index(["occurred_date_time"], inplace=True)
+    df.family_violence  = df.family_violence.astype('bool')
+    date_col = ['occurred_date_time', 'clearance_date',
+                'report_date_time']
+    int_col  = ['zip_code']
+    cat_col  = ['highest_offense_description', 'location_type',
+                'apd_sector']
+    df[date_col] = df[date_col].astype('datetime64')
+    df[cat_col]  = df[cat_col].astype('category')
+    df[int_col]  = df[int_col].astype('int64')
+    df['year']  = pd.to_datetime(df['occurred_date_time'],
+                                 format='%m/%d/%Y').dt.year
+    df['month'] = pd.to_datetime(df['occurred_date_time'],
+                                 format='%m/%d/%Y').dt.month
+    df['week']  = pd.to_datetime(df['occurred_date_time'],
+                                 format='%m/%d/%Y').dt.week
+    df['day']   = pd.to_datetime(df['occurred_date_time'],
+                                 format='%m/%d/%Y').dt.day
+    df['hour']  = pd.to_datetime(df['occurred_date_time'],
+                                 format='%m/%d/%Y').dt.hour
+    df.set_index(['occurred_date_time'], inplace=True)
     df.sort_index(inplace=True)
     return df
+
 df = clean_data(df)
 
 
@@ -149,62 +141,52 @@ print('----------------------------------')
 display(df.tail())
 
 
-# In[27]:
-
-
-# Plotting and weekly trends
-plt.figure(figsize=(10,5))
-plt.plot(df.resample('W').size())
-plt.xlabel('Weekly')
-plt.ylabel('Number of crimes')
-plt.show()
-
-
 # ## III. Exploratory Analysis
 
 # First, let's get an overall look at crime rates and how they trend over time...
 
 # ### Overall crime rates over time 
 
-# In[7]:
+# In[28]:
 
 
-figsize=(20,10)
+# plotting trend on a weekly basis 
+plt.figure(figsize=(10, 5))
+plt.plot(df.resample('W').size())
+plt.xlabel('Weekly')
+plt.ylabel('Number of crimes')
+plt.show()
+
+figsize = (20, 10)
 
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
-crimes_per_year = df['year'].value_counts().sort_index() 
 
-g = sns.barplot(x=crimes_per_year.index, 
-                y=crimes_per_year.values)
-g.set_xticklabels(g.get_xticklabels(), 
-                  rotation=60)
-g.set(xlabel='Year', 
-      ylabel='Crimes Reported', 
-      title ='Annual Crime Rates')
+crimes_per_year = df['year'].value_counts().sort_index()
+
+g = sns.barplot(x=crimes_per_year.index, y=crimes_per_year.values)
+g.set_xticklabels(g.get_xticklabels(), rotation=60)
+g.set(xlabel='Year', ylabel='Crimes Reported',
+      title='Annual Crime Rates')
 plt.show()
 
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
-crimes_per_month = df['month'].value_counts().sort_index() 
 
-d = sns.barplot(x=crimes_per_month.index, 
-                y=crimes_per_month.values)
-d.set_xticklabels(d.get_xticklabels(), 
-                  rotation=60)
-d.set(xlabel='Month', 
-      ylabel='Crimes Reported', 
-      title ='Monthly Crime Rates')
+crimes_per_month = df['month'].value_counts().sort_index()
+
+d = sns.barplot(x=crimes_per_month.index, y=crimes_per_month.values)
+d.set_xticklabels(d.get_xticklabels(), rotation=60)
+d.set(xlabel='Month', ylabel='Crimes Reported',
+      title='Monthly Crime Rates')
 plt.show()
 
 # Overall hourly crime rates as well
+
 crimes_per_hour = df['hour'].value_counts().sort_index()
 
-e = sns.barplot(x=crimes_per_hour.index, 
-                y=crimes_per_hour.values)
-e.set_xticklabels(e.get_xticklabels(), 
-                  rotation=60)
-e.set(xlabel='Hour', 
-      ylabel='Crimes Reported', 
-      title ='Hourly Crime Rates')
+e = sns.barplot(x=crimes_per_hour.index, y=crimes_per_hour.values)
+e.set_xticklabels(e.get_xticklabels(), rotation=60)
+e.set(xlabel='Hour', ylabel='Crimes Reported',
+      title='Hourly Crime Rates')
 plt.show()
 
 
@@ -213,9 +195,8 @@ plt.show()
 # In[8]:
 
 
-df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
-    figsize=(9, 10), title="Top 50 crime types since 2003"
-)
+df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(figsize=(9,
+        10), title='Top 50 crime types since 2003')
 
 
 # Between 2003 and now, crime peaked in 2008 and continued a downward trend until 2019 when it rose again. Since we're still in 2020, we have to wait until the end of the year to see what 2020 yields. 
@@ -229,14 +210,13 @@ df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
 # Create and show dataframe for crime rates by zipcode and then as percentages
 zip_codes = df.zip_code.value_counts().head(25)
 display(zip_codes)
-print("----------------------------------")
+print '----------------------------------'
 display(df.zip_code.value_counts(normalize=True).head(25))
 
+# Visualizing the top 25 areas for crime
 
-# Visualizing the top 25 areas for crime 
-df.zip_code.value_counts().head(25).plot.bar(
-    rot=60, title="Top 25 Zipcodes (2003-Present)"
-)
+df.zip_code.value_counts().head(25).plot.bar(rot=60,
+        title='Top 25 Zipcodes (2003-Present)')
 plt.show()
 
 
@@ -299,112 +279,90 @@ df_45 = df[df.zip_code == 78745]
 # Create a dataframe for the top 10 crime categories in the zipcode
 df_45_off = df_45.highest_offense_description.value_counts().head(22)
 
-# Display the different crime values & then as percentages 
+# Display the different crime values & then as percentages
 display(df_45_off)
-print("----------------------------------")
+print '----------------------------------'
 display(df_45.highest_offense_description.value_counts(normalize=True).head(22))
 
-df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
+df_45_off.plot.pie(figsize=(8, 8), title='Crime Distribution (78745)')
 
 
 # <a id='q4'></a>
 # ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[13]:
+# In[29]:
 
 
 # Creating an overall and separate dataframes for violent crime
-df_viol = df.query(
-    'highest_offense_description == ["MURDER", "CAPITAL MURDER", "RAPE", "AGG ASSAULT"]'
-)
-df_viol_mur = df.query('highest_offense_description == ["MURDER", "CAPITAL MURDER"]')
-df_mur = df[df.highest_offense_description == "MURDER"]
-df_mur_cap = df[df.highest_offense_description == "CAPITAL MURDER"]
-df_agg_asslt = df[df.highest_offense_description == "AGG ASSAULT"]
-df_rape = df[df.highest_offense_description == "RAPE"]
-
+df_viol =     df.query('highest_offense_description == ["MURDER", "CAPITAL MURDER", "RAPE", "AGG ASSAULT"]'
+             )
+df_viol_mur =     df.query('highest_offense_description == ["MURDER", "CAPITAL MURDER"]'
+             )
+df_mur = df[df.highest_offense_description == 'MURDER']
+df_mur_cap = df[df.highest_offense_description == 'CAPITAL MURDER']
+df_agg_asslt = df[df.highest_offense_description == 'AGG ASSAULT']
+df_rape = df[df.highest_offense_description == 'RAPE']
 
 # Visualizing violent crimes per year
-viol_per_year = df_viol["year"].value_counts().sort_index()
-viol_per_year.plot.bar(
-    rot=60, title="Annual Violent Crime Rates (2003-Present)", fontsize=12
-)
+viol_per_year = df_viol['year'].value_counts().sort_index()
+viol_per_year.plot.bar(rot=60,
+                       title='Annual Violent Crime Rates (2003-Present)'
+                       , fontsize=12)
 plt.show()
 
 # Visualizing murders per year
 viol_mur_per_year = df_viol_mur.year.value_counts().sort_index()
-viol_mur_per_year.plot.bar(
-    rot=60, title="Annual Murder Rates (2003-Present)", fontsize=12
-)
+viol_mur_per_year.plot.bar(rot=60,
+                           title='Annual Murder Rates (2003-Present)',
+                           fontsize=12)
 plt.show()
 
 # Violent Crime by Zipcode
 display(df_viol.zip_code.value_counts(normalize=True).head(25))
-df_viol.zip_code.value_counts().head(25).plot.bar(
-    title="Top Zipcodes for Violent Crime", fontsize=12, rot=60
-)
+df_viol.zip_code.value_counts().head(25).plot.bar(title='Top Zipcodes for Violent Crime'
+        , fontsize=12, rot=60)
 plt.show()
 
 # Murder by Zipcode
 display(df_viol_mur.zip_code.value_counts(normalize=True).head(25))
-df_viol_mur.zip_code.value_counts().head(25).plot.bar(
-    fontsize=12, title="Top Zipcodes for Murder", rot=60
-)
+df_viol_mur.zip_code.value_counts().head(25).plot.bar(fontsize=12,
+        title='Top Zipcodes for Murder', rot=60)
 plt.show()
 
-mur_by_month = df_viol_mur["month"].value_counts().sort_index()
-mur_by_hour = df_viol_mur["hour"].value_counts().sort_index()
+mur_by_month = df_viol_mur['month'].value_counts().sort_index()
+mur_by_hour = df_viol_mur['hour'].value_counts().sort_index()
 
 # Visualizing monthly & hourly murder rate with Seaborn
 v = sns.barplot(x=mur_by_month.index, y=mur_by_month.values)
 v.set_xticklabels(v.get_xticklabels(), rotation=60)
-v.set(
-    xlabel="Month",
-    ylabel="Crimes Reported",
-    title="Monthly Murder Rates (2003-Present)",
-)
+v.set(xlabel='Month', ylabel='Crimes Reported',
+      title='Monthly Murder Rates (2003-Present)')
 plt.show()
 
 f = sns.barplot(x=mur_by_hour.index, y=mur_by_hour.values)
 f.set_xticklabels(f.get_xticklabels(), rotation=60)
-f.set(
-    xlabel="Hour", ylabel="Crimes Reported", title="Hourly Murder Rates (2003-Present)"
-)
+f.set(xlabel='Hour', ylabel='Crimes Reported',
+      title='Hourly Murder Rates (2003-Present)')
 plt.show()
 
 # Calculating and visualizing frequency rate of violent crimes by zipcode
-viol_freq = pd.crosstab(df_viol.zip_code, df_viol.highest_offense_description)
+viol_freq = pd.crosstab(df_viol.zip_code,
+                        df_viol.highest_offense_description)
 
 display(viol_freq)
 
-viol_freq.plot.bar(
-    figsize=figsize,
-    title="Violent Crime Distribution by Zipcode and Type since 2003",
-    fontsize=12,
-    stacked=True,
-    rot=60,
-)
+viol_freq.plot.bar(figsize=figsize,
+                   title='Violent Crime Distribution by Zipcode and Type since 2003'
+                   , fontsize=12, stacked=True, rot=60)
 plt.show()
 
-viol_mur_freq = pd.crosstab(
-    df_viol_mur.zip_code, df_viol_mur.highest_offense_description
-)
+viol_mur_freq = pd.crosstab(df_viol_mur.zip_code,
+                            df_viol_mur.highest_offense_description)
 
-viol_mur_freq.plot.bar(
-    figsize=figsize,
-    title="Murder Distribution by Zipcode and Type since 2003",
-    fontsize=12,
-    stacked=True,
-    rot=60,
-)
+viol_mur_freq.plot.bar(figsize=figsize,
+                       title='Murder Distribution by Zipcode and Type since 2003'
+                       , fontsize=12, stacked=True, rot=60)
 plt.show()
-
-
-# In[14]:
-
-
-df_53.to_csv('df_53.csv')
-df_41.to_csv('df_41.csv')
 
 
 # According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 10/19/2020, murders already totaled 34--the same amount for 2016 and 2010!!
@@ -475,20 +433,19 @@ df_viol_mur.address.value_counts().head(31)
 # 
 # Astonishingly the family violence factor played an ever increasing role over over time, in regards to violent crime. From 2003 to 2015, family violence increased by nearly 10 percentage points--meaning you were likely to be the victim of a family member, during the commission of a rape, aggrivated assault, murder, or capital murder, only 3.15% of the time in 2003. But by 2015, that same likelihood rose to 12.82%!
 
-# In[28]:
+# ### Time Series Modeling of the overall dataframe with Facebook Prophet 
+
+# In[42]:
 
 
-df_fbprophet   = df[(df.year >= 2003) & (df.year < 2020)]
+df_fbprophet = df[(df.year >= 2003) & (df.year < 2020)]
 
-df_m_1         = df_fbprophet.resample('M').size().reset_index()
+df_m_1 = df_fbprophet.resample('M').size().reset_index()
 df_m_1.columns = ['date', 'monthly_crime_count']
-df_m_final_1   = df_m_1.rename(columns = {'date': 'ds', 'monthly_crime_count': 'y'})
+df_m_final_1 = df_m_1.rename(columns={'date': 'ds',
+                             'monthly_crime_count': 'y'})
 
-df_m_final_1.head(), df_m_final_1.tail()
-
-
-# In[29]:
-
+(df_m_final_1.head(), df_m_final_1.tail())
 
 m_1 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_1.add_seasonality(name='monthly', period=30.5, fourier_order=10)
@@ -496,43 +453,25 @@ m_1.add_seasonality(name='quarterly', period=91.5, fourier_order=10)
 m_1.add_seasonality(name='weekly', period=52.25, fourier_order=10)
 m_1.fit(df_m_final_1)
 
-
-# In[33]:
-
-
-future_1 = m_1.make_future_dataframe(periods=24, 
-                                 freq='M')
-pred_1   = m_1.predict(future_1)
-
-
-# In[34]:
-
-
+future_1 = m_1.make_future_dataframe(periods=24, freq='M')
+pred_1 = m_1.predict(future_1)
 fig2_1 = m_1.plot_components(pred_1)
-
-
-# In[35]:
-
-
 plot_plotly(m_1, pred_1)
 
 
-# ### Time Series Modeling of the murder data with Facebook Prophet 
+# ### ...now the murder dataframe 
 
-# In[18]:
+# In[41]:
 
 
 df_viol_mur_fbprophet = df_viol_mur[(df_viol_mur.year >= 2003) & (df_viol_mur.year < 2020)]
 
-df_m         = df_viol_mur_fbprophet.resample('M').size().reset_index()
+df_m = df_viol_mur_fbprophet.resample('M').size().reset_index()
 df_m.columns = ['date', 'monthly_crime_count']
-df_m_final   = df_m.rename(columns = {'date': 'ds', 'monthly_crime_count': 'y'})
+df_m_final = df_m.rename(columns={'date': 'ds',
+                         'monthly_crime_count': 'y'})
 
-df_m_final.head(), df_m_final.tail()
-
-
-# In[19]:
-
+(df_m_final.head(), df_m_final.tail())
 
 m = Prophet(interval_width=0.95, yearly_seasonality=False)
 m.add_seasonality(name='monthly', period=30.5, fourier_order=10)
@@ -540,23 +479,60 @@ m.add_seasonality(name='quarterly', period=91.5, fourier_order=10)
 m.add_seasonality(name='weekly', period=52.25, fourier_order=10)
 m.fit(df_m_final)
 
-
-# In[20]:
-
-
-future = m.make_future_dataframe(periods=24, 
-                                 freq='M')
-pred   = m.predict(future)
-
-
-# In[21]:
-
-
+future = m.make_future_dataframe(periods=24, freq='M')
+pred = m.predict(future)
 fig2 = m.plot_components(pred)
-
-
-# In[22]:
-
-
 plot_plotly(m, pred)
+
+
+# ### ...now examining different zip codes
+
+# #### 78753
+
+# In[39]:
+
+
+df_fbprophet_53 = df_53[(df_53.year >= 2003) & (df_53.year < 2020)]
+
+df_m_53 = df_fbprophet_53.resample('M').size().reset_index()
+df_m_53.columns = ['date', 'monthly_crime_count']
+df_m_final_53 = df_m_53.rename(columns={'date': 'ds',
+                               'monthly_crime_count': 'y'})
+
+m_53 = Prophet(interval_width=0.95, yearly_seasonality=False)
+m_53.add_seasonality(name='monthly', period=30.5, fourier_order=10)
+m_53.add_seasonality(name='quarterly', period=91.5, fourier_order=10)
+m_53.add_seasonality(name='weekly', period=52.25, fourier_order=10)
+m_53.fit(df_m_final_53)
+
+future_53 = m_53.make_future_dataframe(periods=24, freq='M')
+pred_53 = m_53.predict(future)
+fig2_53 = m_53.plot_components(pred)
+plot_plotly(m_53, pred_53)
+
+
+# #### 78745
+
+# In[40]:
+
+
+df_fbprophet_45 = df_45[(df_45.year >= 2003) & (df_45.year < 2020)]
+
+df_m_45 = df_fbprophet_45.resample('M').size().reset_index()
+df_m_45.columns = ['date', 'monthly_crime_count']
+df_m_final_45 = df_m_45.rename(columns={'date': 'ds',
+                               'monthly_crime_count': 'y'})
+
+(df_m_final_45.head(), df_m_final_45.tail())
+
+m_45 = Prophet(interval_width=0.95, yearly_seasonality=False)
+m_45.add_seasonality(name='monthly', period=30.5, fourier_order=10)
+m_45.add_seasonality(name='quarterly', period=91.5, fourier_order=10)
+m_45.add_seasonality(name='weekly', period=52.25, fourier_order=10)
+m_45.fit(df_m_final_45)
+
+future_45 = m_45.make_future_dataframe(periods=24, freq='M')
+pred_45 = m_45.predict(future)
+fig2_45 = m_45.plot_components(pred)
+plot_plotly(m_45, pred_45)
 
