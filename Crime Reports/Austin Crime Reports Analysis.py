@@ -83,8 +83,11 @@ def clean_data(df):
     drop_col = [
         'Occurred Time',
         'Occurred Date',
+        'Family Violence',
+        'Clearance Status',
         'Report Date',
         'Report Time',
+        'Clearance Date',
         'Census Tract',
         'UCR Category',
         'Category Description',
@@ -97,34 +100,21 @@ def clean_data(df):
     df.dropna(subset=clean_col, inplace=True)
     df.rename(columns=lambda x: x.strip().lower().replace(' ', '_'),
               inplace=True)
-    d = {'Y': True, 'N': False}
-    e = {'C': True, 'O': True, 'N': False}
-    df.clearance_status = df.clearance_status.map(e)
-    df.clearance_status = df.clearance_status.astype('bool')
-    df.family_violence = df.family_violence.map(d)
-    df.family_violence = df.family_violence.astype('bool')
-    date_col = ['occurred_date_time', 'clearance_date',
-                'report_date_time']
-
-    # int_col  = ['zip_code']
-
-    cat_col = ['highest_offense_description', 'location_type',
+    date_col = ['occurred_date_time', 'report_date_time']
+    cat_col  = ['highest_offense_description', 'location_type',
                'apd_sector']
     df[date_col] = df[date_col].astype('datetime64')
-    df[cat_col] = df[cat_col].astype('category')
-
-    # df[int_col]  = df[int_col].astype('int64')
-
-    df['year'] = pd.to_datetime(df['occurred_date_time'],
-                                format='%m/%d/%Y').dt.year
+    df[cat_col]  = df[cat_col].astype('category')
+    df['year']  = pd.to_datetime(df['occurred_date_time'],
+                                 format='%m/%d/%Y').dt.year
     df['month'] = pd.to_datetime(df['occurred_date_time'],
                                  format='%m/%d/%Y').dt.month
-    df['week'] = pd.to_datetime(df['occurred_date_time'],
-                                format='%m/%d/%Y').dt.week
-    df['day'] = pd.to_datetime(df['occurred_date_time'],
-                               format='%m/%d/%Y').dt.day
-    df['hour'] = pd.to_datetime(df['occurred_date_time'],
-                                format='%m/%d/%Y').dt.hour
+    df['week']  = pd.to_datetime(df['occurred_date_time'],
+                                 format='%m/%d/%Y').dt.week
+    df['day']   = pd.to_datetime(df['occurred_date_time'],
+                                 format='%m/%d/%Y').dt.day
+    df['hour']  = pd.to_datetime(df['occurred_date_time'],
+                                 format='%m/%d/%Y').dt.hour
     df.set_index(['occurred_date_time'], inplace=True)
     df.sort_index(inplace=True)
     return df
@@ -448,15 +438,15 @@ df_viol_mur.address.value_counts().head(31)
 
 # ### Time Series Modeling of the overall dataframe with Facebook Prophet 
 
-# In[16]:
+# In[20]:
 
 
-df_fbprophet   = df[(df.year >= 2003) & (df.year < 2020)]
+df_fbprophet = df
 
-df_m_1         = df_fbprophet.resample('M').size().reset_index()
+df_m_1 = df_fbprophet.resample('M').size().reset_index()
 df_m_1.columns = ['date', 'monthly_crime_count']
-df_m_final_1   = df_m_1.rename(columns={'date': 'ds',
-                               'monthly_crime_count': 'y'})
+df_m_final_1 = df_m_1.rename(columns={'date': 'ds',
+                             'monthly_crime_count': 'y'})
 
 (df_m_final_1.head(), df_m_final_1.tail())
 
@@ -475,16 +465,15 @@ fig2_2
 
 # ### ...now the murder dataframe 
 
-# In[17]:
+# In[21]:
 
 
-df_viol_mur_fbprophet = df_viol_mur[(df_viol_mur.year >= 2003)
-                                    & (df_viol_mur.year < 2020)]
+df_viol_mur_fbprophet = df_viol_mur
 
-df_m         = df_viol_mur_fbprophet.resample('M').size().reset_index()
+df_m = df_viol_mur_fbprophet.resample('M').size().reset_index()
 df_m.columns = ['date', 'monthly_crime_count']
-df_m_final   = df_m.rename(columns={'date': 'ds',
-                           'monthly_crime_count': 'y'})
+df_m_final = df_m.rename(columns={'date': 'ds',
+                         'monthly_crime_count': 'y'})
 
 (df_m_final.head(), df_m_final.tail())
 
@@ -505,15 +494,15 @@ fig2_3
 
 # #### 78753
 
-# In[18]:
+# In[22]:
 
 
-df_fbprophet_53 = df_53[(df_53.year >= 2003) & (df_53.year < 2020)]
+df_fbprophet_53 = df_53
 
-df_m_53         = df_fbprophet_53.resample('M').size().reset_index()
+df_m_53 = df_fbprophet_53.resample('M').size().reset_index()
 df_m_53.columns = ['date', 'monthly_crime_count']
-df_m_final_53   = df_m_53.rename(columns={'date': 'ds',
-                                 'monthly_crime_count': 'y'})
+df_m_final_53 = df_m_53.rename(columns={'date': 'ds',
+                               'monthly_crime_count': 'y'})
 
 m_53 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_53.add_seasonality(name='monthly', period=30.5, fourier_order=10)
@@ -530,15 +519,15 @@ fig2_53_1
 
 # #### 78745
 
-# In[19]:
+# In[23]:
 
 
-df_fbprophet_45 = df_45[(df_45.year >= 2003) & (df_45.year < 2020)]
+df_fbprophet_45 = df_45
 
-df_m_45         = df_fbprophet_45.resample('M').size().reset_index()
+df_m_45 = df_fbprophet_45.resample('M').size().reset_index()
 df_m_45.columns = ['date', 'monthly_crime_count']
-df_m_final_45   = df_m_45.rename(columns={'date': 'ds',
-                                 'monthly_crime_count': 'y'})
+df_m_final_45 = df_m_45.rename(columns={'date': 'ds',
+                               'monthly_crime_count': 'y'})
 
 (df_m_final_45.head(), df_m_final_45.tail())
 
