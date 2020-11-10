@@ -11,7 +11,7 @@
 #     I. Introduction
 #     II. Data Scrubbing
 #     III. Exploratory Analysis 
-#     IV. Prediction Modeling 
+#     IV. Time Series Modeling 
 #     
 #     Questions:
 # ><ul>
@@ -44,7 +44,7 @@ import warnings
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly, plot_components_plotly
 
-plt.style.use("classic")
+plt.style.use("seaborn-white")
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -139,12 +139,11 @@ display(df.tail())
 # plotting trend on a weekly basis
 
 plt.figure(figsize=(12, 6))
-plt.plot(df.resample("W").size())
-plt.xlabel("Weekly")
+plt.plot(df.resample("M").size())
+plt.xlabel("Monthly Trend")
 plt.ylabel("Number of crimes")
 plt.show()
 
-figsize = (20, 10)
 
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 
@@ -346,10 +345,14 @@ v.set(
 )
 plt.show()
 
+# Hourly rate with Seaborn
+
 f = sns.barplot(x=mur_by_hour.index, y=mur_by_hour.values)
 f.set_xticklabels(f.get_xticklabels(), rotation=60)
 f.set(
-    xlabel="Hour", ylabel="Crimes Reported", title="Hourly Murder Rates (2003-Present)"
+    xlabel="Hour",
+    ylabel="Crimes Reported",
+    title="Hourly Murder Rates (2003-Present)",
 )
 plt.show()
 
@@ -360,7 +363,7 @@ viol_freq = pd.crosstab(df_viol.zip_code, df_viol.highest_offense_description)
 display(viol_freq)
 
 viol_freq.plot.bar(
-    figsize=figsize,
+    figsize=(20, 10),
     title="Violent Crime Distribution by Zipcode and Type since 2003",
     fontsize=12,
     stacked=True,
@@ -373,7 +376,7 @@ viol_mur_freq = pd.crosstab(
 )
 
 viol_mur_freq.plot.bar(
-    figsize=figsize,
+    figsize=(20, 10),
     title="Murder Distribution by Zipcode and Type since 2003",
     fontsize=12,
     stacked=True,
@@ -385,7 +388,7 @@ plt.show()
 # According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 10/19/2020, murders already totaled 34--the same amount for 2016 and 2010!!
 # 
 # So, you're most likely to get murdered in July, between 1 and 2am, in the 78753 zip code, with 78741 coming in as a very strong alternate. Good to know!
-
+# 
 # Overall, family violence is seeing an upward trend as a crime factor. Violent crime saw an alarming upward trend of the family violence factor, as well. Rapes, for example, involved the family violence factor a 3rd of the time in 2016 whereas in 2004, family violence was involved less than 1% of the time. 
 
 # <a id='q6'></a>
@@ -469,9 +472,33 @@ fig2_2 = plot_plotly(m_1, pred_1)
 fig2_2
 
 
-# ### ...now the murder dataframe 
+# ### ...now the violent crime dataframe
 
 # In[17]:
+
+
+df_viol_fbprophet = df_viol_mur
+
+df_v = df_viol_fbprophet.resample("M").size().reset_index()
+df_v.columns = ["date", "monthly_crime_count"]
+df_v_final = df_v.rename(columns={"date": "ds", "monthly_crime_count": "y"})
+
+v = Prophet(interval_width=0.95, yearly_seasonality=False)
+v.add_seasonality(name="monthly", period=30.5, fourier_order=10)
+v.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
+v.add_seasonality(name="weekly", period=52.25, fourier_order=10)
+v.fit(df_v_final)
+
+future = v.make_future_dataframe(periods=24, freq="M")
+pred = v.predict(future)
+fig2_1 = v.plot_components(pred)
+fig2_3 = plot_plotly(v, pred)
+fig2_3
+
+
+# ### ...now the murder dataframe 
+
+# In[18]:
 
 
 df_viol_mur_fbprophet = df_viol_mur
@@ -487,17 +514,18 @@ m.add_seasonality(name="weekly", period=52.25, fourier_order=10)
 m.fit(df_m_final)
 
 future = m.make_future_dataframe(periods=24, freq="M")
+
 pred = m.predict(future)
-fig2_1 = m.plot_components(pred)
-fig2_3 = plot_plotly(m, pred)
-fig2_3
+fig3_1 = m.plot_components(pred)
+fig3_3 = plot_plotly(m, pred)
+fig3_3
 
 
-# ### ...now examining different zip codes
+# ### ...now examining some zip codes
 
 # #### 78753
 
-# In[18]:
+# In[19]:
 
 
 df_fbprophet_53 = df_53
@@ -519,9 +547,33 @@ fig2_53_1 = plot_plotly(m_53, pred_53)
 fig2_53_1
 
 
+# #### 78741
+
+# In[20]:
+
+
+df_fbprophet_41 = df_41
+
+df_m_41 = df_fbprophet_41.resample("M").size().reset_index()
+df_m_41.columns = ["date", "monthly_crime_count"]
+df_m_final_41 = df_m_41.rename(columns={"date": "ds", "monthly_crime_count": "y"})
+
+m_41 = Prophet(interval_width=0.95, yearly_seasonality=False)
+m_41.add_seasonality(name="monthly", period=30.5, fourier_order=10)
+m_41.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
+m_41.add_seasonality(name="weekly", period=52.25, fourier_order=10)
+m_41.fit(df_m_final_41)
+
+future_41 = m_41.make_future_dataframe(periods=24, freq="M")
+pred_41 = m_41.predict(future)
+fig2_41 = m_41.plot_components(pred)
+fig2_41_1 = plot_plotly(m_41, pred_53)
+fig2_41_1
+
+
 # #### 78745
 
-# In[19]:
+# In[21]:
 
 
 df_fbprophet_45 = df_45
@@ -529,8 +581,6 @@ df_fbprophet_45 = df_45
 df_m_45 = df_fbprophet_45.resample("M").size().reset_index()
 df_m_45.columns = ["date", "monthly_crime_count"]
 df_m_final_45 = df_m_45.rename(columns={"date": "ds", "monthly_crime_count": "y"})
-
-(df_m_final_45.head(), df_m_final_45.tail())
 
 m_45 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_45.add_seasonality(name="monthly", period=30.5, fourier_order=10)
