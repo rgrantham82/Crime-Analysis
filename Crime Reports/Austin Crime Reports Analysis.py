@@ -44,7 +44,7 @@ import warnings
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly, plot_components_plotly
 
-plt.style.use("seaborn-white")
+plt.style.use("fivethirtyeight")
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -131,7 +131,7 @@ display(df.tail())
 
 # First, let's get an overall look at crime rates and how they trend over time...
 
-# ### Overall crime rates over time 
+# #### Overall crime rates over time 
 
 # In[6]:
 
@@ -173,7 +173,7 @@ e.set(xlabel="Hour", ylabel="Crimes Reported", title="Hourly Crime Rates")
 plt.show()
 
 
-# ### Top 50 crime types 
+# #### Top 50 crime types 
 
 # In[7]:
 
@@ -212,7 +212,7 @@ plt.show()
 # 
 # Because 78753 is my resident zipcode, I chose to examine it first. 
 # 
-# Next, I'll examine 78741. 
+# Next, I'll examine 78741 & 78745. 
 
 # <a id='q2'></a>
 # ### B. Question 2. How is crime distributed in 78753? 
@@ -477,7 +477,7 @@ fig2_2
 # In[17]:
 
 
-df_viol_fbprophet = df_viol_mur
+df_viol_fbprophet = df_viol
 
 df_v = df_viol_fbprophet.resample("M").size().reset_index()
 df_v.columns = ["date", "monthly_crime_count"]
