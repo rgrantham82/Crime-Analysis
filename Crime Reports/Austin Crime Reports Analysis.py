@@ -44,6 +44,7 @@ import warnings
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly, plot_components_plotly
 
+plt.style.use("classic")
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -104,12 +105,6 @@ def clean_data(df):
 df = clean_data(df)
 
 
-# In[28]:
-
-
-df.hist(figsize=(15, 10))
-
-
 # ## III. Exploratory Analysis
 
 # First, let's get an overall look at crime rates and how they trend over time...
@@ -126,7 +121,6 @@ plt.plot(df.resample("M").size())
 plt.xlabel("Monthly Trend")
 plt.ylabel("Number of crimes")
 plt.show()
-
 
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 
@@ -416,7 +410,7 @@ for (index, row) in mur_coords_add.iterrows():
     name = row["address"]
     folium.Marker([lat, lon], popup=name).add_to(m)
 
-    m.save(outfile="aus_mur_map.html")
+m.save(outfile="aus_mur_map.html")
 
 m
 
