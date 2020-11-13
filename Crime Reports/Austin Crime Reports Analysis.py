@@ -44,7 +44,6 @@ import warnings
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly, plot_components_plotly
 
-plt.style.use("fivethirtyeight")
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -57,30 +56,21 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 df = pd.read_csv("crime_reports.csv")
 
 
-# In[3]:
-
-
-# Examining the dataframe
-display(df.info())
-print("----------------------------------")
-display(df.duplicated().sum())
-print("----------------------------------")
-display(df.isnull().sum())
-
-
 # ## II. Data Scrubbing
 # 
 # There are several columns of data we don't need. We'll drop those and also scrub the Columns were keeping for analysis. Mainly, we want the zip code and address columns to be free of nulls and duplicates. 
 # 
 # The 'clearance status' column contains 3 types of statuses: Y for Yes, N for No, and O which stands for "cleared by other means than arrest." Therefore, I changed it to boolean type:  Y and O as True, and N as False. However, you may note that areas, where there is no clearance status at all, may or may not contain a corresponding date in the clearance date column. I am unsure how best to handle this so I am open to suggestions or advice. I also converted the 'family violence' column to boolean type.  
 
-# In[4]:
+# In[3]:
 
 
 def clean_data(df):
     drop_col = [
         "Occurred Time",
+        "Incident Number",
         "Occurred Date",
+        "Highest Offense Code",
         "Family Violence",
         "Clearance Status",
         "Report Date",
@@ -93,7 +83,7 @@ def clean_data(df):
         "Y-coordinate",
         "Location",
     ]
-    clean_col = ["Report Date Time", "Occurred Date Time"]
+    clean_col = ["Occurred Date Time", "Report Date Time"]
     df.drop(drop_col, axis=1, inplace=True)
     df.dropna(subset=clean_col, inplace=True)
     df.rename(columns=lambda x: x.strip().lower().replace(" ", "_"), inplace=True)
@@ -114,17 +104,10 @@ def clean_data(df):
 df = clean_data(df)
 
 
-# In[5]:
+# In[28]:
 
 
-# Rechecking the dataframe
-display(df.isnull().sum())
-print("----------------------------------")
-display(df.dtypes)
-print("----------------------------------")
-display(df.head())
-print("----------------------------------")
-display(df.tail())
+df.hist(figsize=(15, 10))
 
 
 # ## III. Exploratory Analysis
@@ -133,7 +116,7 @@ display(df.tail())
 
 # #### Overall crime rates over time 
 
-# In[6]:
+# In[4]:
 
 
 # plotting trend on a weekly basis
@@ -175,7 +158,7 @@ plt.show()
 
 # #### Top 50 crime types 
 
-# In[7]:
+# In[5]:
 
 
 df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
@@ -188,7 +171,7 @@ df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
 # <a id='q1'></a>
 # ### A. Question 1. What areas of Austin have the highest crime rates? 
 
-# In[8]:
+# In[6]:
 
 
 # Create and show dataframe for crime rates by zipcode and then as percentages
@@ -217,7 +200,7 @@ plt.show()
 # <a id='q2'></a>
 # ### B. Question 2. How is crime distributed in 78753? 
 
-# In[9]:
+# In[7]:
 
 
 # Examining crime in the 78753 area
@@ -240,7 +223,7 @@ df_53_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78753)")
 # <a id='q3'></a>
 # ### C. Question 3. How is crime distributed in 78741? 
 
-# In[10]:
+# In[8]:
 
 
 # Create a dataframe for crime in the 78741 area (the highest amount of crime of any Austin zip code)
@@ -262,7 +245,7 @@ df_41_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78741)")
 
 # ### D. Question 4. How is crime distributed in 78745?
 
-# In[11]:
+# In[9]:
 
 
 # Examining crime in the 78745 area
@@ -285,7 +268,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q4'></a>
 # ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[12]:
+# In[10]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -394,7 +377,7 @@ plt.show()
 # <a id='q6'></a>
 # ### F. Question 6. How does murder appear on the map? 
 
-# In[13]:
+# In[11]:
 
 
 # As a heatmap
@@ -415,7 +398,7 @@ k.save(outfile="aus_mur_heatmap.html")
 k
 
 
-# In[14]:
+# In[12]:
 
 
 # Pinpointing individual addresses
@@ -440,7 +423,7 @@ m
 
 # #### Are there any addresses where murder occurs frequently?
 
-# In[15]:
+# In[13]:
 
 
 df_viol_mur.address.value_counts().head(31)
@@ -450,7 +433,7 @@ df_viol_mur.address.value_counts().head(31)
 
 # ### Time Series Modeling of the overall dataframe with Facebook Prophet 
 
-# In[16]:
+# In[14]:
 
 
 df_fbprophet = df
@@ -474,7 +457,7 @@ fig2_2
 
 # ### ...now the violent crime dataframe
 
-# In[17]:
+# In[15]:
 
 
 df_viol_fbprophet = df_viol
@@ -498,7 +481,7 @@ fig2_3
 
 # ### ...now the murder dataframe 
 
-# In[18]:
+# In[16]:
 
 
 df_viol_mur_fbprophet = df_viol_mur
@@ -525,7 +508,7 @@ fig3_3
 
 # #### 78753
 
-# In[19]:
+# In[17]:
 
 
 df_fbprophet_53 = df_53
@@ -549,7 +532,7 @@ fig2_53_1
 
 # #### 78741
 
-# In[20]:
+# In[18]:
 
 
 df_fbprophet_41 = df_41
@@ -573,7 +556,7 @@ fig2_41_1
 
 # #### 78745
 
-# In[21]:
+# In[19]:
 
 
 df_fbprophet_45 = df_45
