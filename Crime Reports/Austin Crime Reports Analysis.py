@@ -30,7 +30,7 @@
 # 
 # I first attempted importing the data into this notebook using Sodapy's Socrata API method but found it lacking. It didn't import the entire dataset, and added several redundant columns. I, therefore, prefer to manually download the entire dataset and re-download each week after it's updated.
 
-# In[1]:
+# In[25]:
 
 
 # Importing essential libraries and configurations
@@ -44,7 +44,7 @@ import warnings
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly, plot_components_plotly
 
-plt.style.use("classic")
+plt.style.use("fivethirtyeight")
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -69,7 +69,6 @@ df = pd.read_csv("crime_reports.csv")
 def clean_data(df):
     drop_col = [
         "Occurred Time",
-        "Incident Number",
         "Occurred Date",
         "Highest Offense Code",
         "Family Violence",
@@ -111,16 +110,23 @@ df = clean_data(df)
 
 # #### Overall crime rates over time 
 
-# In[4]:
+# In[26]:
 
 
-# plotting trend on a weekly basis
+# plotting trend on a monthly basis
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(8, 4))
 plt.plot(df.resample("M").size())
-plt.xlabel("Monthly Trend")
-plt.ylabel("Number of crimes")
+plt.title("Monthly trend, 2003-Present ")
 plt.show()
+
+# Above plot re-shown as rolling average
+
+plt.figure(figsize=(8, 4))
+df.resample("D").size().rolling(365).sum().plot()
+plt.title("Rolling average of all crimes, 2003-Present")
+plt.show()
+
 
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 
@@ -152,7 +158,7 @@ plt.show()
 
 # #### Top 50 crime types 
 
-# In[5]:
+# In[27]:
 
 
 df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
@@ -165,7 +171,7 @@ df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
 # <a id='q1'></a>
 # ### A. Question 1. What areas of Austin have the highest crime rates? 
 
-# In[6]:
+# In[28]:
 
 
 # Create and show dataframe for crime rates by zipcode and then as percentages
@@ -178,7 +184,7 @@ display(df.zip_code.value_counts(normalize=True).head(25))
 # Visualizing the top 25 areas for crime
 
 df.zip_code.value_counts().head(25).plot.bar(
-    rot=60, title="Top 25 Zipcodes (2003-Present)"
+    rot=60, title="Top 25 Zipcodes (2003-2019)"
 )
 plt.show()
 
@@ -194,7 +200,7 @@ plt.show()
 # <a id='q2'></a>
 # ### B. Question 2. How is crime distributed in 78753? 
 
-# In[7]:
+# In[29]:
 
 
 # Examining crime in the 78753 area
@@ -217,7 +223,7 @@ df_53_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78753)")
 # <a id='q3'></a>
 # ### C. Question 3. How is crime distributed in 78741? 
 
-# In[8]:
+# In[30]:
 
 
 # Create a dataframe for crime in the 78741 area (the highest amount of crime of any Austin zip code)
@@ -239,7 +245,7 @@ df_41_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78741)")
 
 # ### D. Question 4. How is crime distributed in 78745?
 
-# In[9]:
+# In[31]:
 
 
 # Examining crime in the 78745 area
@@ -262,7 +268,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q4'></a>
 # ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[10]:
+# In[32]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -280,16 +286,30 @@ df_rape = df[df.highest_offense_description == "RAPE"]
 
 viol_per_year = df_viol["year"].value_counts().sort_index()
 viol_per_year.plot.bar(
-    rot=60, title="Annual Violent Crime Rates (2003-Present)", fontsize=12
+    rot=60, title="Annual Violent Crime Rates", fontsize=12
 )
+plt.show()
+
+#As rolling average 
+
+plt.figure(figsize=(8, 4))
+df_viol.resample("D").size().rolling(365).sum().plot()
+plt.title("Rolling average for violent crime")
 plt.show()
 
 # Visualizing murders per year
 
 viol_mur_per_year = df_viol_mur.year.value_counts().sort_index()
 viol_mur_per_year.plot.bar(
-    rot=60, title="Annual Murder Rates (2003-Present)", fontsize=12
+    rot=60, title="Annual Murder Rates", fontsize=12
 )
+plt.show()
+
+#As rolling average 
+
+plt.figure(figsize=(8, 4))
+df_viol_mur.resample("D").size().rolling(365).sum().plot()
+plt.title("Rolling average for murders")
 plt.show()
 
 # Violent Crime by Zipcode
@@ -371,7 +391,7 @@ plt.show()
 # <a id='q6'></a>
 # ### F. Question 6. How does murder appear on the map? 
 
-# In[11]:
+# In[12]:
 
 
 # As a heatmap
@@ -392,7 +412,7 @@ k.save(outfile="aus_mur_heatmap.html")
 k
 
 
-# In[12]:
+# In[13]:
 
 
 # Pinpointing individual addresses
@@ -402,7 +422,7 @@ mur_coords_add = df_viol_mur[
     & (df_viol_mur["longitude"].isnull() == False)
 ]
 
-m = folium.Map([30.2672, -97.7431], tiles="OpenStreetMap", zoom_level=12)
+m = folium.Map([30.2672, -97.7431], tiles="OpenStreetMap", zoom_level=11)
 
 for (index, row) in mur_coords_add.iterrows():
     lat = row["latitude"]
@@ -417,7 +437,7 @@ m
 
 # #### Are there any addresses where murder occurs frequently?
 
-# In[13]:
+# In[14]:
 
 
 df_viol_mur.address.value_counts().head(31)
@@ -427,7 +447,7 @@ df_viol_mur.address.value_counts().head(31)
 
 # ### Time Series Modeling of the overall dataframe with Facebook Prophet 
 
-# In[14]:
+# In[33]:
 
 
 df_fbprophet = df
@@ -451,7 +471,7 @@ fig2_2
 
 # ### ...now the violent crime dataframe
 
-# In[15]:
+# In[34]:
 
 
 df_viol_fbprophet = df_viol
@@ -475,7 +495,7 @@ fig2_3
 
 # ### ...now the murder dataframe 
 
-# In[16]:
+# In[35]:
 
 
 df_viol_mur_fbprophet = df_viol_mur
@@ -502,7 +522,7 @@ fig3_3
 
 # #### 78753
 
-# In[17]:
+# In[36]:
 
 
 df_fbprophet_53 = df_53
@@ -526,7 +546,7 @@ fig2_53_1
 
 # #### 78741
 
-# In[18]:
+# In[37]:
 
 
 df_fbprophet_41 = df_41
@@ -550,7 +570,7 @@ fig2_41_1
 
 # #### 78745
 
-# In[19]:
+# In[38]:
 
 
 df_fbprophet_45 = df_45
