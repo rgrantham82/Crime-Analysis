@@ -275,7 +275,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q5'></a>
 # ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[11]:
+# In[27]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -379,7 +379,6 @@ viol_mur_freq.plot.bar(
     figsize=(20, 10),
     title="Murder Distribution by Zipcode and Type since 2003",
     fontsize=12,
-    stacked=True,
     rot=60,
 )
 plt.show()
@@ -392,20 +391,49 @@ plt.show()
 # Overall, family violence is seeing an upward trend as a crime factor. Violent crime saw an alarming upward trend of the family violence factor, as well. Rapes, for example, involved the family violence factor a 3rd of the time in 2016 whereas in 2004, family violence was involved less than 1% of the time. 
 
 # <a id='q6'></a>
-# ### F. Question 6. How is crime distributed across council districts?
+# ### F. Question 6. How is crime distributed across council districts and APD sectors?
+# 
+# #### checking council districts and APD sectors for overall crime rates 
 
-# In[12]:
+# In[37]:
 
 
-df.council_district.value_counts().plot.bar(title="Council Districts, Overall Crime")
-plt.show()
-
-df_viol.council_district.value_counts().plot.bar(
-    title="Council Districts, Violent Crime"
+df.council_district.value_counts().plot.bar(
+    title="Council districts, overall crime", rot=60
 )
 plt.show()
 
-df_viol_mur.council_district.value_counts().plot.bar(title="Council Districts, Murders")
+df.apd_sector.value_counts().plot.bar(
+    title="APD sectors, overall crime",
+    figsize=(12, 6),
+    rot=60,
+)
+plt.show()
+
+
+# #### Distribution of violent crime and murders across council districts and APD sectors 
+
+# In[38]:
+
+
+pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.bar(
+    figsize=(12, 6), rot=60
+)
+plt.show()
+
+pd.crosstab(
+    df_viol_mur.council_district, df_viol_mur.highest_offense_description
+).plot.bar(figsize=(12, 6), rot=60)
+plt.show()
+
+pd.crosstab(df_viol.apd_sector, df_viol.highest_offense_description).plot.bar(
+    figsize=(12, 6), rot=60
+)
+plt.show()
+
+pd.crosstab(df_viol_mur.apd_sector, df_viol_mur.highest_offense_description).plot.bar(
+    figsize=(12, 6), rot=60
+)
 plt.show()
 
 
