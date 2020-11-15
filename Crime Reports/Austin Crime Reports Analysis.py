@@ -32,7 +32,7 @@
 # 
 # I first attempted importing the data into this notebook using Sodapy's Socrata API method but found it lacking. It didn't import the entire dataset, and added several redundant columns. I, therefore, prefer to manually download the entire dataset and re-download each week after it's updated.
 
-# In[1]:
+# In[68]:
 
 
 # Importing essential libraries and configurations
@@ -46,6 +46,7 @@ import warnings
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly, plot_components_plotly
 
+plt.style.use("fivethirtyeight")
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -118,7 +119,7 @@ display(df.tail())
 
 # #### Overall crime rates over time 
 
-# In[5]:
+# In[69]:
 
 
 # plotting trend on a monthly basis
@@ -166,7 +167,7 @@ plt.show()
 
 # #### Top 50 crime types 
 
-# In[6]:
+# In[70]:
 
 
 df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
@@ -179,7 +180,7 @@ df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
 # <a id='q1'></a>
 # ### A. Question 1. What areas of Austin have the highest crime rates? 
 
-# In[7]:
+# In[71]:
 
 
 # Create and show dataframe for crime rates by zipcode and then as percentages
@@ -206,7 +207,7 @@ plt.show()
 # <a id='q2'></a>
 # ### B. Question 2. How is crime distributed in 78753? 
 
-# In[8]:
+# In[74]:
 
 
 # Examining crime in the 78753 area
@@ -229,7 +230,7 @@ df_53_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78753)")
 # <a id='q3'></a>
 # ### C. Question 3. How is crime distributed in 78741? 
 
-# In[9]:
+# In[73]:
 
 
 # Create a dataframe for crime in the 78741 area (the highest amount of crime of any Austin zip code)
@@ -252,7 +253,7 @@ df_41_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78741)")
 # <a id='q4'></a>
 # ### D. Question 4. How is crime distributed in 78745?
 
-# In[10]:
+# In[75]:
 
 
 # Examining crime in the 78745 area
@@ -275,7 +276,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q5'></a>
 # ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[27]:
+# In[76]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -395,7 +396,7 @@ plt.show()
 # 
 # #### checking council districts and APD sectors for overall crime rates 
 
-# In[37]:
+# In[90]:
 
 
 df.council_district.value_counts().plot.bar(
@@ -410,29 +411,50 @@ df.apd_sector.value_counts().plot.bar(
 )
 plt.show()
 
+df.apd_district.value_counts().plot.bar(
+    title="APD districts, overall crime", rot=60, figsize=(12, 6)
+)
+plt.show()
+
 
 # #### Distribution of violent crime and murders across council districts and APD sectors 
 
-# In[38]:
+# In[95]:
 
 
 pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.bar(
-    figsize=(12, 6), rot=60
+    figsize=(12, 6),
+    logy=True,
+    rot=60,
+    title="Violent crime distribution by council district",
 )
 plt.show()
 
 pd.crosstab(
     df_viol_mur.council_district, df_viol_mur.highest_offense_description
-).plot.bar(figsize=(12, 6), rot=60)
+).plot.bar(figsize=(12, 6), rot=60, title="Murder distribution by council district")
 plt.show()
 
 pd.crosstab(df_viol.apd_sector, df_viol.highest_offense_description).plot.bar(
-    figsize=(12, 6), rot=60
+    figsize=(12, 6), logy=True, rot=60, title="Violent crime distribution by APD sector"
 )
 plt.show()
 
 pd.crosstab(df_viol_mur.apd_sector, df_viol_mur.highest_offense_description).plot.bar(
-    figsize=(12, 6), rot=60
+    figsize=(12, 6), rot=60, title="Murder distribution by APD sector"
+)
+plt.show()
+
+pd.crosstab(df_viol.apd_district, df_viol.highest_offense_description).plot.bar(
+    figsize=(12, 6),
+    rot=60,
+    logy=True,
+    title="Violent crime distribution by APD district",
+)
+plt.show()
+
+pd.crosstab(df_viol_mur.apd_district, df_viol_mur.highest_offense_description).plot.bar(
+    figsize=(12, 6), rot=60, title="Murder distribution by APD district"
 )
 plt.show()
 
