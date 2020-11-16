@@ -32,7 +32,7 @@
 # 
 # I first attempted importing the data into this notebook using Sodapy's Socrata API method but found it lacking. It didn't import the entire dataset, and added several redundant columns. I, therefore, prefer to manually download the entire dataset and re-download each week after it's updated.
 
-# In[68]:
+# In[28]:
 
 
 # Importing essential libraries and configurations
@@ -46,7 +46,6 @@ import warnings
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly, plot_components_plotly
 
-plt.style.use("fivethirtyeight")
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -119,7 +118,7 @@ display(df.tail())
 
 # #### Overall crime rates over time 
 
-# In[69]:
+# In[29]:
 
 
 # plotting trend on a monthly basis
@@ -167,7 +166,7 @@ plt.show()
 
 # #### Top 50 crime types 
 
-# In[70]:
+# In[30]:
 
 
 df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
@@ -180,7 +179,7 @@ df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
 # <a id='q1'></a>
 # ### A. Question 1. What areas of Austin have the highest crime rates? 
 
-# In[71]:
+# In[31]:
 
 
 # Create and show dataframe for crime rates by zipcode and then as percentages
@@ -207,7 +206,7 @@ plt.show()
 # <a id='q2'></a>
 # ### B. Question 2. How is crime distributed in 78753? 
 
-# In[74]:
+# In[32]:
 
 
 # Examining crime in the 78753 area
@@ -230,7 +229,7 @@ df_53_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78753)")
 # <a id='q3'></a>
 # ### C. Question 3. How is crime distributed in 78741? 
 
-# In[73]:
+# In[33]:
 
 
 # Create a dataframe for crime in the 78741 area (the highest amount of crime of any Austin zip code)
@@ -253,7 +252,7 @@ df_41_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78741)")
 # <a id='q4'></a>
 # ### D. Question 4. How is crime distributed in 78745?
 
-# In[75]:
+# In[34]:
 
 
 # Examining crime in the 78745 area
@@ -276,7 +275,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q5'></a>
 # ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[76]:
+# In[35]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -380,6 +379,7 @@ viol_mur_freq.plot.bar(
     figsize=(20, 10),
     title="Murder Distribution by Zipcode and Type since 2003",
     fontsize=12,
+    logy=True,
     rot=60,
 )
 plt.show()
@@ -396,7 +396,7 @@ plt.show()
 # 
 # #### checking council districts and APD sectors for overall crime rates 
 
-# In[90]:
+# In[36]:
 
 
 df.council_district.value_counts().plot.bar(
@@ -419,7 +419,7 @@ plt.show()
 
 # #### Distribution of violent crime and murders across council districts and APD sectors 
 
-# In[95]:
+# In[37]:
 
 
 pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.bar(
@@ -462,7 +462,7 @@ plt.show()
 # <a id='q7'></a>
 # ### G. Question 7. How does murder appear on the map? 
 
-# In[13]:
+# In[14]:
 
 
 # As a heatmap
@@ -483,7 +483,7 @@ k.save(outfile="aus_mur_heatmap.html")
 k
 
 
-# In[14]:
+# In[15]:
 
 
 # Pinpointing individual addresses
@@ -508,7 +508,7 @@ m
 
 # #### Are there any addresses where murder occurs frequently?
 
-# In[15]:
+# In[16]:
 
 
 df_viol_mur.address.value_counts().head(31)
@@ -518,7 +518,7 @@ df_viol_mur.address.value_counts().head(31)
 
 # ### Time Series Modeling of the overall dataframe with Facebook Prophet 
 
-# In[16]:
+# In[38]:
 
 
 df_fbprophet = df
@@ -542,7 +542,7 @@ fig2_2
 
 # ### ...now the violent crime dataframe
 
-# In[17]:
+# In[39]:
 
 
 df_viol_fbprophet = df_viol
@@ -566,7 +566,7 @@ fig2_3
 
 # ### ...now the murder dataframe 
 
-# In[18]:
+# In[40]:
 
 
 df_viol_mur_fbprophet = df_viol_mur
@@ -593,7 +593,7 @@ fig3_3
 
 # #### 78753
 
-# In[19]:
+# In[41]:
 
 
 df_fbprophet_53 = df_53
@@ -617,7 +617,7 @@ fig2_53_1
 
 # #### 78741
 
-# In[20]:
+# In[42]:
 
 
 df_fbprophet_41 = df_41
@@ -641,7 +641,7 @@ fig2_41_1
 
 # #### 78745
 
-# In[21]:
+# In[43]:
 
 
 df_fbprophet_45 = df_45
