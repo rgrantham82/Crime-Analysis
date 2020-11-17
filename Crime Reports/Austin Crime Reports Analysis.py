@@ -32,10 +32,9 @@
 # 
 # I first attempted importing the data into this notebook using Sodapy's Socrata API method but found it lacking. It didn't import the entire dataset, and added several redundant columns. I, therefore, prefer to manually download the entire dataset and re-download each week after it's updated.
 
-# In[28]:
+# In[1]:
 
 
-# Importing essential libraries and configurations
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -44,40 +43,49 @@ from folium import plugins
 import seaborn as sns
 import warnings
 from fbprophet import Prophet
-from fbprophet.plot import plot_plotly, plot_components_plotly
+from fbprophet.plot import plot_plotly
+from fbprophet.plot import add_changepoints_to_plot
+from fbprophet.diagnostics import cross_validation
+from fbprophet.diagnostics import performance_metrics
+from fbprophet.plot import plot_cross_validation_metric
 
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
+plt.style.use("fivethirtyeight")
 
 
 # In[2]:
 
 
-# Loading the data
 df = pd.read_csv("crime_reports.csv")
+
+
+# In[3]:
+
+
+display(df.head())
+display(df.tail())
 
 
 # ## II. Data Scrubbing
 # 
-# There are several columns of data we don't need. We'll drop those and also scrub the Columns were keeping for analysis. Mainly, we want the zip code and address columns to be free of nulls and duplicates. 
-# 
-# The 'clearance status' column contains 3 types of statuses: Y for Yes, N for No, and O which stands for "cleared by other means than arrest." Therefore, I changed it to boolean type:  Y and O as True, and N as False. However, you may note that areas, where there is no clearance status at all, may or may not contain a corresponding date in the clearance date column. I am unsure how best to handle this so I am open to suggestions or advice. I also converted the 'family violence' column to boolean type.  
+# There are several columns of data we don't need. We'll drop those and also scrub the Columns were keeping for analysis. Mainly, we want the zip code and address columns to be free of nulls and duplicates. We'll also create new columns for time series analysis. 
 
-# In[3]:
+# In[4]:
 
 
 def clean_data(df):
     drop_col = [
         "Occurred Time",
         "Occurred Date",
-        "Highest Offense Code",
+        "Highest Offense Code", 
+        "Census Tract",
         "Family Violence",
         "Clearance Status",
         "Report Date",
         "Report Time",
         "Clearance Date",
-        "Census Tract",
         "UCR Category",
         "Category Description",
         "X-coordinate",
@@ -105,7 +113,7 @@ def clean_data(df):
 df = clean_data(df)
 
 
-# In[4]:
+# In[5]:
 
 
 display(df.head())
@@ -118,19 +126,19 @@ display(df.tail())
 
 # #### Overall crime rates over time 
 
-# In[29]:
+# In[6]:
 
 
 # plotting trend on a monthly basis
 
-plt.figure(figsize=(8, 4))
+plt.figure(figsize=(10, 5))
 plt.plot(df.resample("M").size())
 plt.title("Monthly trend, 2003-Present")
 plt.show()
 
 # Above plot re-shown as rolling average
 
-plt.figure(figsize=(8, 4))
+plt.figure(figsize=(10, 5))
 df.resample("D").size().rolling(365).sum().plot()
 plt.title("365 day rolling average, 2003-Present")
 plt.show()
@@ -140,6 +148,7 @@ plt.show()
 
 crimes_per_year = df["year"].value_counts().sort_index()
 
+#plt.figure(figsize=(8, 4))
 g = sns.barplot(x=crimes_per_year.index, y=crimes_per_year.values)
 g.set_xticklabels(g.get_xticklabels(), rotation=60)
 g.set(xlabel="Year", ylabel="Crimes Reported", title="Annual Crime Rates")
@@ -149,6 +158,7 @@ plt.show()
 
 crimes_per_month = df["month"].value_counts().sort_index()
 
+#plt.figure(figsize=(8, 4))
 d = sns.barplot(x=crimes_per_month.index, y=crimes_per_month.values)
 d.set_xticklabels(d.get_xticklabels(), rotation=60)
 d.set(xlabel="Month", ylabel="Crimes Reported", title="Monthly Crime Rates")
@@ -158,6 +168,7 @@ plt.show()
 
 crimes_per_hour = df["hour"].value_counts().sort_index()
 
+#plt.figure(figsize=(8, 4))
 e = sns.barplot(x=crimes_per_hour.index, y=crimes_per_hour.values)
 e.set_xticklabels(e.get_xticklabels(), rotation=60)
 e.set(xlabel="Hour", ylabel="Crimes Reported", title="Hourly Crime Rates")
@@ -166,7 +177,7 @@ plt.show()
 
 # #### Top 50 crime types 
 
-# In[30]:
+# In[7]:
 
 
 df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
@@ -179,7 +190,7 @@ df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
 # <a id='q1'></a>
 # ### A. Question 1. What areas of Austin have the highest crime rates? 
 
-# In[31]:
+# In[8]:
 
 
 # Create and show dataframe for crime rates by zipcode and then as percentages
@@ -206,7 +217,7 @@ plt.show()
 # <a id='q2'></a>
 # ### B. Question 2. How is crime distributed in 78753? 
 
-# In[32]:
+# In[9]:
 
 
 # Examining crime in the 78753 area
@@ -229,7 +240,7 @@ df_53_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78753)")
 # <a id='q3'></a>
 # ### C. Question 3. How is crime distributed in 78741? 
 
-# In[33]:
+# In[10]:
 
 
 # Create a dataframe for crime in the 78741 area (the highest amount of crime of any Austin zip code)
@@ -252,7 +263,7 @@ df_41_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78741)")
 # <a id='q4'></a>
 # ### D. Question 4. How is crime distributed in 78745?
 
-# In[34]:
+# In[11]:
 
 
 # Examining crime in the 78745 area
@@ -275,7 +286,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q5'></a>
 # ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[35]:
+# In[12]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -297,7 +308,7 @@ plt.show()
 
 # As rolling average
 
-plt.figure(figsize=(8, 4))
+plt.figure(figsize=(10, 5))
 df_viol.resample("D").size().rolling(365).sum().plot()
 plt.title("365 day rolling average for violent crime")
 plt.show()
@@ -310,7 +321,7 @@ plt.show()
 
 # As rolling average
 
-plt.figure(figsize=(8, 4))
+plt.figure(figsize=(10, 5))
 df_viol_mur.resample("D").size().rolling(365).sum().plot()
 plt.title("365 day rolling average for murders")
 plt.show()
@@ -396,7 +407,7 @@ plt.show()
 # 
 # #### checking council districts and APD sectors for overall crime rates 
 
-# In[36]:
+# In[13]:
 
 
 df.council_district.value_counts().plot.bar(
@@ -419,7 +430,7 @@ plt.show()
 
 # #### Distribution of violent crime and murders across council districts and APD sectors 
 
-# In[37]:
+# In[14]:
 
 
 pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.bar(
@@ -462,7 +473,7 @@ plt.show()
 # <a id='q7'></a>
 # ### G. Question 7. How does murder appear on the map? 
 
-# In[14]:
+# In[15]:
 
 
 # As a heatmap
@@ -483,7 +494,7 @@ k.save(outfile="aus_mur_heatmap.html")
 k
 
 
-# In[15]:
+# In[16]:
 
 
 # Pinpointing individual addresses
@@ -508,7 +519,7 @@ m
 
 # #### Are there any addresses where murder occurs frequently?
 
-# In[16]:
+# In[17]:
 
 
 df_viol_mur.address.value_counts().head(31)
@@ -518,7 +529,7 @@ df_viol_mur.address.value_counts().head(31)
 
 # ### Time Series Modeling of the overall dataframe with Facebook Prophet 
 
-# In[38]:
+# In[18]:
 
 
 df_fbprophet = df
@@ -542,7 +553,7 @@ fig2_2
 
 # ### ...now the violent crime dataframe
 
-# In[39]:
+# In[19]:
 
 
 df_viol_fbprophet = df_viol
@@ -566,7 +577,7 @@ fig2_3
 
 # ### ...now the murder dataframe 
 
-# In[40]:
+# In[20]:
 
 
 df_viol_mur_fbprophet = df_viol_mur
@@ -593,7 +604,7 @@ fig3_3
 
 # #### 78753
 
-# In[41]:
+# In[21]:
 
 
 df_fbprophet_53 = df_53
@@ -617,7 +628,7 @@ fig2_53_1
 
 # #### 78741
 
-# In[42]:
+# In[22]:
 
 
 df_fbprophet_41 = df_41
@@ -641,7 +652,7 @@ fig2_41_1
 
 # #### 78745
 
-# In[43]:
+# In[23]:
 
 
 df_fbprophet_45 = df_45
