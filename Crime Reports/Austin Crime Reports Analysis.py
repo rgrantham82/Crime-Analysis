@@ -52,7 +52,7 @@ from fbprophet.plot import plot_cross_validation_metric
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
-plt.style.use("fivethirtyeight")
+plt.style.use("seaborn-white")
 
 
 # In[2]:
@@ -529,7 +529,7 @@ df_viol_mur.address.value_counts().head(31)
 
 # ### Time Series Modeling of the overall dataframe with Facebook Prophet.
 
-# In[56]:
+# In[18]:
 
 
 df_fbprophet = df
@@ -555,7 +555,7 @@ fig2_2
 
 # ### ...now the violent crime dataframe
 
-# In[50]:
+# In[19]:
 
 
 df_viol_fbprophet = df_viol
@@ -579,7 +579,7 @@ fig2_3
 
 # ### ...now the murder dataframe 
 
-# In[52]:
+# In[20]:
 
 
 df_viol_mur_fbprophet = df_viol_mur
@@ -606,7 +606,7 @@ fig3_3
 
 # #### 78753
 
-# In[53]:
+# In[21]:
 
 
 df_fbprophet_53 = df_53
@@ -630,7 +630,7 @@ fig2_53_1
 
 # #### 78741
 
-# In[54]:
+# In[22]:
 
 
 df_fbprophet_41 = df_41
@@ -654,7 +654,7 @@ fig2_41_1
 
 # #### 78745
 
-# In[57]:
+# In[23]:
 
 
 df_fbprophet_45 = df_45
