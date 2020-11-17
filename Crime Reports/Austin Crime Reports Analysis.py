@@ -527,25 +527,27 @@ df_viol_mur.address.value_counts().head(31)
 
 # ## IV. Prediction Modeling 
 
-# ### Time Series Modeling of the overall dataframe with Facebook Prophet 
+# ### Time Series Modeling of the overall dataframe with Facebook Prophet.
 
-# In[18]:
+# In[56]:
 
 
 df_fbprophet = df
 
-df_m_1 = df_fbprophet.resample("M").size().reset_index()
-df_m_1.columns = ["date", "monthly_crime_count"]
-df_m_final_1 = df_m_1.rename(columns={"date": "ds", "monthly_crime_count": "y"})
+df_m_1 = df_fbprophet.resample("W").size().reset_index()
+df_m_1.columns = ["date", "weekly_crime_count"]
+df_m_final_1 = df_m_1.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
 m_1 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_1.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 m_1.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
-m_1.add_seasonality(name="weekly", period=52.25, fourier_order=10)
+m_1.add_seasonality(name="weekly", period=52, fourier_order=10)
 m_1.fit(df_m_final_1)
 
-future_1 = m_1.make_future_dataframe(periods=24, freq="M")
+future_1 = m_1.make_future_dataframe(periods=52, freq="W")
+
 pred_1 = m_1.predict(future_1)
+
 fig2_1 = m_1.plot_components(pred_1)
 fig2_2 = plot_plotly(m_1, pred_1)
 fig2_2
@@ -553,22 +555,22 @@ fig2_2
 
 # ### ...now the violent crime dataframe
 
-# In[19]:
+# In[50]:
 
 
 df_viol_fbprophet = df_viol
 
-df_v = df_viol_fbprophet.resample("M").size().reset_index()
-df_v.columns = ["date", "monthly_crime_count"]
-df_v_final = df_v.rename(columns={"date": "ds", "monthly_crime_count": "y"})
+df_v = df_viol_fbprophet.resample("W").size().reset_index()
+df_v.columns = ["date", "weekly_crime_count"]
+df_v_final = df_v.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
 v = Prophet(interval_width=0.95, yearly_seasonality=False)
 v.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 v.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
-v.add_seasonality(name="weekly", period=52.25, fourier_order=10)
+v.add_seasonality(name="weekly", period=52, fourier_order=10)
 v.fit(df_v_final)
 
-future = v.make_future_dataframe(periods=24, freq="M")
+future = v.make_future_dataframe(periods=52, freq="W")
 pred = v.predict(future)
 fig2_1 = v.plot_components(pred)
 fig2_3 = plot_plotly(v, pred)
@@ -577,22 +579,22 @@ fig2_3
 
 # ### ...now the murder dataframe 
 
-# In[20]:
+# In[52]:
 
 
 df_viol_mur_fbprophet = df_viol_mur
 
-df_m = df_viol_mur_fbprophet.resample("M").size().reset_index()
-df_m.columns = ["date", "monthly_crime_count"]
-df_m_final = df_m.rename(columns={"date": "ds", "monthly_crime_count": "y"})
+df_m = df_viol_mur_fbprophet.resample("W").size().reset_index()
+df_m.columns = ["date", "weekly_crime_count"]
+df_m_final = df_m.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
 m = Prophet(interval_width=0.95, yearly_seasonality=False)
 m.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 m.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
-m.add_seasonality(name="weekly", period=52.25, fourier_order=10)
+m.add_seasonality(name="weekly", period=52, fourier_order=10)
 m.fit(df_m_final)
 
-future = m.make_future_dataframe(periods=24, freq="M")
+future = m.make_future_dataframe(periods=52, freq="W")
 
 pred = m.predict(future)
 fig3_1 = m.plot_components(pred)
@@ -604,14 +606,14 @@ fig3_3
 
 # #### 78753
 
-# In[21]:
+# In[53]:
 
 
 df_fbprophet_53 = df_53
 
-df_m_53 = df_fbprophet_53.resample("M").size().reset_index()
-df_m_53.columns = ["date", "monthly_crime_count"]
-df_m_final_53 = df_m_53.rename(columns={"date": "ds", "monthly_crime_count": "y"})
+df_m_53 = df_fbprophet_53.resample("W").size().reset_index()
+df_m_53.columns = ["date", "weekly_crime_count"]
+df_m_final_53 = df_m_53.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
 m_53 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_53.add_seasonality(name="monthly", period=30.5, fourier_order=10)
@@ -619,7 +621,7 @@ m_53.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 m_53.add_seasonality(name="weekly", period=52.25, fourier_order=10)
 m_53.fit(df_m_final_53)
 
-future_53 = m_53.make_future_dataframe(periods=24, freq="M")
+future_53 = m_53.make_future_dataframe(periods=52, freq="W")
 pred_53 = m_53.predict(future)
 fig2_53 = m_53.plot_components(pred)
 fig2_53_1 = plot_plotly(m_53, pred_53)
@@ -628,22 +630,22 @@ fig2_53_1
 
 # #### 78741
 
-# In[22]:
+# In[54]:
 
 
 df_fbprophet_41 = df_41
 
-df_m_41 = df_fbprophet_41.resample("M").size().reset_index()
-df_m_41.columns = ["date", "monthly_crime_count"]
-df_m_final_41 = df_m_41.rename(columns={"date": "ds", "monthly_crime_count": "y"})
+df_m_41 = df_fbprophet_41.resample("W").size().reset_index()
+df_m_41.columns = ["date", "weekly_crime_count"]
+df_m_final_41 = df_m_41.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
 m_41 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_41.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 m_41.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
-m_41.add_seasonality(name="weekly", period=52.25, fourier_order=10)
+m_41.add_seasonality(name="weekly", period=52, fourier_order=10)
 m_41.fit(df_m_final_41)
 
-future_41 = m_41.make_future_dataframe(periods=24, freq="M")
+future_41 = m_41.make_future_dataframe(periods=52, freq="W")
 pred_41 = m_41.predict(future)
 fig2_41 = m_41.plot_components(pred)
 fig2_41_1 = plot_plotly(m_41, pred_53)
@@ -652,22 +654,22 @@ fig2_41_1
 
 # #### 78745
 
-# In[23]:
+# In[57]:
 
 
 df_fbprophet_45 = df_45
 
-df_m_45 = df_fbprophet_45.resample("M").size().reset_index()
-df_m_45.columns = ["date", "monthly_crime_count"]
-df_m_final_45 = df_m_45.rename(columns={"date": "ds", "monthly_crime_count": "y"})
+df_m_45 = df_fbprophet_45.resample("W").size().reset_index()
+df_m_45.columns = ["date", "weekly_crime_count"]
+df_m_final_45 = df_m_45.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
 m_45 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_45.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 m_45.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
-m_45.add_seasonality(name="weekly", period=52.25, fourier_order=10)
+m_45.add_seasonality(name="weekly", period=52, fourier_order=10)
 m_45.fit(df_m_final_45)
 
-future_45 = m_45.make_future_dataframe(periods=24, freq="M")
+future_45 = m_45.make_future_dataframe(periods=52, freq="W")
 pred_45 = m_45.predict(future)
 fig2_45 = m_45.plot_components(pred)
 fig2_45_1 = plot_plotly(m_45, pred_45)
