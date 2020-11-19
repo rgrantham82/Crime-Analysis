@@ -22,6 +22,7 @@
 # ><li><a href="#q5"> 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed?
 # ><li><a href="#q6"> 6. How is crime distributed across council districts?
 # ><li><a href="#q7"> 7. How does murder appear on the map?
+# ><li><a href="#q8"> 8. Are there any addresses where murder occurs frequently?
 # </a></li>
 
 # ## I. Introduction
@@ -64,6 +65,7 @@ df = pd.read_csv("crime_reports.csv")
 # In[3]:
 
 
+display(df.shape)
 display(df.head())
 display(df.tail())
 
@@ -116,6 +118,7 @@ df = clean_data(df)
 # In[5]:
 
 
+display(df.shape)
 display(df.head())
 display(df.tail())
 
@@ -148,7 +151,6 @@ plt.show()
 
 crimes_per_year = df["year"].value_counts().sort_index()
 
-#plt.figure(figsize=(8, 4))
 g = sns.barplot(x=crimes_per_year.index, y=crimes_per_year.values)
 g.set_xticklabels(g.get_xticklabels(), rotation=60)
 g.set(xlabel="Year", ylabel="Crimes Reported", title="Annual Crime Rates")
@@ -158,7 +160,6 @@ plt.show()
 
 crimes_per_month = df["month"].value_counts().sort_index()
 
-#plt.figure(figsize=(8, 4))
 d = sns.barplot(x=crimes_per_month.index, y=crimes_per_month.values)
 d.set_xticklabels(d.get_xticklabels(), rotation=60)
 d.set(xlabel="Month", ylabel="Crimes Reported", title="Monthly Crime Rates")
@@ -168,20 +169,19 @@ plt.show()
 
 crimes_per_hour = df["hour"].value_counts().sort_index()
 
-#plt.figure(figsize=(8, 4))
 e = sns.barplot(x=crimes_per_hour.index, y=crimes_per_hour.values)
 e.set_xticklabels(e.get_xticklabels(), rotation=60)
 e.set(xlabel="Hour", ylabel="Crimes Reported", title="Hourly Crime Rates")
 plt.show()
 
 
-# #### Top 50 crime types 
+# #### Top 25 crime types 
 
-# In[7]:
+# In[26]:
 
 
-df.highest_offense_description.value_counts().head(50).sort_values().plot.barh(
-    figsize=(9, 10), title="Top 50 crime types since 2003"
+df.highest_offense_description.value_counts().head(25).sort_values().plot.barh(
+    title="Top 25 crime types (2003-Present)"
 )
 
 
@@ -286,7 +286,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q5'></a>
 # ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[12]:
+# In[24]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -356,7 +356,6 @@ v.set(
 )
 plt.show()
 
-# Hourly rate with Seaborn
 
 f = sns.barplot(x=mur_by_hour.index, y=mur_by_hour.values)
 f.set_xticklabels(f.get_xticklabels(), rotation=60)
@@ -377,7 +376,7 @@ viol_freq.plot.bar(
     figsize=(20, 10),
     title="Violent Crime Distribution by Zipcode and Type since 2003",
     fontsize=12,
-    stacked=True,
+    logy=True, 
     rot=60,
 )
 plt.show()
@@ -390,13 +389,12 @@ viol_mur_freq.plot.bar(
     figsize=(20, 10),
     title="Murder Distribution by Zipcode and Type since 2003",
     fontsize=12,
-    logy=True,
     rot=60,
 )
 plt.show()
 
 
-# According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 10/19/2020, murders already totaled 34--the same amount for 2016 and 2010!!
+# According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 11/19/2020, murders exceeded both those years with a total of 39 so far.
 # 
 # So, you're most likely to get murdered in July, between 1 and 2am, in the 78753 zip code, with 78741 coming in as a very strong alternate. Good to know!
 # 
@@ -483,7 +481,7 @@ mur_coords_heat = df_viol_mur[
     & (df_viol_mur["longitude"].isnull() == False)
 ]
 
-k = folium.Map(location=[30.2672, -97.7431], tiles="OpenStreetMap", zoom_start=11)
+k = folium.Map(location=[30.2672, -97.7431], tiles="OpenStreetMap", zoom_start=12)
 
 k.add_child(
     plugins.HeatMap(mur_coords_heat[["latitude", "longitude"]].values, radius=15)
@@ -504,7 +502,7 @@ mur_coords_add = df_viol_mur[
     & (df_viol_mur["longitude"].isnull() == False)
 ]
 
-m = folium.Map([30.2672, -97.7431], tiles="OpenStreetMap", zoom_level=11)
+m = folium.Map([30.2672, -97.7431], tiles="OpenStreetMap", zoom_level=12)
 
 for (index, row) in mur_coords_add.iterrows():
     lat = row["latitude"]
@@ -517,9 +515,10 @@ m.save(outfile="aus_mur_map.html")
 m
 
 
-# #### Are there any addresses where murder occurs frequently?
+# <a id='q8'></a>
+# ### H. Question 8. Are there any addresses where murder occurs frequently?
 
-# In[17]:
+# In[28]:
 
 
 df_viol_mur.address.value_counts().head(31)
