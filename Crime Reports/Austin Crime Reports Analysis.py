@@ -53,7 +53,7 @@ from fbprophet.plot import plot_cross_validation_metric
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
-plt.style.use("seaborn-white")
+plt.style.use("classic")
 
 
 # In[2]:
@@ -177,7 +177,7 @@ plt.show()
 
 # #### Top 25 crime types 
 
-# In[26]:
+# In[7]:
 
 
 df.highest_offense_description.value_counts().head(25).sort_values().plot.barh(
@@ -286,7 +286,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q5'></a>
 # ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[24]:
+# In[12]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -372,12 +372,10 @@ viol_freq = pd.crosstab(df_viol.zip_code, df_viol.highest_offense_description)
 
 display(viol_freq)
 
-viol_freq.plot.bar(
-    figsize=(20, 10),
+viol_freq.plot.barh(
     title="Violent Crime Distribution by Zipcode and Type since 2003",
-    fontsize=12,
-    logy=True, 
-    rot=60,
+    stacked=True,
+    figsize=(8, 11),
 )
 plt.show()
 
@@ -385,11 +383,9 @@ viol_mur_freq = pd.crosstab(
     df_viol_mur.zip_code, df_viol_mur.highest_offense_description
 )
 
-viol_mur_freq.plot.bar(
-    figsize=(20, 10),
+viol_mur_freq.plot.barh(
+    figsize=(8, 8),
     title="Murder Distribution by Zipcode and Type since 2003",
-    fontsize=12,
-    rot=60,
 )
 plt.show()
 
@@ -518,7 +514,7 @@ m
 # <a id='q8'></a>
 # ### H. Question 8. Are there any addresses where murder occurs frequently?
 
-# In[28]:
+# In[17]:
 
 
 df_viol_mur.address.value_counts().head(31)
@@ -526,9 +522,9 @@ df_viol_mur.address.value_counts().head(31)
 
 # ## IV. Prediction Modeling 
 
-# ### Time Series Modeling of the overall dataframe with Facebook Prophet.
+# ### A. Time Series Modeling of the overall dataframe with Facebook Prophet.
 
-# In[18]:
+# In[30]:
 
 
 df_fbprophet = df
@@ -543,7 +539,7 @@ m_1.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 m_1.add_seasonality(name="weekly", period=52, fourier_order=10)
 m_1.fit(df_m_final_1)
 
-future_1 = m_1.make_future_dataframe(periods=52, freq="W")
+future_1 = m_1.make_future_dataframe(periods=104, freq="W")
 
 pred_1 = m_1.predict(future_1)
 
@@ -552,9 +548,9 @@ fig2_2 = plot_plotly(m_1, pred_1)
 fig2_2
 
 
-# ### ...now the violent crime dataframe
+# #### ...now the violent crime dataframe
 
-# In[19]:
+# In[29]:
 
 
 df_viol_fbprophet = df_viol
@@ -569,16 +565,16 @@ v.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 v.add_seasonality(name="weekly", period=52, fourier_order=10)
 v.fit(df_v_final)
 
-future = v.make_future_dataframe(periods=52, freq="W")
+future = v.make_future_dataframe(periods=104, freq="W")
 pred = v.predict(future)
 fig2_1 = v.plot_components(pred)
 fig2_3 = plot_plotly(v, pred)
 fig2_3
 
 
-# ### ...now the murder dataframe 
+# #### ...now the murder dataframe 
 
-# In[20]:
+# In[31]:
 
 
 df_viol_mur_fbprophet = df_viol_mur
@@ -593,7 +589,7 @@ m.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 m.add_seasonality(name="weekly", period=52, fourier_order=10)
 m.fit(df_m_final)
 
-future = m.make_future_dataframe(periods=52, freq="W")
+future = m.make_future_dataframe(periods=104, freq="W")
 
 pred = m.predict(future)
 fig3_1 = m.plot_components(pred)
@@ -601,11 +597,11 @@ fig3_3 = plot_plotly(m, pred)
 fig3_3
 
 
-# ### ...now examining some zip codes
-
+# #### ...now examining some zip codes
+# 
 # #### 78753
 
-# In[21]:
+# In[42]:
 
 
 df_fbprophet_53 = df_53
@@ -617,10 +613,10 @@ df_m_final_53 = df_m_53.rename(columns={"date": "ds", "weekly_crime_count": "y"}
 m_53 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_53.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 m_53.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
-m_53.add_seasonality(name="weekly", period=52.25, fourier_order=10)
+m_53.add_seasonality(name="weekly", period=52, fourier_order=10)
 m_53.fit(df_m_final_53)
 
-future_53 = m_53.make_future_dataframe(periods=52, freq="W")
+future_53 = m_53.make_future_dataframe(periods=104, freq="W")
 pred_53 = m_53.predict(future)
 fig2_53 = m_53.plot_components(pred)
 fig2_53_1 = plot_plotly(m_53, pred_53)
@@ -629,7 +625,7 @@ fig2_53_1
 
 # #### 78741
 
-# In[22]:
+# In[33]:
 
 
 df_fbprophet_41 = df_41
@@ -644,7 +640,7 @@ m_41.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 m_41.add_seasonality(name="weekly", period=52, fourier_order=10)
 m_41.fit(df_m_final_41)
 
-future_41 = m_41.make_future_dataframe(periods=52, freq="W")
+future_41 = m_41.make_future_dataframe(periods=104, freq="W")
 pred_41 = m_41.predict(future)
 fig2_41 = m_41.plot_components(pred)
 fig2_41_1 = plot_plotly(m_41, pred_53)
@@ -653,7 +649,7 @@ fig2_41_1
 
 # #### 78745
 
-# In[23]:
+# In[34]:
 
 
 df_fbprophet_45 = df_45
@@ -668,7 +664,7 @@ m_45.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 m_45.add_seasonality(name="weekly", period=52, fourier_order=10)
 m_45.fit(df_m_final_45)
 
-future_45 = m_45.make_future_dataframe(periods=52, freq="W")
+future_45 = m_45.make_future_dataframe(periods=104, freq="W")
 pred_45 = m_45.predict(future)
 fig2_45 = m_45.plot_components(pred)
 fig2_45_1 = plot_plotly(m_45, pred_45)
