@@ -53,6 +53,7 @@ from fbprophet.plot import plot_cross_validation_metric
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
+plt.style.use("seaborn-dark")
 
 
 # In[2]:
@@ -80,7 +81,7 @@ def clean_data(df):
     drop_col = [
         "Occurred Time",
         "Occurred Date",
-        "Highest Offense Code", 
+        "Highest Offense Code",
         "Census Tract",
         "Family Violence",
         "Clearance Status",
@@ -302,7 +303,7 @@ df_rape = df[df.highest_offense_description == "RAPE"]
 # Visualizing violent crimes per year
 
 viol_per_year = df_viol["year"].value_counts().sort_index()
-viol_per_year.plot.bar(rot=60, title="Annual Violent Crime Rates", fontsize=12)
+viol_per_year.plot.bar(rot=60, title="Annual Violent Crime Rates")
 plt.show()
 
 # As rolling average
@@ -315,7 +316,7 @@ plt.show()
 # Visualizing murders per year
 
 viol_mur_per_year = df_viol_mur.year.value_counts().sort_index()
-viol_mur_per_year.plot.bar(rot=60, title="Annual Murder Rates", fontsize=12)
+viol_mur_per_year.plot.bar(rot=60, title="Annual Murder Rates")
 plt.show()
 
 # As rolling average
@@ -329,7 +330,7 @@ plt.show()
 
 display(df_viol.zip_code.value_counts(normalize=True).head(25))
 df_viol.zip_code.value_counts().head(25).plot.bar(
-    title="Top Zipcodes for Violent Crime", fontsize=12, rot=60
+    title="Top 25 Zipcodes for Violent Crime", rot=60
 )
 plt.show()
 
@@ -337,7 +338,7 @@ plt.show()
 
 display(df_viol_mur.zip_code.value_counts(normalize=True).head(25))
 df_viol_mur.zip_code.value_counts().head(25).plot.bar(
-    fontsize=12, title="Top Zipcodes for Murder", rot=60
+    title="Top 25 Zipcodes for Murder", rot=60
 )
 plt.show()
 
@@ -384,6 +385,7 @@ viol_mur_freq = pd.crosstab(
 
 viol_mur_freq.plot.barh(
     figsize=(8, 8),
+    stacked=True,
     title="Murder Distribution by Zipcode and Type since 2003",
 )
 plt.show()
