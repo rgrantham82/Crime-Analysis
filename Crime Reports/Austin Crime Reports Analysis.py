@@ -53,7 +53,6 @@ from fbprophet.plot import plot_cross_validation_metric
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
-plt.style.use("seaborn-dark")
 
 
 # In[2]:
@@ -65,7 +64,7 @@ df = pd.read_csv("crime_reports.csv")
 # In[3]:
 
 
-display(df.shape)
+display(df.info())
 display(df.head())
 display(df.tail())
 
@@ -129,7 +128,7 @@ display(df.tail())
 
 # #### Overall crime rates over time 
 
-# In[25]:
+# In[6]:
 
 
 # plotting trend on a monthly basis
@@ -150,7 +149,6 @@ plt.show()
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 
 crimes_per_year = df["year"].value_counts().sort_index()
-
 g = sns.barplot(x=crimes_per_year.index, y=crimes_per_year.values)
 g.set_xticklabels(g.get_xticklabels(), rotation=60)
 g.set(xlabel="Year", ylabel="Crimes Reported", title="Annual Crime Rates")
@@ -159,7 +157,6 @@ plt.show()
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 
 crimes_per_month = df["month"].value_counts().sort_index()
-
 d = sns.barplot(x=crimes_per_month.index, y=crimes_per_month.values)
 d.set_xticklabels(d.get_xticklabels(), rotation=60)
 d.set(xlabel="Month", ylabel="Crimes Reported", title="Monthly Crime Rates")
@@ -168,7 +165,6 @@ plt.show()
 # Overall hourly crime rates as well
 
 crimes_per_hour = df["hour"].value_counts().sort_index()
-
 e = sns.barplot(x=crimes_per_hour.index, y=crimes_per_hour.values)
 e.set_xticklabels(e.get_xticklabels(), rotation=60)
 e.set(xlabel="Hour", ylabel="Crimes Reported", title="Hourly Crime Rates")
@@ -177,11 +173,11 @@ plt.show()
 
 # #### Top 25 crime types 
 
-# In[32]:
+# In[7]:
 
 
 df.highest_offense_description.value_counts().head(25).sort_values().plot.barh(
-    figsize=(7, 6), title="Top 25 crime types (2003-Present)"
+    figsize=(8, 6), title="Top 25 crime types (2003-Present)"
 )
 
 
@@ -279,7 +275,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q5'></a>
 # ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[26]:
+# In[12]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -295,13 +291,17 @@ df_rape = df[df.highest_offense_description == "RAPE"]
 
 # Visualizing violent crimes per year
 viol_per_year = df_viol["year"].value_counts().sort_index()
-viol_per_year.plot.bar(rot=60, title="Annual Violent Crime Rates")
+viol_per_year.plot.bar(
+    rot=60,
+    title="Annual Violent Crime Rates",
+)
 plt.show()
 
-
 # As rolling average
-df_viol.resample("D").size().rolling(365).sum().plot(figsize=(10, 5))
-plt.title("365 day rolling average for violent crime")
+df_viol.resample("D").size().rolling(365).sum().plot(
+    figsize=(10, 5),
+    title="365 day rolling average for violent crime",
+)
 plt.show()
 
 
@@ -310,14 +310,13 @@ viol_mur_per_year = df_viol_mur.year.value_counts().sort_index()
 viol_mur_per_year.plot.bar(rot=60, title="Annual Murder Rates")
 plt.show()
 
-
 # As rolling average
 df_viol_mur.resample("D").size().rolling(365).sum().plot(figsize=(10, 5))
 plt.title("365 day rolling average for murders")
 plt.show()
 
 
-# Violent Crime by Zipcode
+# Overall violent crime by Zipcode
 display(df_viol.zip_code.value_counts(normalize=True).head(25))
 df_viol.zip_code.value_counts().head(25).plot.bar(
     title="Top 25 Zipcodes for Violent Crime", rot=60
@@ -325,15 +324,34 @@ df_viol.zip_code.value_counts().head(25).plot.bar(
 plt.show()
 
 
-# Murder by Zipcode
+# Calculating and visualizing frequency rate of violent crimes types by zipcode
+viol_freq = pd.crosstab(df_viol.zip_code, df_viol.highest_offense_description)
+display(viol_freq)
+viol_freq.plot.barh(
+    title="Violent Crime Distribution by Zipcode and Type since 2003",
+    stacked=True,
+    figsize=(8, 11),
+)
+plt.show()
+
+# Overall murders by zip code
+viol_mur_freq = pd.crosstab(
+    df_viol_mur.zip_code, df_viol_mur.highest_offense_description
+)
+viol_mur_freq.plot.barh(
+    figsize=(8, 8),
+    stacked=True,
+    title="Murder Distribution by Zipcode and Type since 2003",
+)
+plt.show()
+
 display(df_viol_mur.zip_code.value_counts(normalize=True).head(25))
 df_viol_mur.zip_code.value_counts().head(25).plot.bar(
     title="Top 25 Zipcodes for Murder", rot=60
 )
 plt.show()
 
-
-# Visualizing monthly & hourly murder rate with Seaborn
+# Visualizing monthly & hourly murder rates
 mur_by_month = df_viol_mur["month"].value_counts().sort_index()
 mur_by_hour = df_viol_mur["hour"].value_counts().sort_index()
 
@@ -349,30 +367,7 @@ plt.show()
 f = sns.barplot(x=mur_by_hour.index, y=mur_by_hour.values)
 f.set_xticklabels(f.get_xticklabels(), rotation=60)
 f.set(
-    xlabel="Hour",
-    ylabel="Crimes Reported",
-    title="Hourly Murder Rates (2003-Present)",
-)
-plt.show()
-
-
-# Calculating and visualizing frequency rate of violent crimes by zipcode
-viol_freq = pd.crosstab(df_viol.zip_code, df_viol.highest_offense_description)
-display(viol_freq)
-viol_freq.plot.barh(
-    title="Violent Crime Distribution by Zipcode and Type since 2003",
-    stacked=True,
-    figsize=(8, 11),
-)
-plt.show()
-
-viol_mur_freq = pd.crosstab(
-    df_viol_mur.zip_code, df_viol_mur.highest_offense_description
-)
-viol_mur_freq.plot.barh(
-    figsize=(8, 8),
-    stacked=True,
-    title="Murder Distribution by Zipcode and Type since 2003",
+    xlabel="Hour", ylabel="Crimes Reported", title="Hourly Murder Rates (2003-Present)"
 )
 plt.show()
 
@@ -424,16 +419,25 @@ plt.show()
 
 pd.crosstab(
     df_viol_mur.council_district, df_viol_mur.highest_offense_description
-).plot.bar(figsize=(12, 6), rot=60, title="Murder distribution by council district")
+).plot.bar(
+    figsize=(12, 6),
+    rot=60,
+    title="Murder distribution by council district",
+)
 plt.show()
 
 pd.crosstab(df_viol.apd_sector, df_viol.highest_offense_description).plot.bar(
-    figsize=(12, 6), logy=True, rot=60, title="Violent crime distribution by APD sector"
+    figsize=(12, 6),
+    logy=True,
+    rot=60,
+    title="Violent crime distribution by APD sector",
 )
 plt.show()
 
 pd.crosstab(df_viol_mur.apd_sector, df_viol_mur.highest_offense_description).plot.bar(
-    figsize=(12, 6), rot=60, title="Murder distribution by APD sector"
+    figsize=(12, 6),
+    rot=60,
+    title="Murder distribution by APD sector",
 )
 plt.show()
 
