@@ -132,14 +132,13 @@ display(df.tail())
 
 
 # plotting trend on a monthly basis
-
 plt.figure(figsize=(10, 5))
 plt.plot(df.resample("M").size())
 plt.title("Monthly trend, 2003-Present")
 plt.show()
 
-# Above plot re-shown as rolling average
 
+# Above plot re-shown as rolling average
 plt.figure(figsize=(10, 5))
 df.resample("D").size().rolling(365).sum().plot()
 plt.title("365 day rolling average, 2003-Present")
@@ -147,23 +146,22 @@ plt.show()
 
 
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
-
 crimes_per_year = df["year"].value_counts().sort_index()
 g = sns.barplot(x=crimes_per_year.index, y=crimes_per_year.values)
 g.set_xticklabels(g.get_xticklabels(), rotation=60)
 g.set(xlabel="Year", ylabel="Crimes Reported", title="Annual Crime Rates")
 plt.show()
 
-# Creating and visualizing a data frame for the overall yearly crime rate since 2003
 
+# Creating and visualizing a data frame for the overall yearly crime rate since 2003
 crimes_per_month = df["month"].value_counts().sort_index()
 d = sns.barplot(x=crimes_per_month.index, y=crimes_per_month.values)
 d.set_xticklabels(d.get_xticklabels(), rotation=60)
 d.set(xlabel="Month", ylabel="Crimes Reported", title="Monthly Crime Rates")
 plt.show()
 
-# Overall hourly crime rates as well
 
+# Overall hourly crime rates as well
 crimes_per_hour = df["hour"].value_counts().sort_index()
 e = sns.barplot(x=crimes_per_hour.index, y=crimes_per_hour.values)
 e.set_xticklabels(e.get_xticklabels(), rotation=60)
@@ -236,7 +234,7 @@ df_53_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78753)")
 # In[10]:
 
 
-# Create a dataframe for crime in the 78741 area (the highest amount of crime of any Austin zip code)
+# Examining crime in the 78741 area (the highest amount of crime of any Austin zip code)
 df_41 = df[df.zip_code == 78741]
 
 
@@ -291,16 +289,12 @@ df_rape = df[df.highest_offense_description == "RAPE"]
 
 # Visualizing violent crimes per year
 viol_per_year = df_viol["year"].value_counts().sort_index()
-viol_per_year.plot.bar(
-    rot=60,
-    title="Annual Violent Crime Rates",
-)
+viol_per_year.plot.bar(rot=60, title="Annual Violent Crime Rates")
 plt.show()
 
 # As rolling average
 df_viol.resample("D").size().rolling(365).sum().plot(
-    figsize=(10, 5),
-    title="365 day rolling average for violent crime",
+    figsize=(10, 5), title="365 day rolling average for violent crime"
 )
 plt.show()
 
@@ -311,8 +305,9 @@ viol_mur_per_year.plot.bar(rot=60, title="Annual Murder Rates")
 plt.show()
 
 # As rolling average
-df_viol_mur.resample("D").size().rolling(365).sum().plot(figsize=(10, 5))
-plt.title("365 day rolling average for murders")
+df_viol_mur.resample("D").size().rolling(365).sum().plot(
+    figsize=(10, 5), title="365 day rolling average for murders"
+)
 plt.show()
 
 
@@ -381,7 +376,7 @@ plt.show()
 # <a id='q6'></a>
 # ### F. Question 6. How is crime distributed across council districts and APD sectors?
 # 
-# #### checking council districts and APD sectors for overall crime rates 
+# #### checking council districts, APD districts, and sectors for overall crime rates 
 
 # In[13]:
 
@@ -392,9 +387,7 @@ df.council_district.value_counts().plot.bar(
 plt.show()
 
 df.apd_sector.value_counts().plot.bar(
-    title="APD sectors, overall crime",
-    figsize=(12, 6),
-    rot=60,
+    title="APD sectors, overall crime", figsize=(12, 6), rot=60
 )
 plt.show()
 
@@ -417,29 +410,24 @@ pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.
 )
 plt.show()
 
+
 pd.crosstab(
     df_viol_mur.council_district, df_viol_mur.highest_offense_description
-).plot.bar(
-    figsize=(12, 6),
-    rot=60,
-    title="Murder distribution by council district",
-)
+).plot.bar(figsize=(12, 6), rot=60, title="Murder distribution by council district")
 plt.show()
+
 
 pd.crosstab(df_viol.apd_sector, df_viol.highest_offense_description).plot.bar(
-    figsize=(12, 6),
-    logy=True,
-    rot=60,
-    title="Violent crime distribution by APD sector",
+    figsize=(12, 6), logy=True, rot=60, title="Violent crime distribution by APD sector"
 )
 plt.show()
 
+
 pd.crosstab(df_viol_mur.apd_sector, df_viol_mur.highest_offense_description).plot.bar(
-    figsize=(12, 6),
-    rot=60,
-    title="Murder distribution by APD sector",
+    figsize=(12, 6), rot=60, title="Murder distribution by APD sector"
 )
 plt.show()
+
 
 pd.crosstab(df_viol.apd_district, df_viol.highest_offense_description).plot.bar(
     figsize=(12, 6),
