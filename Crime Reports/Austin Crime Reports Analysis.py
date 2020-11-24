@@ -16,13 +16,14 @@
 #     Questions:
 # ><ul>
 # ><li><a href="#q1"> 1. What areas of Austin have the highest crime rates?</a></li>
-# ><li><a href="#q2"> 2. How is crime distributed in 78753?</a></li> 
-# ><li><a href="#q3"> 3. How is crime distributed in 78741?</a></li>
-# ><li><a href="#q4"> 4. How is crime distributed in 78745?</a></li>
-# ><li><a href="#q5"> 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed?
-# ><li><a href="#q6"> 6. How is crime distributed across council districts?
-# ><li><a href="#q7"> 7. How does murder appear on the map?
-# ><li><a href="#q8"> 8. Are there any addresses where murder occurs frequently?
+# ><li><a href="#q2"> 2. How is crime distributed in 78701?</a></li> 
+# ><li><a href="#q3"> 3. How is crime distributed in 78753?</a></li>     
+# ><li><a href="#q4"> 4. How is crime distributed in 78741?</a></li>
+# ><li><a href="#q5"> 5. How is crime distributed in 78745?</a></li>
+# ><li><a href="#q6"> 6. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed?
+# ><li><a href="#q7"> 7. How is crime distributed across council districts?
+# ><li><a href="#q8"> 8. How does murder appear on the map?
+# ><li><a href="#q9"> 9. Are there any addresses where murder occurs frequently?
 # </a></li>
 
 # ## I. Introduction
@@ -201,14 +202,35 @@ df.zip_code.value_counts().head(25).plot.bar(
 plt.show()
 
 
-# Out of all the areas in Austin, 78741 has the highest percentage of overall crime at 9.14%. This is a significant 1.29 percentage points higher than the number 2 area 78753 which hosts 7.85% of overall crime.
+# Out of all the areas in Austin, 78741 has the highest percentage of overall crime at 9.05%. This is a significant 1.23 percentage points higher than the number 2 area 78753 which hosts 7.82% of overall crime.
 
 # #### Taking a closer look at particular areas... 
 # 
-# The next section will examine the zip codes 78753, 78741, and 78745.
+# The next section will examine the zip codes 78701 (downtown), 78753, 78741, and 78745.
 
 # <a id='q2'></a>
-# ### B. Question 2. How is crime distributed in 78753? 
+# ### B. Question 2. How is crime distributed in 78701? 
+
+# In[28]:
+
+
+# Examining crime in the 78701 area
+df_01 = df[df.zip_code == 78701]
+
+
+# Create a dataframe for the top 10 crime categories in the zipcode
+df_01_off = df_01.highest_offense_description.value_counts().head(24)
+
+
+# Display the different crime values & then as percentages
+display(df_01_off)
+print("----------------------------------")
+display(df_01.highest_offense_description.value_counts(normalize=True).head(24))
+df_01_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78701)")
+
+
+# <a id='q3'></a>
+# ### C. Question 2. How is crime distributed in 78753? 
 
 # In[9]:
 
@@ -228,8 +250,8 @@ display(df_53.highest_offense_description.value_counts(normalize=True).head(22))
 df_53_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78753)")
 
 
-# <a id='q3'></a>
-# ### C. Question 3. How is crime distributed in 78741? 
+# <a id='q4'></a>
+# ### D. Question 3. How is crime distributed in 78741? 
 
 # In[10]:
 
@@ -249,8 +271,8 @@ display(df_41.highest_offense_description.value_counts(normalize=True).head(21))
 df_41_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78741)")
 
 
-# <a id='q4'></a>
-# ### D. Question 4. How is crime distributed in 78745?
+# <a id='q5'></a>
+# ### E. Question 4. How is crime distributed in 78745?
 
 # In[11]:
 
@@ -270,8 +292,8 @@ display(df_45.highest_offense_description.value_counts(normalize=True).head(22))
 df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 
 
-# <a id='q5'></a>
-# ### E. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
+# <a id='q6'></a>
+# ### F. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
 # In[12]:
 
@@ -367,14 +389,12 @@ f.set(
 plt.show()
 
 
-# According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 11/19/2020, murders exceeded both those years with a total of 39 so far.
+# According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 11/23/2020, we've now had more murders this year than any other since 2003.
 # 
 # So, you're most likely to get murdered in July, between 1 and 2am, in the 78753 zip code, with 78741 coming in as a very strong alternate. Good to know!
-# 
-# Overall, family violence is seeing an upward trend as a crime factor. Violent crime saw an alarming upward trend of the family violence factor, as well. Rapes, for example, involved the family violence factor a 3rd of the time in 2016 whereas in 2004, family violence was involved less than 1% of the time. 
 
-# <a id='q6'></a>
-# ### F. Question 6. How is crime distributed across council districts and APD sectors?
+# <a id='q7'></a>
+# ### G. Question 7. How is crime distributed across council districts and APD sectors?
 # 
 # #### checking council districts, APD districts, and sectors for overall crime rates 
 
@@ -443,8 +463,8 @@ pd.crosstab(df_viol_mur.apd_district, df_viol_mur.highest_offense_description).p
 plt.show()
 
 
-# <a id='q7'></a>
-# ### G. Question 7. How does murder appear on the map? 
+# <a id='q8'></a>
+# ### H. Question 8. How does murder appear on the map? 
 
 # In[15]:
 
@@ -490,8 +510,8 @@ m.save(outfile="aus_mur_map.html")
 m
 
 
-# <a id='q8'></a>
-# ### H. Question 8. Are there any addresses where murder occurs frequently?
+# <a id='q9'></a>
+# ### I. Question 9. Are there any addresses where murder occurs frequently?
 
 # In[17]:
 
@@ -578,6 +598,30 @@ fig3_3
 
 # #### ...now examining some zip codes
 # 
+# #### 78701
+
+# In[29]:
+
+
+df_fbprophet_01 = df_01
+
+df_m_01 = df_fbprophet_01.resample("W").size().reset_index()
+df_m_01.columns = ["date", "weekly_crime_count"]
+df_m_final_01 = df_m_01.rename(columns={"date": "ds", "weekly_crime_count": "y"})
+
+m_01 = Prophet(interval_width=0.95, yearly_seasonality=False)
+m_01.add_seasonality(name="monthly", period=30.5, fourier_order=10)
+m_01.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
+m_01.add_seasonality(name="weekly", period=52, fourier_order=10)
+m_01.fit(df_m_final_01)
+
+future_01 = m_01.make_future_dataframe(periods=104, freq="W")
+pred_01 = m_01.predict(future)
+fig2_01 = m_01.plot_components(pred)
+fig2_01_1 = plot_plotly(m_01, pred_01)
+fig2_01_1
+
+
 # #### 78753
 
 # In[21]:
