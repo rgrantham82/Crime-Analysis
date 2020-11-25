@@ -21,7 +21,7 @@
 # ><li><a href="#q4"> 4. How is crime distributed in 78741?</a></li>
 # ><li><a href="#q5"> 5. How is crime distributed in 78745?</a></li>
 # ><li><a href="#q6"> 6. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed?
-# ><li><a href="#q7"> 7. How is crime distributed across council districts?
+# ><li><a href="#q7"> 7. How is crime distributed across different districts and sectors around Austin? Location types?
 # ><li><a href="#q8"> 8. How does murder appear on the map?
 # ><li><a href="#q9"> 9. Are there any addresses where murder occurs frequently?
 # </a></li>
@@ -34,7 +34,7 @@
 # 
 # I first attempted importing the data into this notebook using Sodapy's Socrata API method but found it lacking. It didn't import the entire dataset, and added several redundant columns. I, therefore, prefer to manually download the entire dataset and re-download each week after it's updated.
 
-# In[28]:
+# In[1]:
 
 
 import pandas as pd
@@ -54,7 +54,6 @@ from fbprophet.plot import plot_cross_validation_metric
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
-plt.style.use("seaborn-white")
 
 
 # In[2]:
@@ -116,7 +115,7 @@ def clean_data(df):
 df = clean_data(df)
 
 
-# In[29]:
+# In[5]:
 
 
 display(df.info())
@@ -130,7 +129,7 @@ display(df.tail())
 
 # #### Overall crime rates over time 
 
-# In[30]:
+# In[6]:
 
 
 # plotting trend on a monthly basis
@@ -173,7 +172,7 @@ plt.show()
 
 # #### Top 25 crime types 
 
-# In[31]:
+# In[7]:
 
 
 df.highest_offense_description.value_counts().head(25).sort_values().plot.barh(
@@ -186,7 +185,7 @@ df.highest_offense_description.value_counts().head(25).sort_values().plot.barh(
 # <a id='q1'></a>
 # ### A. Question 1. What areas of Austin have the highest crime rates? 
 
-# In[32]:
+# In[8]:
 
 
 # Create and show dataframe for crime rates by zipcode and then as percentages
@@ -212,7 +211,7 @@ plt.show()
 # <a id='q2'></a>
 # ### B. Question 2. How is crime distributed in 78701? 
 
-# In[33]:
+# In[9]:
 
 
 # Examining crime in the 78701 area
@@ -233,7 +232,7 @@ df_01_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78701)")
 # <a id='q3'></a>
 # ### C. Question 2. How is crime distributed in 78753? 
 
-# In[34]:
+# In[10]:
 
 
 # Examining crime in the 78753 area
@@ -254,7 +253,7 @@ df_53_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78753)")
 # <a id='q4'></a>
 # ### D. Question 3. How is crime distributed in 78741? 
 
-# In[35]:
+# In[11]:
 
 
 # Examining crime in the 78741 area (the highest amount of crime of any Austin zip code)
@@ -275,7 +274,7 @@ df_41_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78741)")
 # <a id='q5'></a>
 # ### E. Question 4. How is crime distributed in 78745?
 
-# In[36]:
+# In[12]:
 
 
 # Examining crime in the 78745 area
@@ -296,7 +295,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q6'></a>
 # ### F. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[37]:
+# In[27]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -393,11 +392,11 @@ plt.show()
 # So, you're most likely to get murdered in July, between 1 and 2am, in the 78753 zip code, with 78741 coming in as a very strong alternate. Good to know!
 
 # <a id='q7'></a>
-# ### G. Question 7. How is crime distributed across council districts and APD sectors?
+# ### G. Question 7. How is crime distributed across different districts and sectors around Austin? Location types?
 # 
 # #### checking council districts, APD districts, and sectors for overall crime rates 
 
-# In[51]:
+# In[14]:
 
 
 df.council_district.value_counts().plot.bar(
@@ -418,7 +417,7 @@ plt.show()
 
 # #### Distribution of violent crime and murders across council districts and APD sectors 
 
-# In[68]:
+# In[15]:
 
 
 pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.bar(
@@ -471,7 +470,7 @@ plt.show()
 
 # #### Violent crime and murder distribution by location type
 
-# In[77]:
+# In[29]:
 
 
 viol_loc = pd.crosstab(df_viol.location_type, df_viol.highest_offense_description)
@@ -497,7 +496,7 @@ plt.show()
 # <a id='q8'></a>
 # ### H. Question 8. How does murder appear on the map? 
 
-# In[46]:
+# In[17]:
 
 
 # As a heatmap
@@ -518,7 +517,7 @@ k.save(outfile="aus_mur_heatmap.html")
 k
 
 
-# In[17]:
+# In[18]:
 
 
 # Pinpointing individual addresses
@@ -542,11 +541,19 @@ m
 
 
 # <a id='q9'></a>
-# ### I. Question 9. Are there any addresses where murder occurs frequently?
+# ### I. Question 9. Are there any addresses where violent crime and murder occurs frequently?
 
-# In[18]:
+# In[36]:
 
 
+# Violent crime 
+df_viol.address.value_counts().head(31)
+
+
+# In[37]:
+
+
+# Murder 
 df_viol_mur.address.value_counts().head(31)
 
 
@@ -554,7 +561,7 @@ df_viol_mur.address.value_counts().head(31)
 
 # ### A. Time Series Modeling of the overall dataframe with Facebook Prophet.
 
-# In[19]:
+# In[20]:
 
 
 df_fbprophet = df
@@ -580,7 +587,7 @@ fig2_2
 
 # #### ...now the violent crime dataframe
 
-# In[20]:
+# In[21]:
 
 
 df_viol_fbprophet = df_viol
@@ -604,7 +611,7 @@ fig2_3
 
 # #### ...now the murder dataframe 
 
-# In[21]:
+# In[22]:
 
 
 df_viol_mur_fbprophet = df_viol_mur
@@ -631,7 +638,7 @@ fig3_3
 # 
 # #### 78701
 
-# In[22]:
+# In[23]:
 
 
 df_fbprophet_01 = df_01
@@ -655,7 +662,7 @@ fig2_01_1
 
 # #### 78753
 
-# In[23]:
+# In[24]:
 
 
 df_fbprophet_53 = df_53
@@ -679,7 +686,7 @@ fig2_53_1
 
 # #### 78741
 
-# In[24]:
+# In[25]:
 
 
 df_fbprophet_41 = df_41
@@ -703,7 +710,7 @@ fig2_41_1
 
 # #### 78745
 
-# In[25]:
+# In[26]:
 
 
 df_fbprophet_45 = df_45
@@ -723,4 +730,23 @@ pred_45 = m_45.predict(future)
 fig2_45 = m_45.plot_components(pred)
 fig2_45_1 = plot_plotly(m_45, pred_45)
 fig2_45_1
+
+
+# In[34]:
+
+
+df_viol_18 = df_viol[df_viol.year == 2018]
+df_viol_19 = df_viol[df_viol.year == 2019]
+df_viol_20 = df_viol[df_viol.year == 2020]
+
+df_viol_mur_18 = df_viol_mur[df_viol_mur.year == 2018]
+df_viol_mur_19 = df_viol_mur[df_viol_mur.year == 2019]
+df_viol_mur_20 = df_viol_mur[df_viol_mur.year == 2020]
+
+df_viol_18.to_csv("df_viol_18.csv")
+df_viol_19.to_csv("df_viol_19.csv")
+df_viol_20.to_csv("df_viol_20.csv")
+df_viol_mur_18.to_csv("df_viol_mur_18.csv")
+df_viol_mur_19.to_csv("df_viol_mur_19.csv")
+df_viol_mur_20.to_csv("df_viol_mur_20.csv")
 
