@@ -38,7 +38,7 @@
 
 
 import pandas as pd
-import numpy as np
+import matplotlib 
 import matplotlib.pyplot as plt
 import folium
 from folium import plugins
@@ -46,11 +46,8 @@ import seaborn as sns
 import warnings
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly
-from fbprophet.plot import add_changepoints_to_plot
-from fbprophet.diagnostics import cross_validation
-from fbprophet.diagnostics import performance_metrics
-from fbprophet.plot import plot_cross_validation_metric
 
+plt.style.use("seaborn-dark")
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -66,6 +63,7 @@ df = pd.read_csv("crime_reports.csv")
 
 
 display(df.info())
+display(df.isnull().sum())
 display(df.head())
 display(df.tail())
 
@@ -119,6 +117,7 @@ df = clean_data(df)
 
 
 display(df.info())
+display(df.isnull().sum())
 display(df.head())
 display(df.tail())
 
@@ -135,16 +134,18 @@ display(df.tail())
 # plotting trend on a monthly basis
 plt.figure(figsize=(10, 5))
 plt.plot(df.resample("M").size())
-plt.title("Monthly trend, 2003-Present")
+plt.title("Monthly trend (2003-Present)")
 plt.show()
 
 
 # Above plot re-shown as rolling average
 plt.figure(figsize=(10, 5))
-df.resample("D").size().rolling(365).sum().plot()
-plt.title("365 day rolling average, 2003-Present")
+df.resample("W").size().rolling(104).sum().plot()
+plt.title("104 week rolling average (2003-Present)")
 plt.show()
 
+print("================================================================================")
+print("================================================================================")
 
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 crimes_per_year = df["year"].value_counts().sort_index()
@@ -197,7 +198,7 @@ display(df.zip_code.value_counts(normalize=True).head(25))
 
 # Visualizing the top 25 areas for crime
 df.zip_code.value_counts().head(25).plot.bar(
-    rot=60, title="Top 25 zip codes, overall crime"
+    rot=60, figsize=(10, 5), title="Top 25 zip codes, overall crime"
 )
 plt.show()
 
@@ -217,10 +218,8 @@ plt.show()
 # Examining crime in the 78701 area
 df_01 = df[df.zip_code == 78701]
 
-
 # Create a dataframe for the top crime categories in the zipcode
 df_01_off = df_01.highest_offense_description.value_counts().head(24)
-
 
 # Display the different crime values & then as percentages
 display(df_01_off)
@@ -295,7 +294,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q6'></a>
 # ### F. Question 5. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[27]:
+# In[13]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -309,85 +308,118 @@ df_agg_asslt = df[df.highest_offense_description == "AGG ASSAULT"]
 df_rape = df[df.highest_offense_description == "RAPE"]
 
 
-# Visualizing violent crimes per year
+# Creating yearly dataframes
+df_17 = df[df.year == 2017]
+df_18 = df[df.year == 2018]
+df_19 = df[df.year == 2019]
+df_20 = df[df.year == 2020]
+
+df_viol_17 = df_viol[df_viol.year == 2017]
+df_viol_18 = df_viol[df_viol.year == 2018]
+df_viol_19 = df_viol[df_viol.year == 2019]
+df_viol_20 = df_viol[df_viol.year == 2020]
+
+df_viol_mur_17 = df_viol_mur[df_viol_mur.year == 2017]
+df_viol_mur_18 = df_viol_mur[df_viol_mur.year == 2018]
+df_viol_mur_19 = df_viol_mur[df_viol_mur.year == 2019]
+df_viol_mur_20 = df_viol_mur[df_viol_mur.year == 2020]
+
+
+# Visualizing overall violent crime trend
 viol_per_year = df_viol["year"].value_counts().sort_index()
-viol_per_year.plot.bar(rot=60, title="Annual Violent Crime Rates")
+viol_per_year.plot.bar(
+    rot=60, figsize=(10, 5), title="Annual violent crime counts (2003-present)"
+)
 plt.show()
 
 # As rolling average
-df_viol.resample("D").size().rolling(365).sum().plot(
-    figsize=(10, 5), title="365 day rolling average for violent crime"
+df_viol.resample("W").size().rolling(104).sum().plot(
+    rot=60, figsize=(10, 5), title="104 week rolling average for violent crime"
 )
 plt.show()
 
 
-# Visualizing murders per year
-viol_mur_per_year = df_viol_mur.year.value_counts().sort_index()
-viol_mur_per_year.plot.bar(rot=60, title="Annual Murder Rates")
+# Visualizing overall murders
+mur_per_year = df_viol_mur.year.value_counts().sort_index()
+mur_per_year.plot.bar(
+    rot=60, figsize=(10, 5), title="Annual murder counts (2003-present)"
+)
 plt.show()
 
 # As rolling average
-df_viol_mur.resample("D").size().rolling(365).sum().plot(
-    figsize=(10, 5), title="365 day rolling average for murders"
+df_viol_mur.resample("W").size().rolling(104).sum().plot(
+    rot=60, figsize=(10, 5), title="104 week rolling average for murders"
 )
 plt.show()
 
 
+print("==============================================================================")
+print("==============================================================================")
+
+# Visualizing yearly violent crime trends for 2017 - 2020
 # Overall violent crime by Zipcode
-display(df_viol.zip_code.value_counts(normalize=True).head(25))
+# display(df_viol.zip_code.value_counts(normalize=True).head(25))
 df_viol.zip_code.value_counts().head(25).plot.bar(
-    title="Top 25 Zipcodes for Violent Crime", rot=60
+    title="Top 25 Zipcodes for Violent Crime", figsize=(10, 5), rot=60
+)
+plt.show()
+
+# display(df_viol_mur.zip_code.value_counts(normalize=True).head(25))
+df_viol_mur.zip_code.value_counts().head(25).plot.bar(
+    title="Top 25 Zipcodes for Murder", rot=60, figsize=(10, 5)
 )
 plt.show()
 
 
-# Calculating and visualizing frequency rate of violent crimes types by zipcode
+# Calculating and visualizing frequency rate of violent crimes by zipcode
 viol_freq = pd.crosstab(df_viol.zip_code, df_viol.highest_offense_description)
 display(viol_freq)
 viol_freq.plot.barh(
     title="Violent Crime Distribution by Zipcode and Type since 2003",
     stacked=True,
-    figsize=(8, 11),
+    figsize=(10, 11),
 )
 plt.show()
 
-# Overall murders by zip code
+# Calculating and visualizing frequency rate of murders by zipcode
 mur_freq = pd.crosstab(df_viol_mur.zip_code, df_viol_mur.highest_offense_description)
 mur_freq.plot.barh(
-    figsize=(8, 8),
+    figsize=(10, 8),
     stacked=True,
     title="Murder Distribution by Zipcode and Type since 2003",
 )
 plt.show()
 
-display(df_viol_mur.zip_code.value_counts(normalize=True).head(25))
-df_viol_mur.zip_code.value_counts().head(25).plot.bar(
-    title="Top 25 Zipcodes for Murder", rot=60
-)
+
+# #### Here I broke down the violent crime df into annual parts, displaying their rolling averages for 2017-present.
+
+# In[14]:
+
+
+plt.figure(figsize=(10, 5))
+df_viol_17.resample("D").size().rolling(30).sum().plot()
+plt.title("2017 violent crime trend with 30 day rolling average")
 plt.show()
 
-# Visualizing monthly & hourly murder rates
-mur_by_month = df_viol_mur["month"].value_counts().sort_index()
-mur_by_hour = df_viol_mur["hour"].value_counts().sort_index()
-
-v = sns.barplot(x=mur_by_month.index, y=mur_by_month.values)
-v.set_xticklabels(v.get_xticklabels(), rotation=60)
-v.set(
-    xlabel="Month",
-    ylabel="Crimes Reported",
-    title="Monthly Murder Rates (2003-Present)",
-)
+plt.figure(figsize=(10, 5))
+df_viol_18.resample("D").size().rolling(30).sum().plot()
+plt.title("2018 violent crime trend with 30 day rolling average")
 plt.show()
 
-f = sns.barplot(x=mur_by_hour.index, y=mur_by_hour.values)
-f.set_xticklabels(f.get_xticklabels(), rotation=60)
-f.set(
-    xlabel="Hour", ylabel="Crimes Reported", title="Hourly Murder Rates (2003-Present)"
-)
+plt.figure(figsize=(10, 5))
+df_viol_19.resample("D").size().rolling(30).sum().plot()
+plt.title("2019 violent crime trend with 30 day rolling average")
+plt.show()
+
+plt.figure(figsize=(10, 5))
+df_viol_20.resample("D").size().rolling(30).sum().plot()
+plt.title("2020 violent crime trend with 30 day rolling average")
 plt.show()
 
 
-# According to the data , 2010 and 2016 had the most number of murders . Alarmingly, as of 11/23/2020, we've now had more murders this year than any other since 2003.
+# As we can see, violent crime spiked after 2018, and especially for 2020 so far.
+# 
+# Years 2010 and 2016 had the most number of murders. However, and alarmingly, as of 11/23/2020, we've now had more murders this year than any other since 2003. Presently, the murder count for 2020 is at 39!!
 # 
 # So, you're most likely to get murdered in July, between 1 and 2am, in the 78753 zip code, with 78741 coming in as a very strong alternate. Good to know!
 
@@ -396,7 +428,7 @@ plt.show()
 # 
 # #### checking council districts, APD districts, and sectors for overall crime rates 
 
-# In[14]:
+# In[15]:
 
 
 df.council_district.value_counts().plot.bar(
@@ -417,7 +449,7 @@ plt.show()
 
 # #### Distribution of violent crime and murders across council districts and APD sectors 
 
-# In[15]:
+# In[16]:
 
 
 pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.bar(
@@ -470,7 +502,7 @@ plt.show()
 
 # #### Violent crime and murder distribution by location type
 
-# In[29]:
+# In[17]:
 
 
 viol_loc = pd.crosstab(df_viol.location_type, df_viol.highest_offense_description)
@@ -481,14 +513,14 @@ mur_loc = pd.crosstab(
 )
 
 viol_loc.plot.barh(
-    figsize=(8, 12),
+    figsize=(10, 12),
     stacked=True,
     title="Violent crime distribution by location type since 2003",
 )
 plt.show()
 
 mur_loc.plot.barh(
-    figsize=(8, 8), title="Murder distribution by location type since 2003"
+    figsize=(10, 8), title="Murder distribution by location type since 2003"
 )
 plt.show()
 
@@ -496,7 +528,7 @@ plt.show()
 # <a id='q8'></a>
 # ### H. Question 8. How does murder appear on the map? 
 
-# In[17]:
+# In[18]:
 
 
 # As a heatmap
@@ -517,7 +549,7 @@ k.save(outfile="aus_mur_heatmap.html")
 k
 
 
-# In[18]:
+# In[19]:
 
 
 # Pinpointing individual addresses
@@ -543,14 +575,14 @@ m
 # <a id='q9'></a>
 # ### I. Question 9. Are there any addresses where violent crime and murder occurs frequently?
 
-# In[36]:
+# In[20]:
 
 
 # Violent crime 
-df_viol.address.value_counts().head(31)
+df_viol.address.value_counts().head(50)
 
 
-# In[37]:
+# In[21]:
 
 
 # Murder 
@@ -561,7 +593,7 @@ df_viol_mur.address.value_counts().head(31)
 
 # ### A. Time Series Modeling of the overall dataframe with Facebook Prophet.
 
-# In[20]:
+# In[22]:
 
 
 df_fbprophet = df
@@ -587,7 +619,7 @@ fig2_2
 
 # #### ...now the violent crime dataframe
 
-# In[21]:
+# In[23]:
 
 
 df_viol_fbprophet = df_viol
@@ -611,7 +643,7 @@ fig2_3
 
 # #### ...now the murder dataframe 
 
-# In[22]:
+# In[24]:
 
 
 df_viol_mur_fbprophet = df_viol_mur
@@ -638,7 +670,7 @@ fig3_3
 # 
 # #### 78701
 
-# In[23]:
+# In[25]:
 
 
 df_fbprophet_01 = df_01
@@ -662,7 +694,7 @@ fig2_01_1
 
 # #### 78753
 
-# In[24]:
+# In[26]:
 
 
 df_fbprophet_53 = df_53
@@ -686,7 +718,7 @@ fig2_53_1
 
 # #### 78741
 
-# In[25]:
+# In[27]:
 
 
 df_fbprophet_41 = df_41
@@ -710,7 +742,7 @@ fig2_41_1
 
 # #### 78745
 
-# In[26]:
+# In[28]:
 
 
 df_fbprophet_45 = df_45
@@ -732,21 +764,24 @@ fig2_45_1 = plot_plotly(m_45, pred_45)
 fig2_45_1
 
 
-# In[34]:
+# In[29]:
 
 
-df_viol_18 = df_viol[df_viol.year == 2018]
-df_viol_19 = df_viol[df_viol.year == 2019]
-df_viol_20 = df_viol[df_viol.year == 2020]
+df_17.to_csv("df_17.csv")
+df_18.to_csv("df_18.csv")
+df_19.to_csv("df_19.csv")
+df_20.to_csv("df_20.csv")
 
-df_viol_mur_18 = df_viol_mur[df_viol_mur.year == 2018]
-df_viol_mur_19 = df_viol_mur[df_viol_mur.year == 2019]
-df_viol_mur_20 = df_viol_mur[df_viol_mur.year == 2020]
-
+df_viol_17.to_csv("df_viol_17.csv")
 df_viol_18.to_csv("df_viol_18.csv")
 df_viol_19.to_csv("df_viol_19.csv")
 df_viol_20.to_csv("df_viol_20.csv")
+
+df_viol_mur_17.to_csv("df_viol_mur_17.csv")
 df_viol_mur_18.to_csv("df_viol_mur_18.csv")
 df_viol_mur_19.to_csv("df_viol_mur_19.csv")
 df_viol_mur_20.to_csv("df_viol_mur_20.csv")
+
+df_viol.to_csv("df_viol.csv")
+df_viol_mur.to_csv("df_viol_mur.csv")
 
