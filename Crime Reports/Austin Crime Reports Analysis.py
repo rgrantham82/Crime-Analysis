@@ -22,8 +22,8 @@
 # ><li><a href="#q5"> 5. How is crime distributed in 78745?</a></li>
 # ><li><a href="#q6"> 6. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed?
 # ><li><a href="#q7"> 7. How is crime distributed across different districts and sectors around Austin? Location types?
-# ><li><a href="#q8"> 8. How does murder appear on the map?
-# ><li><a href="#q9"> 9. Are there any addresses where murder occurs frequently?
+# ><li><a href="#q8"> 8. How does violent crime appear on the map?
+# ><li><a href="#q9"> 9. Are there any addresses where violent crime and murder occurs frequently?
 # </a></li>
 
 # ## I. Introduction
@@ -38,7 +38,7 @@
 
 
 import pandas as pd
-import matplotlib 
+import matplotlib
 import matplotlib.pyplot as plt
 import folium
 from folium import plugins
@@ -47,7 +47,6 @@ import warnings
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly
 
-plt.style.use("seaborn-dark")
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -144,8 +143,8 @@ df.resample("W").size().rolling(104).sum().plot()
 plt.title("104 week rolling average (2003-Present)")
 plt.show()
 
-print("================================================================================")
-print("================================================================================")
+print("===============================================================================")
+print("===============================================================================")
 
 # Creating and visualizing a data frame for the overall yearly crime rate since 2003
 crimes_per_year = df["year"].value_counts().sort_index()
@@ -198,7 +197,7 @@ display(df.zip_code.value_counts(normalize=True).head(25))
 
 # Visualizing the top 25 areas for crime
 df.zip_code.value_counts().head(25).plot.bar(
-    rot=60, figsize=(10, 5), title="Top 25 zip codes, overall crime"
+    rot=60, figsize=(10, 5), title="Top 25 zip codes, overall crime (2003-present)"
 )
 plt.show()
 
@@ -299,12 +298,13 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 
 # Creating an overall and separate dataframes for violent crime
 df_viol = df.query(
-    'highest_offense_description == ["MURDER", "CAPITAL MURDER", "RAPE", "AGG ASSAULT"]'
+    'highest_offense_description == ["AGG ASSAULT", "AGG ROBBERY/DEADLY WEAPON", "CAPITAL MURDER", "MURDER", "RAPE"]'
 )
 df_viol_mur = df.query('highest_offense_description == ["MURDER", "CAPITAL MURDER"]')
 df_mur = df[df.highest_offense_description == "MURDER"]
 df_mur_cap = df[df.highest_offense_description == "CAPITAL MURDER"]
 df_agg_asslt = df[df.highest_offense_description == "AGG ASSAULT"]
+df_agg_robbery = df[df.highest_offense_description == "AGG ROBBERY/DEADLY WEAPON"]
 df_rape = df[df.highest_offense_description == "RAPE"]
 
 
@@ -417,7 +417,7 @@ plt.title("2020 violent crime trend with 30 day rolling average")
 plt.show()
 
 
-# As we can see, violent crime spiked after 2018, and especially for 2020 so far.
+# As we can see, violent crime spiked tremendously after 2018, and especially for 2020 so far.
 # 
 # Years 2010 and 2016 had the most number of murders. However, and alarmingly, as of 11/23/2020, we've now had more murders this year than any other since 2003. Presently, the murder count for 2020 is at 39!!
 # 
@@ -428,11 +428,11 @@ plt.show()
 # 
 # #### checking council districts, APD districts, and sectors for overall crime rates 
 
-# In[15]:
+# In[31]:
 
 
 df.council_district.value_counts().plot.bar(
-    title="Council districts, overall crime", rot=60
+    figsize=(10, 5), title="Council districts, overall crime", rot=60
 )
 plt.show()
 
@@ -526,9 +526,60 @@ plt.show()
 
 
 # <a id='q8'></a>
-# ### H. Question 8. How does murder appear on the map? 
+# ### H. How does violent crime appear on the map?
+# 
+# #### Aggravated assault 
 
 # In[18]:
+
+
+# Aggravated assault as a heatmap
+
+agg_asslt_coords_heat = df_agg_asslt[
+    (df_agg_asslt["latitude"].isnull() == False)
+    & (df_agg_asslt["longitude"].isnull() == False)
+]
+
+k = folium.Map(location=[30.2672, -97.7431], tiles="OpenStreetMap", zoom_start=12)
+
+k.add_child(
+    plugins.HeatMap(agg_asslt_coords_heat[["latitude", "longitude"]].values, radius=15)
+)
+
+k.save(outfile="agg_asslt_heatmap.html")
+
+k
+
+
+# #### Armed robbery 
+
+# In[19]:
+
+
+# Aggravated robbery a heatmap
+
+agg_robbery_coords_heat = df_agg_robbery[
+    (df_agg_robbery["latitude"].isnull() == False)
+    & (df_agg_robbery["longitude"].isnull() == False)
+]
+
+k = folium.Map(location=[30.2672, -97.7431], tiles="OpenStreetMap", zoom_start=12)
+
+k.add_child(
+    plugins.HeatMap(
+        agg_robbery_coords_heat[["latitude", "longitude"]].values, radius=15
+    )
+)
+
+k.save(outfile="agg_robbery_heatmap.html")
+
+k
+
+
+# <a id='q8'></a>
+# #### Murder  
+
+# In[20]:
 
 
 # As a heatmap
@@ -544,48 +595,25 @@ k.add_child(
     plugins.HeatMap(mur_coords_heat[["latitude", "longitude"]].values, radius=15)
 )
 
-k.save(outfile="aus_mur_heatmap.html")
+k.save(outfile="mur_heatmap.html")
 
 k
-
-
-# In[19]:
-
-
-# Pinpointing individual addresses
-
-mur_coords_add = df_viol_mur[
-    (df_viol_mur["latitude"].isnull() == False)
-    & (df_viol_mur["longitude"].isnull() == False)
-]
-
-m = folium.Map([30.2672, -97.7431], tiles="OpenStreetMap", zoom_level=12)
-
-for (index, row) in mur_coords_add.iterrows():
-    lat = row["latitude"]
-    lon = row["longitude"]
-    name = row["address"]
-    folium.Marker([lat, lon], popup=name).add_to(m)
-
-m.save(outfile="aus_mur_map.html")
-
-m
 
 
 # <a id='q9'></a>
 # ### I. Question 9. Are there any addresses where violent crime and murder occurs frequently?
 
-# In[20]:
-
-
-# Violent crime 
-df_viol.address.value_counts().head(50)
-
-
 # In[21]:
 
 
-# Murder 
+# Violent crime
+df_viol.address.value_counts().head(50)
+
+
+# In[22]:
+
+
+# Murder
 df_viol_mur.address.value_counts().head(31)
 
 
@@ -593,7 +621,7 @@ df_viol_mur.address.value_counts().head(31)
 
 # ### A. Time Series Modeling of the overall dataframe with Facebook Prophet.
 
-# In[22]:
+# In[23]:
 
 
 df_fbprophet = df
@@ -619,7 +647,7 @@ fig2_2
 
 # #### ...now the violent crime dataframe
 
-# In[23]:
+# In[24]:
 
 
 df_viol_fbprophet = df_viol
@@ -643,7 +671,7 @@ fig2_3
 
 # #### ...now the murder dataframe 
 
-# In[24]:
+# In[25]:
 
 
 df_viol_mur_fbprophet = df_viol_mur
@@ -670,7 +698,7 @@ fig3_3
 # 
 # #### 78701
 
-# In[25]:
+# In[26]:
 
 
 df_fbprophet_01 = df_01
@@ -694,7 +722,7 @@ fig2_01_1
 
 # #### 78753
 
-# In[26]:
+# In[27]:
 
 
 df_fbprophet_53 = df_53
@@ -718,7 +746,7 @@ fig2_53_1
 
 # #### 78741
 
-# In[27]:
+# In[28]:
 
 
 df_fbprophet_41 = df_41
@@ -742,7 +770,7 @@ fig2_41_1
 
 # #### 78745
 
-# In[28]:
+# In[29]:
 
 
 df_fbprophet_45 = df_45
@@ -764,7 +792,7 @@ fig2_45_1 = plot_plotly(m_45, pred_45)
 fig2_45_1
 
 
-# In[29]:
+# In[30]:
 
 
 df_17.to_csv("df_17.csv")
