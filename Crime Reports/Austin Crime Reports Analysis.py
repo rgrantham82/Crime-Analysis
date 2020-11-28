@@ -50,6 +50,7 @@ from fbprophet.plot import plot_plotly
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
+plt.style.use("seaborn")
 
 
 # In[2]:
@@ -393,26 +394,26 @@ plt.show()
 
 # #### Here I broke down the violent crime df into annual parts, displaying their rolling averages for 2017-present.
 
-# In[14]:
+# In[52]:
 
 
 plt.figure(figsize=(10, 5))
-df_viol_17.resample("D").size().rolling(30).sum().plot()
+df_viol_17.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
 plt.title("2017 violent crime trend with 30 day rolling average")
 plt.show()
 
 plt.figure(figsize=(10, 5))
-df_viol_18.resample("D").size().rolling(30).sum().plot()
+df_viol_18.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
 plt.title("2018 violent crime trend with 30 day rolling average")
 plt.show()
 
 plt.figure(figsize=(10, 5))
-df_viol_19.resample("D").size().rolling(30).sum().plot()
+df_viol_19.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
 plt.title("2019 violent crime trend with 30 day rolling average")
 plt.show()
 
 plt.figure(figsize=(10, 5))
-df_viol_20.resample("D").size().rolling(30).sum().plot()
+df_viol_20.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
 plt.title("2020 violent crime trend with 30 day rolling average")
 plt.show()
 
@@ -428,11 +429,11 @@ plt.show()
 # 
 # #### checking council districts, APD districts, and sectors for overall crime rates 
 
-# In[31]:
+# In[48]:
 
 
 df.council_district.value_counts().plot.bar(
-    figsize=(10, 5), title="Council districts, overall crime", rot=60
+    figsize=(10, 5), fontsize=12, title="Council districts, overall crime", rot=60
 )
 plt.show()
 
@@ -449,11 +450,11 @@ plt.show()
 
 # #### Distribution of violent crime and murders across council districts and APD sectors 
 
-# In[16]:
+# In[47]:
 
 
 pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.bar(
-    stacked=True,
+    # stacked=True,
     figsize=(12, 6),
     rot=60,
     title="Violent crime distribution by council district",
@@ -466,6 +467,7 @@ pd.crosstab(
 ).plot.bar(
     figsize=(12, 6),
     rot=60,
+    fontsize=12,
     title="Murder distribution by council district",
 )
 plt.show()
@@ -473,36 +475,38 @@ plt.show()
 
 pd.crosstab(df_viol.apd_sector, df_viol.highest_offense_description).plot.bar(
     figsize=(12, 6),
-    stacked=True,
+    # stacked=True,
     rot=60,
+    fontsize=12,
     title="Violent crime distribution by APD sector",
 )
 plt.show()
 
 
 pd.crosstab(df_viol_mur.apd_sector, df_viol_mur.highest_offense_description).plot.bar(
-    figsize=(12, 6), rot=60, title="Murder distribution by APD sector"
+    figsize=(12, 6), rot=60, fontsize=12, title="Murder distribution by APD sector"
 )
 plt.show()
 
 
 pd.crosstab(df_viol.apd_district, df_viol.highest_offense_description).plot.bar(
     figsize=(12, 6),
-    stacked=True,
+    # stacked=True,
     rot=60,
+    fontsize=12,
     title="Violent crime distribution by APD district",
 )
 plt.show()
 
 pd.crosstab(df_viol_mur.apd_district, df_viol_mur.highest_offense_description).plot.bar(
-    figsize=(12, 6), rot=60, title="Murder distribution by APD district"
+    figsize=(12, 6), rot=60, fontsize=12, title="Murder distribution by APD district"
 )
 plt.show()
 
 
 # #### Violent crime and murder distribution by location type
 
-# In[17]:
+# In[46]:
 
 
 viol_loc = pd.crosstab(df_viol.location_type, df_viol.highest_offense_description)
@@ -513,14 +517,18 @@ mur_loc = pd.crosstab(
 )
 
 viol_loc.plot.barh(
-    figsize=(10, 12),
+    figsize=(10, 20),
+    fontsize=12,
     stacked=True,
     title="Violent crime distribution by location type since 2003",
 )
 plt.show()
 
 mur_loc.plot.barh(
-    figsize=(10, 8), title="Murder distribution by location type since 2003"
+    figsize=(10, 10),
+    fontsize=12,
+    stacked=True,
+    title="Murder distribution by location type since 2003",
 )
 plt.show()
 
@@ -603,17 +611,17 @@ k
 # <a id='q9'></a>
 # ### I. Question 9. Are there any addresses where violent crime and murder occurs frequently?
 
-# In[21]:
+# In[33]:
 
 
-# Violent crime
-df_viol.address.value_counts().head(50)
+# Show addresses with 50 or more reported violent crimes
+df_viol.address.value_counts().head(13)
 
 
-# In[22]:
+# In[35]:
 
 
-# Murder
+# Show addresses with 2 or more reported murders
 df_viol_mur.address.value_counts().head(31)
 
 
@@ -792,7 +800,7 @@ fig2_45_1 = plot_plotly(m_45, pred_45)
 fig2_45_1
 
 
-# In[30]:
+# In[32]:
 
 
 df_17.to_csv("df_17.csv")
@@ -812,4 +820,9 @@ df_viol_mur_20.to_csv("df_viol_mur_20.csv")
 
 df_viol.to_csv("df_viol.csv")
 df_viol_mur.to_csv("df_viol_mur.csv")
+
+df_01.to_csv("df_01.csv")
+df_53.to_csv("df_53.csv")
+df_41.to_csv("df_41.csv")
+df_45.to_csv("df_45.csv")
 
