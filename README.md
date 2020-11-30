@@ -7,7 +7,7 @@ I added a notebook to this repo, labeled "Austin Crime Reports Analysis," in whi
 
 
 ## Introduction
-I conceptualized this project beginning in  January 2020. The goal is to analyze hate crimes trends for Austin, TX, from 2017 to present. In particular, I'm focusing on the affects of hate crime on the LGBT community. 
+I conceptualized this project beginning in  January 2020. The goal is to analyze hate crimes trends for Austin, TX, from 2017 to present. In particular, I'm focusing on the effects of hate crime on the LGBT community. 
 
 So far, I am using datasets provided by the Austin PD's publicly available databases, found at data.austintexas.gov. 
 
