@@ -1,9 +1,9 @@
-# Hate Crimes Analysis
+# Austin Crimes Analysis
 
 ***This project is ongoing & will be updated frequently***
 
 ### Update -- 7/19/2020
-I added a notebook to this repo, labeled "Austin Crime Reports Analysis," in which I am analyzing OVERALL crimes data for the Austin, TX area. The dataset for this analysis is available at https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. This dataset covers all reported crimes from the beginning of 2003 to the present so it is a large dataset with over 2 million records. 
+I added a notebook to this repo, labeled "Austin Crime Reports Analysis," in which I analyze OVERALL crime data for the Austin, TX area. The dataset for this analysis is available at https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. The dataset covers all reported crimes from the beginning of 2003 to the present, so it is a large dataset with over 2 million records. 
 
 
 ## Introduction
