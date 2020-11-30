@@ -392,14 +392,24 @@ mur_freq.plot.barh(
 plt.show()
 
 
-# #### Here I broke down the violent crime df into annual parts, displaying their rolling averages for 2017-present.
+# #### Here I broke down the overall  and violent crime dataframes into annual parts, then displaying their rolling averages to compare more closely. 2017-Present.
 
-# In[52]:
+# In[14]:
 
+
+plt.figure(figsize=(10, 5))
+df_17.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
+plt.title("Daily trend with 30 day rolling average, 2017")
+plt.show()
 
 plt.figure(figsize=(10, 5))
 df_viol_17.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
 plt.title("2017 violent crime trend with 30 day rolling average")
+plt.show()
+
+plt.figure(figsize=(10, 5))
+df_18.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
+plt.title("Daily trend with 30 day rolling average, 2018")
 plt.show()
 
 plt.figure(figsize=(10, 5))
@@ -408,8 +418,18 @@ plt.title("2018 violent crime trend with 30 day rolling average")
 plt.show()
 
 plt.figure(figsize=(10, 5))
+df_19.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
+plt.title("Daily trend with 30 day rolling average, 2019")
+plt.show()
+
+plt.figure(figsize=(10, 5))
 df_viol_19.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
 plt.title("2019 violent crime trend with 30 day rolling average")
+plt.show()
+
+plt.figure(figsize=(10, 5))
+df_20.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
+plt.title("Daily trend with 30 day rolling average, 2020")
 plt.show()
 
 plt.figure(figsize=(10, 5))
@@ -429,7 +449,7 @@ plt.show()
 # 
 # #### checking council districts, APD districts, and sectors for overall crime rates 
 
-# In[48]:
+# In[15]:
 
 
 df.council_district.value_counts().plot.bar(
@@ -450,7 +470,7 @@ plt.show()
 
 # #### Distribution of violent crime and murders across council districts and APD sectors 
 
-# In[47]:
+# In[16]:
 
 
 pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.bar(
@@ -506,7 +526,7 @@ plt.show()
 
 # #### Violent crime and murder distribution by location type
 
-# In[46]:
+# In[17]:
 
 
 viol_loc = pd.crosstab(df_viol.location_type, df_viol.highest_offense_description)
@@ -611,14 +631,14 @@ k
 # <a id='q9'></a>
 # ### I. Question 9. Are there any addresses where violent crime and murder occurs frequently?
 
-# In[33]:
+# In[21]:
 
 
 # Show addresses with 50 or more reported violent crimes
 df_viol.address.value_counts().head(13)
 
 
-# In[35]:
+# In[22]:
 
 
 # Show addresses with 2 or more reported murders
@@ -634,7 +654,7 @@ df_viol_mur.address.value_counts().head(31)
 
 df_fbprophet = df
 
-df_m_1 = df_fbprophet.resample("W").size().reset_index()
+df_m_1 = df_fbprophet.resample("D").size().reset_index()
 df_m_1.columns = ["date", "weekly_crime_count"]
 df_m_final_1 = df_m_1.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
@@ -642,9 +662,11 @@ m_1 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_1.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 m_1.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 m_1.add_seasonality(name="weekly", period=52, fourier_order=10)
+m_1.add_seasonality(name="daily", period=365, fourier_order=10)
+
 m_1.fit(df_m_final_1)
 
-future_1 = m_1.make_future_dataframe(periods=104, freq="W")
+future_1 = m_1.make_future_dataframe(periods=365, freq="D")
 
 pred_1 = m_1.predict(future_1)
 
@@ -660,7 +682,7 @@ fig2_2
 
 df_viol_fbprophet = df_viol
 
-df_v = df_viol_fbprophet.resample("W").size().reset_index()
+df_v = df_viol_fbprophet.resample("D").size().reset_index()
 df_v.columns = ["date", "weekly_crime_count"]
 df_v_final = df_v.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
@@ -668,9 +690,10 @@ v = Prophet(interval_width=0.95, yearly_seasonality=False)
 v.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 v.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 v.add_seasonality(name="weekly", period=52, fourier_order=10)
+v.add_seasonality(name="daily", period=365, fourier_order=10)
 v.fit(df_v_final)
 
-future = v.make_future_dataframe(periods=104, freq="W")
+future = v.make_future_dataframe(periods=365, freq="D")
 pred = v.predict(future)
 fig2_1 = v.plot_components(pred)
 fig2_3 = plot_plotly(v, pred)
@@ -684,7 +707,7 @@ fig2_3
 
 df_viol_mur_fbprophet = df_viol_mur
 
-df_m = df_viol_mur_fbprophet.resample("W").size().reset_index()
+df_m = df_viol_mur_fbprophet.resample("D").size().reset_index()
 df_m.columns = ["date", "weekly_crime_count"]
 df_m_final = df_m.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
@@ -692,9 +715,10 @@ m = Prophet(interval_width=0.95, yearly_seasonality=False)
 m.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 m.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 m.add_seasonality(name="weekly", period=52, fourier_order=10)
+m.add_seasonality(name="daily", period=365, fourier_order=10)
 m.fit(df_m_final)
 
-future = m.make_future_dataframe(periods=104, freq="W")
+future = m.make_future_dataframe(periods=365, freq="D")
 
 pred = m.predict(future)
 fig3_1 = m.plot_components(pred)
@@ -711,7 +735,7 @@ fig3_3
 
 df_fbprophet_01 = df_01
 
-df_m_01 = df_fbprophet_01.resample("W").size().reset_index()
+df_m_01 = df_fbprophet_01.resample("D").size().reset_index()
 df_m_01.columns = ["date", "weekly_crime_count"]
 df_m_final_01 = df_m_01.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
@@ -719,9 +743,10 @@ m_01 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_01.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 m_01.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 m_01.add_seasonality(name="weekly", period=52, fourier_order=10)
+m_01.add_seasonality(name="daily", period=365, fourier_order=10)
 m_01.fit(df_m_final_01)
 
-future_01 = m_01.make_future_dataframe(periods=104, freq="W")
+future_01 = m_01.make_future_dataframe(periods=365, freq="D")
 pred_01 = m_01.predict(future)
 fig2_01 = m_01.plot_components(pred)
 fig2_01_1 = plot_plotly(m_01, pred_01)
@@ -735,7 +760,7 @@ fig2_01_1
 
 df_fbprophet_53 = df_53
 
-df_m_53 = df_fbprophet_53.resample("W").size().reset_index()
+df_m_53 = df_fbprophet_53.resample("D").size().reset_index()
 df_m_53.columns = ["date", "weekly_crime_count"]
 df_m_final_53 = df_m_53.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
@@ -743,9 +768,10 @@ m_53 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_53.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 m_53.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 m_53.add_seasonality(name="weekly", period=52, fourier_order=10)
+m_53.add_seasonality(name="daily", period=365, fourier_order=10)
 m_53.fit(df_m_final_53)
 
-future_53 = m_53.make_future_dataframe(periods=104, freq="W")
+future_53 = m_53.make_future_dataframe(periods=365, freq="D")
 pred_53 = m_53.predict(future)
 fig2_53 = m_53.plot_components(pred)
 fig2_53_1 = plot_plotly(m_53, pred_53)
@@ -759,7 +785,7 @@ fig2_53_1
 
 df_fbprophet_41 = df_41
 
-df_m_41 = df_fbprophet_41.resample("W").size().reset_index()
+df_m_41 = df_fbprophet_41.resample("D").size().reset_index()
 df_m_41.columns = ["date", "weekly_crime_count"]
 df_m_final_41 = df_m_41.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
@@ -767,9 +793,10 @@ m_41 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_41.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 m_41.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 m_41.add_seasonality(name="weekly", period=52, fourier_order=10)
+m_41.add_seasonality(name="daily", period=365, fourier_order=10)
 m_41.fit(df_m_final_41)
 
-future_41 = m_41.make_future_dataframe(periods=104, freq="W")
+future_41 = m_41.make_future_dataframe(periods=365, freq="D")
 pred_41 = m_41.predict(future)
 fig2_41 = m_41.plot_components(pred)
 fig2_41_1 = plot_plotly(m_41, pred_53)
@@ -783,7 +810,7 @@ fig2_41_1
 
 df_fbprophet_45 = df_45
 
-df_m_45 = df_fbprophet_45.resample("W").size().reset_index()
+df_m_45 = df_fbprophet_45.resample("D").size().reset_index()
 df_m_45.columns = ["date", "weekly_crime_count"]
 df_m_final_45 = df_m_45.rename(columns={"date": "ds", "weekly_crime_count": "y"})
 
@@ -791,16 +818,17 @@ m_45 = Prophet(interval_width=0.95, yearly_seasonality=False)
 m_45.add_seasonality(name="monthly", period=30.5, fourier_order=10)
 m_45.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
 m_45.add_seasonality(name="weekly", period=52, fourier_order=10)
+m_45.add_seasonality(name="daily", period=365, fourier_order=10)
 m_45.fit(df_m_final_45)
 
-future_45 = m_45.make_future_dataframe(periods=104, freq="W")
+future_45 = m_45.make_future_dataframe(periods=365, freq="D")
 pred_45 = m_45.predict(future)
 fig2_45 = m_45.plot_components(pred)
 fig2_45_1 = plot_plotly(m_45, pred_45)
 fig2_45_1
 
 
-# In[32]:
+# In[30]:
 
 
 df_17.to_csv("df_17.csv")
