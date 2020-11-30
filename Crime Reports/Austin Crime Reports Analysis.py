@@ -92,21 +92,29 @@ def clean_data(df):
         "Y-coordinate",
         "Location",
     ]
+    
     clean_col = ["Occurred Date Time", "Report Date Time"]
+    
     df.drop(drop_col, axis=1, inplace=True)
     df.dropna(subset=clean_col, inplace=True)
     df.rename(columns=lambda x: x.strip().lower().replace(" ", "_"), inplace=True)
+    
     date_col = ["occurred_date_time", "report_date_time"]
+    
     cat_col = ["highest_offense_description", "location_type", "apd_sector"]
+    
     df[date_col] = df[date_col].astype("datetime64")
     df[cat_col] = df[cat_col].astype("category")
+    
     df["year"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.year
     df["month"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.month
     df["week"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.week
     df["day"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.day
     df["hour"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.hour
+    
     df.set_index(["occurred_date_time"], inplace=True)
     df.sort_index(inplace=True)
+    
     return df
 
 
@@ -131,37 +139,34 @@ display(df.tail())
 # In[6]:
 
 
-# plotting trend on a monthly basis
+# Plotting overall trend on a monthly basis
 plt.figure(figsize=(10, 5))
 plt.plot(df.resample("M").size())
 plt.title("Monthly trend (2003-Present)")
 plt.show()
 
-
-# Above plot re-shown as rolling average
+# Above plot re-shown with a rolling average
 plt.figure(figsize=(10, 5))
-df.resample("W").size().rolling(104).sum().plot()
-plt.title("104 week rolling average (2003-Present)")
+df.resample("M").size().rolling(12).sum().plot()
+plt.title("12 month rolling average (2003-Present)")
 plt.show()
 
 print("===============================================================================")
 print("===============================================================================")
 
-# Creating and visualizing a data frame for the overall yearly crime rate since 2003
+# Visualizing overall yearly crime rate since 2003
 crimes_per_year = df["year"].value_counts().sort_index()
 g = sns.barplot(x=crimes_per_year.index, y=crimes_per_year.values)
 g.set_xticklabels(g.get_xticklabels(), rotation=60)
 g.set(xlabel="Year", ylabel="Crimes Reported", title="Annual Crime Rates")
 plt.show()
 
-
-# Creating and visualizing a data frame for the overall yearly crime rate since 2003
+# Overall monthly crime rate since 2003
 crimes_per_month = df["month"].value_counts().sort_index()
 d = sns.barplot(x=crimes_per_month.index, y=crimes_per_month.values)
 d.set_xticklabels(d.get_xticklabels(), rotation=60)
 d.set(xlabel="Month", ylabel="Crimes Reported", title="Monthly Crime Rates")
 plt.show()
-
 
 # Overall hourly crime rates as well
 crimes_per_hour = df["hour"].value_counts().sort_index()
@@ -310,16 +315,19 @@ df_rape = df[df.highest_offense_description == "RAPE"]
 
 
 # Creating yearly dataframes
+# Annual overall crime
 df_17 = df[df.year == 2017]
 df_18 = df[df.year == 2018]
 df_19 = df[df.year == 2019]
 df_20 = df[df.year == 2020]
 
+# Annual violent crime
 df_viol_17 = df_viol[df_viol.year == 2017]
 df_viol_18 = df_viol[df_viol.year == 2018]
 df_viol_19 = df_viol[df_viol.year == 2019]
 df_viol_20 = df_viol[df_viol.year == 2020]
 
+# Annual murders
 df_viol_mur_17 = df_viol_mur[df_viol_mur.year == 2017]
 df_viol_mur_18 = df_viol_mur[df_viol_mur.year == 2018]
 df_viol_mur_19 = df_viol_mur[df_viol_mur.year == 2019]
@@ -327,32 +335,41 @@ df_viol_mur_20 = df_viol_mur[df_viol_mur.year == 2020]
 
 
 # Visualizing overall violent crime trend
-viol_per_year = df_viol["year"].value_counts().sort_index()
-viol_per_year.plot.bar(
-    rot=60, figsize=(10, 5), title="Annual violent crime counts (2003-present)"
-)
-plt.show()
+# viol_per_year = df_viol["year"].value_counts().sort_index()
+# viol_per_year.plot.bar(
+#    rot=60, figsize=(10, 5), title="Annual violent crime counts (2003-present)"
+# )
+# plt.show()
+
+# plt.figure(figsize=(10, 5))
+# plt.plot(df_viol.resample("Q").size())
+# plt.title("Monthly trend (2003-Present)")
+# plt.show()
 
 # As rolling average
-df_viol.resample("W").size().rolling(104).sum().plot(
-    rot=60, figsize=(10, 5), title="104 week rolling average for violent crime"
+df_viol.resample("W").size().rolling(52).sum().plot(
+    rot=60, figsize=(10, 5), title="52 week rolling average for violent crime"
 )
 plt.show()
 
 
 # Visualizing overall murders
-mur_per_year = df_viol_mur.year.value_counts().sort_index()
-mur_per_year.plot.bar(
-    rot=60, figsize=(10, 5), title="Annual murder counts (2003-present)"
-)
-plt.show()
+# mur_per_year = df_viol_mur.year.value_counts().sort_index()
+# mur_per_year.plot.bar(
+#    rot=60, figsize=(10, 5), title="Annual murder counts (2003-present)"
+# )
+# plt.show()
+
+# plt.figure(figsize=(10, 5))
+# plt.plot(df_viol_mur.resample("Q").size())
+# plt.title("Monthly trend (2003-Present)")
+# plt.show()
 
 # As rolling average
-df_viol_mur.resample("W").size().rolling(104).sum().plot(
-    rot=60, figsize=(10, 5), title="104 week rolling average for murders"
+df_viol_mur.resample("W").size().rolling(52).sum().plot(
+    rot=60, figsize=(10, 5), title="52 week rolling average for murders"
 )
 plt.show()
-
 
 print("==============================================================================")
 print("==============================================================================")
@@ -399,7 +416,7 @@ plt.show()
 
 plt.figure(figsize=(10, 5))
 df_17.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
-plt.title("Daily trend with 30 day rolling average, 2017")
+plt.title("2017 overall crime trend with 30 day rolling average")
 plt.show()
 
 plt.figure(figsize=(10, 5))
@@ -407,9 +424,12 @@ df_viol_17.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
 plt.title("2017 violent crime trend with 30 day rolling average")
 plt.show()
 
+print("==============================================================================")
+print("==============================================================================")
+
 plt.figure(figsize=(10, 5))
 df_18.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
-plt.title("Daily trend with 30 day rolling average, 2018")
+plt.title("2018 overall crime trend with 30 day rolling average")
 plt.show()
 
 plt.figure(figsize=(10, 5))
@@ -417,9 +437,12 @@ df_viol_18.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
 plt.title("2018 violent crime trend with 30 day rolling average")
 plt.show()
 
+print("==============================================================================")
+print("==============================================================================")
+
 plt.figure(figsize=(10, 5))
 df_19.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
-plt.title("Daily trend with 30 day rolling average, 2019")
+plt.title("2019 overall crime trend with 30 day rolling average")
 plt.show()
 
 plt.figure(figsize=(10, 5))
@@ -427,9 +450,12 @@ df_viol_19.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
 plt.title("2019 violent crime trend with 30 day rolling average")
 plt.show()
 
+print("==============================================================================")
+print("==============================================================================")
+
 plt.figure(figsize=(10, 5))
 df_20.resample("D").size().rolling(30).sum().plot(fontsize=12, rot=60)
-plt.title("Daily trend with 30 day rolling average, 2020")
+plt.title("2020 overall crime trend with 30 day rolling average")
 plt.show()
 
 plt.figure(figsize=(10, 5))
@@ -853,4 +879,10 @@ df_01.to_csv("df_01.csv")
 df_53.to_csv("df_53.csv")
 df_41.to_csv("df_41.csv")
 df_45.to_csv("df_45.csv")
+
+
+# In[ ]:
+
+
+
 
