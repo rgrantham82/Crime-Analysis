@@ -62,6 +62,7 @@ df_01 = df[df.zip_code == 78701]
 df_41 = df[df.zip_code == 78741]
 df_45 = df[df.zip_code == 78745]
 df_53 = df[df.zip_code == 78753]
+df_05 = df[df.zip_code == 78705]
 
 
 # ## III. Predictions
@@ -162,7 +163,7 @@ fig2_01_1 = plot_plotly(m_01, pred_01)
 fig2_01_1
 
 
-# ### 78753
+# ### 78753 (highest concentration of murders)
 
 # In[8]:
 
@@ -188,7 +189,7 @@ fig2_53_1 = plot_plotly(m_53, pred_53)
 fig2_53_1
 
 
-# ### 78741 (highest crime concentration in Austin)
+# ### 78741 (highest concentration of overall crime)
 
 # In[9]:
 
@@ -238,6 +239,32 @@ pred_45 = m_45.predict(future)
 fig2_45 = m_45.plot_components(pred)
 fig2_45_1 = plot_plotly(m_45, pred_45)
 fig2_45_1
+
+
+# ### 78705 (UT campus area)
+
+# In[12]:
+
+
+df_fbprophet_05 = df_05
+
+df_m_05 = df_fbprophet_05.resample("D").size().reset_index()
+df_m_05.columns = ["date", "daily_crime_count"]
+df_m_final_05 = df_m_05.rename(columns={"date": "ds", "daily_crime_count": "y"})
+
+m_05 = Prophet(interval_width=0.95, yearly_seasonality=False)
+m_05.add_seasonality(name="monthly", period=30.5, fourier_order=10)
+m_05.add_seasonality(name="quarterly", period=91.5, fourier_order=10)
+m_05.add_seasonality(name="weekly", period=52, fourier_order=10)
+m_05.add_seasonality(name="daily", period=365, fourier_order=10)
+m_05.fit(df_m_final_05)
+
+future_05 = m_05.make_future_dataframe(periods=365, freq="D")
+pred_05 = m_05.predict(future)
+
+fig2_05 = m_05.plot_components(pred)
+fig2_05_1 = plot_plotly(m_05, pred_05)
+fig2_05_1
 
 
 # ## IV. Summary 
