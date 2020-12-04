@@ -191,7 +191,7 @@ fig2_53_1
 
 # ### 78741 (highest concentration of overall crime)
 
-# In[9]:
+# In[ ]:
 
 
 df_fbprophet_41 = df_41
@@ -217,7 +217,7 @@ fig2_41_1
 
 # ### 78745 (far south Austin)
 
-# In[10]:
+# In[ ]:
 
 
 df_fbprophet_45 = df_45
@@ -243,7 +243,7 @@ fig2_45_1
 
 # ### 78705 (UT campus area)
 
-# In[12]:
+# In[ ]:
 
 
 df_fbprophet_05 = df_05
