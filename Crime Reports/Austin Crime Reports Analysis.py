@@ -44,13 +44,11 @@ import folium
 from folium import plugins
 import seaborn as sns
 import warnings
-from fbprophet import Prophet
-from fbprophet.plot import plot_plotly
 
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
-plt.style.use("seaborn-white")
+plt.style.use("seaborn-dark")
 
 
 # In[2]:
@@ -126,8 +124,11 @@ df = clean_data(df)
 
 
 display(df.info())
+print("----------------------------------")
 display(df.isnull().sum())
+print("----------------------------------")
 display(df.head())
+print("----------------------------------")
 display(df.tail())
 
 
@@ -141,13 +142,13 @@ display(df.tail())
 
 
 # Plotting overall trend on a monthly basis
-plt.figure(figsize=(8, 4))
+plt.figure(figsize=(8, 5))
 plt.plot(df.resample("M").size())
 plt.title("Monthly trend (2003-present)")
 plt.show()
 
 # Above plot re-shown with a rolling average
-plt.figure(figsize=(8, 4))
+plt.figure(figsize=(8, 5))
 df.resample("M").size().rolling(12).sum().plot()
 plt.title("12 month rolling average (2003-present)")
 plt.show()
@@ -185,7 +186,7 @@ plt.show()
 
 # #### Top 25 crime types 
 
-# In[26]:
+# In[7]:
 
 
 df.highest_offense_description.value_counts().head(25).sort_values().plot.barh(
@@ -208,9 +209,8 @@ display(df.zip_code.value_counts(normalize=True).head(25))
 
 # Visualizing the top 25 areas for crime
 df.zip_code.value_counts().head(25).plot.bar(
-    rot=60, title="Top 25 zip codes, overall crime (2003-present)"
+    rot=60, title="Top 25 zip codes, overall crime (2003-present)", figsize=(8, 5)
 )
-plt.show()
 
 
 # #### Taking a closer look at particular areas... 
@@ -302,7 +302,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # <a id='q6'></a>
 # ### F. Question 6. How is crime distributed in 78705?
 
-# In[24]:
+# In[13]:
 
 
 # Examining crime in the 78705 area
@@ -323,7 +323,7 @@ df_05_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78705)")
 # <a id='q7'></a>
 # ### H. Question 7. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[13]:
+# In[14]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -372,7 +372,7 @@ df_viol_mur_20 = df_viol_mur[df_viol_mur.year == 2020]
 
 # As rolling average
 df_viol.resample("W").size().rolling(52).sum().plot(
-    rot=60, figsize=(8, 4), title="52 week rolling average for violent crime"
+    rot=60, figsize=(8, 5), title="52 week rolling average for violent crime"
 )
 plt.show()
 
@@ -391,7 +391,7 @@ plt.show()
 
 # As rolling average
 df_viol_mur.resample("W").size().rolling(52).sum().plot(
-    rot=60, figsize=(8, 4), title="52 week rolling average for murders"
+    rot=60, figsize=(8, 5), title="52 week rolling average for murders"
 )
 plt.show()
 
@@ -423,6 +423,8 @@ viol_freq.plot.barh(
 )
 plt.show()
 
+print("----------------------------------")
+
 # Calculating and visualizing frequency rate of murders by zipcode
 mur_freq = pd.crosstab(df_viol_mur.zip_code, df_viol_mur.highest_offense_description)
 mur_freq.plot.barh(
@@ -435,63 +437,80 @@ plt.show()
 
 # #### Here I broke down the overall  and violent crime dataframes into annual parts, then displaying their rolling averages to compare more closely. 2017-Present.
 
-# In[14]:
+# In[15]:
 
 
-df_17.resample("D").size().rolling(30).sum().plot(fontsize=12, figsize=(8, 4), rot=60)
-plt.title("2017 overall crime trend with 30 day rolling average")
+df_17.resample("D").size().rolling(30).sum().plot(
+    fontsize=12,
+    figsize=(8, 5),
+    rot=60,
+    title="2017 overall crime trend with 30 day rolling average",
+)
 plt.show()
-
 
 df_viol_17.resample("D").size().rolling(30).sum().plot(
-    fontsize=12, figsize=(8, 4), rot=60
+    fontsize=12,
+    figsize=(8, 5),
+    rot=60,
+    title="2017 violent crime trend with 30 day rolling average",
 )
-plt.title("2017 violent crime trend with 30 day rolling average")
 plt.show()
 
 print("==============================================================================")
 print("==============================================================================")
 
-
-df_18.resample("D").size().rolling(30).sum().plot(fontsize=12, figsize=(8, 4), rot=60)
-plt.title("2018 overall crime trend with 30 day rolling average")
+df_18.resample("D").size().rolling(30).sum().plot(
+    fontsize=12,
+    figsize=(8, 5),
+    rot=60,
+    title="2018 overall crime trend with 30 day rolling average",
+)
 plt.show()
-
 
 df_viol_18.resample("D").size().rolling(30).sum().plot(
-    fontsize=12, figsize=(8, 4), rot=60
+    fontsize=12,
+    figsize=(8, 5),
+    rot=60,
+    title="2018 violent crime trend with 30 day rolling average",
 )
-plt.title("2018 violent crime trend with 30 day rolling average")
 plt.show()
 
 print("==============================================================================")
 print("==============================================================================")
 
-
-df_19.resample("D").size().rolling(30).sum().plot(fontsize=12, figsize=(8, 4), rot=60)
-plt.title("2019 overall crime trend with 30 day rolling average")
+df_19.resample("D").size().rolling(30).sum().plot(
+    fontsize=12,
+    figsize=(8, 5),
+    rot=60,
+    title="2019 overall crime trend with 30 day rolling average",
+)
 plt.show()
-
 
 df_viol_19.resample("D").size().rolling(30).sum().plot(
-    fontsize=12, figsize=(8, 4), rot=60
+    fontsize=12,
+    figsize=(8, 5),
+    rot=60,
+    title="2019 violent crime trend with 30 day rolling average",
 )
-plt.title("2019 violent crime trend with 30 day rolling average")
 plt.show()
 
 print("==============================================================================")
 print("==============================================================================")
 
-
-df_20.resample("D").size().rolling(30).sum().plot(fontsize=12, figsize=(8, 4), rot=60)
-plt.title("2020 overall crime trend with 30 day rolling average")
+df_20.resample("D").size().rolling(30).sum().plot(
+    fontsize=12,
+    figsize=(8, 5),
+    rot=60,
+    title="2020 overall crime trend with 30 day rolling average",
+)
 plt.show()
-
 
 df_viol_20.resample("D").size().rolling(30).sum().plot(
-    fontsize=12, figsize=(8, 4), rot=60
+    fontsize=12,
+    figsize=(8, 5),
+    rot=60,
+    title="2020 violent crime trend with 30 day rolling average",
 )
-plt.title("2020 violent crime trend with 30 day rolling average")
 plt.show()
 
 # ax = df_20.plot(x="year", figsize=(10, 6), label="overall crime")
@@ -504,28 +523,26 @@ plt.show()
 # 
 # #### checking council districts, APD districts, and sectors for overall crime rates 
 
-# In[15]:
+# In[16]:
 
 
-df.council_district.value_counts().plot.bar(
-    fontsize=12, title="Council districts, overall crime", rot=60
-)
+df.council_district.value_counts().plot.bar(title="Council districts, overall crime")
 plt.show()
 
 df.apd_sector.value_counts().plot.bar(
-    title="APD sectors, overall crime", fontsize=12, figsize=(14, 7), rot=60
+    title="APD sectors, overall crime", figsize=(12, 6)
 )
 plt.show()
 
 df.apd_district.value_counts().plot.bar(
-    title="APD districts, overall crime", rot=60, fontsize=12, figsize=(14, 7)
+    title="APD districts, overall crime", figsize=(12, 6)
 )
 plt.show()
 
 
 # #### Distribution of violent crime and murders across council districts and APD sectors 
 
-# In[16]:
+# In[17]:
 
 
 pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.bar(
@@ -587,7 +604,7 @@ plt.show()
 
 # #### Violent crime and murder distribution by location type
 
-# In[17]:
+# In[18]:
 
 
 viol_loc = pd.crosstab(df_viol.location_type, df_viol.highest_offense_description)
@@ -598,16 +615,16 @@ mur_loc = pd.crosstab(
 )
 
 viol_loc.plot.barh(
-    figsize=(8, 20),
-    fontsize=12,
+    figsize=(8, 14),
     stacked=True,
     title="Violent crime distribution by location type since 2003",
 )
 plt.show()
 
+print("----------------------------------")
+
 mur_loc.plot.barh(
-    figsize=(8, 10),
-    fontsize=12,
+    figsize=(8, 8),
     stacked=True,
     title="Murder distribution by location type since 2003",
 )
@@ -621,11 +638,10 @@ plt.show()
 # 
 # #### Aggravated assault 
 
-# In[18]:
+# In[19]:
 
 
 # Aggravated assault as a heatmap
-
 agg_asslt_coords_heat = df_agg_asslt[
     (df_agg_asslt["latitude"].isnull() == False)
     & (df_agg_asslt["longitude"].isnull() == False)
@@ -644,11 +660,10 @@ k
 
 # #### Armed robbery 
 
-# In[19]:
+# In[20]:
 
 
-# Aggravated robbery a heatmap
-
+# Aggravated robbery as a heatmap
 agg_robbery_coords_heat = df_agg_robbery[
     (df_agg_robbery["latitude"].isnull() == False)
     & (df_agg_robbery["longitude"].isnull() == False)
@@ -670,11 +685,10 @@ k
 # <a id='q8'></a>
 # #### Murder  
 
-# In[20]:
+# In[21]:
 
 
 # As a heatmap
-
 mur_coords_heat = df_viol_mur[
     (df_viol_mur["latitude"].isnull() == False)
     & (df_viol_mur["longitude"].isnull() == False)
@@ -694,14 +708,14 @@ k
 # <a id='q10'></a>
 # ### J. Question 10. Are there any addresses where violent crime and murder occurs frequently?
 
-# In[21]:
+# In[22]:
 
 
 # Show addresses with 50 or more reported violent crimes
 df_viol.address.value_counts().head(13)
 
 
-# In[22]:
+# In[23]:
 
 
 # Show addresses with 2 or more reported murders
@@ -720,7 +734,7 @@ df_viol_mur.address.value_counts().head(31)
 # 
 # So, you're most likely to get murdered in July, between 1 and 2am, in the 78753 zip code, with 78741 coming in as a very strong alternate. Good to know!
 
-# In[27]:
+# In[24]:
 
 
 df_clean = df.copy()
