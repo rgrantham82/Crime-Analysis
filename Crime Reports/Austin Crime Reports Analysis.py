@@ -75,16 +75,15 @@ display(df.tail())
 
 def clean_data(df):
     drop_col = [
+        "Incident Number",
         "Occurred Time",
         "Occurred Date",
         "Highest Offense Code",
         "Census Tract",
         "Family Violence",
-        "Clearance Status",
         "PRA",
         "Report Date",
         "Report Time",
-        "Clearance Date",
         "UCR Category",
         "Category Description",
         "X-coordinate",
@@ -92,29 +91,29 @@ def clean_data(df):
         "Location",
     ]
 
-    clean_col = ["Occurred Date Time", "Report Date Time"]
-
+    clean_col = ["Occurred Date Time"]
     df.drop(drop_col, axis=1, inplace=True)
     df.dropna(subset=clean_col, inplace=True)
     df.rename(columns=lambda x: x.strip().lower().replace(" ", "_"), inplace=True)
-
-    date_col = ["occurred_date_time", "report_date_time"]
-
-    cat_col = ["highest_offense_description", "location_type", "apd_sector"]
-
+    date_col = ["occurred_date_time", "report_date_time", "clearance_date"]
+    cat_col = [
+        "highest_offense_description",
+        "zip_code",
+        "location_type",
+        "council_district",
+        "apd_district",
+        "apd_sector",
+    ]
     df[date_col] = df[date_col].astype("datetime64")
     df[cat_col] = df[cat_col].astype("category")
-
     df["year"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.year
     df["month"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.month
     df["week"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.week
     df["day"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.day
     df["hour"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.hour
-
     df.set_index(["occurred_date_time"], inplace=True)
     df.sort_index(inplace=True)
-
-    return df
+    return df 
 
 
 df = clean_data(df)
