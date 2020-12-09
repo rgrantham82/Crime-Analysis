@@ -90,7 +90,6 @@ def clean_data(df):
         "Y-coordinate",
         "Location",
     ]
-
     clean_col = ["Occurred Date Time"]
     df.drop(drop_col, axis=1, inplace=True)
     df.dropna(subset=clean_col, inplace=True)
