@@ -45,10 +45,10 @@ from folium import plugins
 import seaborn as sns
 import warnings
 
+plt.style.use("seaborn-dark")
 warnings.filterwarnings("ignore")
 pd.set_option("display.max_columns", None)
 get_ipython().run_line_magic('matplotlib', 'inline')
-plt.style.use("seaborn-dark")
 
 
 # In[2]:
@@ -112,7 +112,7 @@ def clean_data(df):
     df["hour"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.hour
     df.set_index(["occurred_date_time"], inplace=True)
     df.sort_index(inplace=True)
-    return df 
+    return df
 
 
 df = clean_data(df)
@@ -122,11 +122,11 @@ df = clean_data(df)
 
 
 display(df.info())
-print("----------------------------------")
+print("-----------------------------------------")
 display(df.isnull().sum())
-print("----------------------------------")
+print("-----------------------------------------")
 display(df.head())
-print("----------------------------------")
+print("-----------------------------------------")
 display(df.tail())
 
 
@@ -139,13 +139,16 @@ display(df.tail())
 # In[6]:
 
 
+print("===============================================================================")
+print("Observing Austin crime trend by various time segments")
+print("===============================================================================")
 # Plotting overall trend on a monthly basis
 plt.figure(figsize=(8, 5))
 plt.plot(df.resample("M").size())
 plt.title("Monthly trend (2003-present)")
 plt.show()
 
-# Above plot re-shown with a rolling average
+# Monthly plot re-shown with a rolling average
 plt.figure(figsize=(8, 5))
 df.resample("M").size().rolling(12).sum().plot()
 plt.title("12 month rolling average (2003-present)")
@@ -188,7 +191,7 @@ plt.show()
 
 
 df.highest_offense_description.value_counts().head(25).sort_values().plot.barh(
-    figsize=(8, 6), title="Top 25 crime types (2003-Present)"
+    figsize=(6, 6), title="Top 25 crime types (2003-Present)"
 )
 
 
@@ -204,10 +207,10 @@ display(zip_codes)
 print("----------------------------------")
 display(df.zip_code.value_counts(normalize=True).head(25))
 
-
 # Visualizing the top 25 areas for crime
 df.zip_code.value_counts().head(25).plot.bar(
-    rot=60, title="Top 25 zip codes, overall crime (2003-present)", figsize=(8, 5)
+    rot=60,
+    title="Top 25 zip codes, overall crime (2003-present)",  # figsize=(8, 5)
 )
 
 
@@ -216,7 +219,7 @@ df.zip_code.value_counts().head(25).plot.bar(
 # The next section will examine the zip codes 78701 (downtown), 78753, 78741, and 78745.
 
 # <a id='q2'></a>
-# ### B. Question 2. How is crime distributed in 78701? 
+# ### B. Question 2. How is crime distributed in 78701 (downtown Austin)? 
 
 # In[9]:
 
@@ -243,10 +246,8 @@ df_01_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78701)")
 # Examining crime in the 78753 area
 df_53 = df[df.zip_code == 78753]
 
-
 # Create a dataframe for the top 10 crime categories in the zipcode
 df_53_off = df_53.highest_offense_description.value_counts().head(22)
-
 
 # Display the different crime values & then as percentages
 display(df_53_off)
@@ -256,7 +257,7 @@ df_53_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78753)")
 
 
 # <a id='q4'></a>
-# ### D. Question 4. How is crime distributed in 78741? 
+# ### D. Question 4. How is crime distributed in 78741 (E Riverside/Oltorf)? 
 
 # In[11]:
 
@@ -264,10 +265,8 @@ df_53_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78753)")
 # Examining crime in the 78741 area (the highest amount of crime of any Austin zip code)
 df_41 = df[df.zip_code == 78741]
 
-
 # Create a dataframe for the top crime categories in the zipcode
 df_41_off = df_41.highest_offense_description.value_counts().head(21)
-
 
 # Display the different crime values & then as percentages
 display(df_41_off)
@@ -277,7 +276,7 @@ df_41_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78741)")
 
 
 # <a id='q5'></a>
-# ### E. Question 5. How is crime distributed in 78745?
+# ### E. Question 5. How is crime distributed in 78745 (far south Austin)?
 
 # In[12]:
 
@@ -285,10 +284,8 @@ df_41_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78741)")
 # Examining crime in the 78745 area
 df_45 = df[df.zip_code == 78745]
 
-
 # Create a dataframe for the top 10 crime categories in the zipcode
 df_45_off = df_45.highest_offense_description.value_counts().head(22)
-
 
 # Display the different crime values & then as percentages
 display(df_45_off)
@@ -298,7 +295,7 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 
 
 # <a id='q6'></a>
-# ### F. Question 6. How is crime distributed in 78705?
+# ### F. Question 6. How is crime distributed in 78705 (UT campus area)?
 
 # In[13]:
 
@@ -306,10 +303,8 @@ df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 # Examining crime in the 78705 area
 df_05 = df[df.zip_code == 78705]
 
-
 # Create a dataframe for the top 10 crime categories in the zipcode
 df_05_off = df_05.highest_offense_description.value_counts().head(22)
-
 
 # Display the different crime values & then as percentages
 display(df_05_off)
@@ -321,7 +316,7 @@ df_05_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78705)")
 # <a id='q7'></a>
 # ### H. Question 7. How are violent crimes, in particular murder, capital murder, aggrivated assault, and rape distributed? 
 
-# In[14]:
+# In[29]:
 
 
 # Creating an overall and separate dataframes for violent crime
@@ -334,7 +329,6 @@ df_mur_cap = df[df.highest_offense_description == "CAPITAL MURDER"]
 df_agg_asslt = df[df.highest_offense_description == "AGG ASSAULT"]
 df_agg_robbery = df[df.highest_offense_description == "AGG ROBBERY/DEADLY WEAPON"]
 df_rape = df[df.highest_offense_description == "RAPE"]
-
 
 # Creating yearly dataframes
 # Annual overall crime
@@ -355,7 +349,6 @@ df_viol_mur_18 = df_viol_mur[df_viol_mur.year == 2018]
 df_viol_mur_19 = df_viol_mur[df_viol_mur.year == 2019]
 df_viol_mur_20 = df_viol_mur[df_viol_mur.year == 2020]
 
-
 # Visualizing overall violent crime trend
 # viol_per_year = df_viol["year"].value_counts().sort_index()
 # viol_per_year.plot.bar(
@@ -368,12 +361,23 @@ df_viol_mur_20 = df_viol_mur[df_viol_mur.year == 2020]
 # plt.title("Monthly trend (2003-Present)")
 # plt.show()
 
+# Visualizing overall yearly violent crime rate since 2003
+crimes_per_year = df_viol["year"].value_counts().sort_index()
+plt.figure(figsize=(8, 5))
+g = sns.barplot(x=crimes_per_year.index, y=crimes_per_year.values)
+g.set_xticklabels(g.get_xticklabels(), rotation=60)
+g.set(
+    xlabel="Year",
+    ylabel="Crimes Reported",
+    title="Annual Violent Crime Rates (2003-present)",
+)
+plt.show()
+
 # As rolling average
 df_viol.resample("W").size().rolling(52).sum().plot(
     rot=60, figsize=(8, 5), title="52 week rolling average for violent crime"
 )
 plt.show()
-
 
 # Visualizing overall murders
 # mur_per_year = df_viol_mur.year.value_counts().sort_index()
@@ -386,6 +390,16 @@ plt.show()
 # plt.plot(df_viol_mur.resample("Q").size())
 # plt.title("Monthly trend (2003-Present)")
 # plt.show()
+
+# Visualizing overall yearly murder rates since 2003
+crimes_per_year = df_viol_mur["year"].value_counts().sort_index()
+plt.figure(figsize=(8, 5))
+g = sns.barplot(x=crimes_per_year.index, y=crimes_per_year.values)
+g.set_xticklabels(g.get_xticklabels(), rotation=60)
+g.set(
+    xlabel="Year", ylabel="Crimes Reported", title="Annual Murder Rates (2003-present)"
+)
+plt.show()
 
 # As rolling average
 df_viol_mur.resample("W").size().rolling(52).sum().plot(
@@ -400,16 +414,15 @@ print("=========================================================================
 # Overall violent crime by Zipcode
 # display(df_viol.zip_code.value_counts(normalize=True).head(25))
 df_viol.zip_code.value_counts().head(25).plot.bar(
-    title="Top 25 Zipcodes for Violent Crime", rot=60
+    title="Top 25 Zipcodes for Violent Crime", rot=60, figsize=(8, 5)
 )
 plt.show()
 
 # display(df_viol_mur.zip_code.value_counts(normalize=True).head(25))
 df_viol_mur.zip_code.value_counts().head(25).plot.bar(
-    title="Top 25 Zipcodes for Murder", rot=60
+    title="Top 25 Zipcodes for Murder", rot=60, figsize=(8, 5)
 )
 plt.show()
-
 
 # Calculating and visualizing frequency rate of violent crimes by zipcode
 viol_freq = pd.crosstab(df_viol.zip_code, df_viol.highest_offense_description)
@@ -521,10 +534,12 @@ plt.show()
 # 
 # #### checking council districts, APD districts, and sectors for overall crime rates 
 
-# In[16]:
+# In[30]:
 
 
-df.council_district.value_counts().plot.bar(title="Council districts, overall crime")
+df.council_district.value_counts().plot.bar(
+    title="Council districts, overall crime", figsize=(8, 5)
+)
 plt.show()
 
 df.apd_sector.value_counts().plot.bar(
@@ -551,7 +566,6 @@ pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.
 )
 plt.show()
 
-
 pd.crosstab(
     df_viol_mur.council_district, df_viol_mur.highest_offense_description
 ).plot.bar(
@@ -562,7 +576,6 @@ pd.crosstab(
 )
 plt.show()
 
-
 pd.crosstab(df_viol.apd_sector, df_viol.highest_offense_description).plot.bar(
     figsize=(12, 6),
     # stacked=True,
@@ -572,7 +585,6 @@ pd.crosstab(df_viol.apd_sector, df_viol.highest_offense_description).plot.bar(
 )
 plt.show()
 
-
 pd.crosstab(df_viol_mur.apd_sector, df_viol_mur.highest_offense_description).plot.bar(
     figsize=(12, 6),
     rot=60,
@@ -580,7 +592,6 @@ pd.crosstab(df_viol_mur.apd_sector, df_viol_mur.highest_offense_description).plo
     title="Murder distribution by APD sector",
 )
 plt.show()
-
 
 pd.crosstab(df_viol.apd_district, df_viol.highest_offense_description).plot.bar(
     figsize=(12, 6),
