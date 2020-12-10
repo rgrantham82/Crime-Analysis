@@ -1,13 +1,14 @@
 # Austin Crimes Analysis
 
 ***This project is ongoing & will be updated frequently***
-### Update -- 12/4/2020
-I've been focusing solely on the Crime Reports dataset for a while now. You may consider it my portfolio project and here is a list of some upcoming changes in the output:
-  1. Because Facebook Prophet modeling takes up too much space, it will be broken up into notebooks in which I'll analyze individual zip codes.
-
+### Update -- 12/10/2020
+I've been focusing solely on the Crime Reports dataset for a while now. Here is a list of some upcoming changes in the output:
+  1. I started a series of crime prediction models, according to zip code, using the Facebook Prophet library.
+  2. Because Facebook Prophet uses a ton of space, I created individual notebooks for each zip code.
+  3. Be sure to utilize the nbviewer mode in order to view the forecast visualizations.
 
 ### Update -- 7/19/2020
-I added a notebook to this repo, labeled "Austin Crime Reports Analysis," in which I analyze OVERALL crime data for the Austin, TX area. The dataset for this analysis is available at https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. The dataset covers all reported crimes from the beginning of 2003 to the present, so it is a large dataset with over 2 million records. 
+I added a notebook to this repo, labeled "Crime Reports" in which I analyze OVERALL crime data for the Austin, TX area. The dataset for this analysis is available at https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. The dataset covers all reported crimes from the beginning of 2003 to the present, so it is a large dataset with over 2 million records. 
 
 
 ## Introduction
