@@ -1,3 +1,5 @@
+<script type='text/javascript' src='https://ko-fi.com/widgets/widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#29abe0', 'V7V33044F');kofiwidget2.draw();</script> 
+
 # Austin Crimes Analysis
 
 ***This project is ongoing & will be updated frequently***
