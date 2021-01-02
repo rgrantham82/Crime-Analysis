@@ -7,10 +7,6 @@ I've been focusing solely on the Crime Reports dataset for a while now. Here is 
   2. Because Facebook Prophet uses a ton of space, I created individual notebooks for each zip code.
   3. Be sure to utilize the nbviewer mode in order to view the forecast visualizations.
 
-### Update -- 7/19/2020
-I added a notebook to this repo, labeled "Crime Reports" in which I analyze OVERALL crime data for the Austin, TX area. The dataset for this analysis is available at https://data.austintexas.gov/Public-Safety/Crime-Reports/fdj4-gpfu. The dataset covers all reported crimes from the beginning of 2003 to the present, so it is a large dataset with over 2 million records. 
-
-
 ## Introduction
 I conceptualized this project beginning in  January 2020. The goal is to analyze hate crimes trends for Austin, TX, from 2017 to present. In particular, I'm focusing on the effects of hate crime on the LGBT community. 
 
