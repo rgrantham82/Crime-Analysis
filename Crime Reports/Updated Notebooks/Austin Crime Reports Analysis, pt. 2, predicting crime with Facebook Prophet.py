@@ -13,8 +13,8 @@ from fbprophet.plot import plot_plotly
 from fbprophet.plot import add_changepoints_to_plot
 from fbprophet.diagnostics import cross_validation
 
-plt.style.use("fivethirtyeight")
-get_ipython().run_line_magic('matplotlib', 'inline')
+plt.style.use("classic")
+get_ipython().run_line_magic("matplotlib", "inline")
 
 
 # In[2]:
@@ -74,7 +74,7 @@ axs[1].legend(["Monthly trend", "Monthly trend as a moving average"])
 plt.show()
 
 
-# ## Predicting crime rates with Facebook Prophet 
+# ## Predicting crime rates with Facebook Prophet
 
 # In[6]:
 
@@ -164,7 +164,3 @@ fig4_1 = plot_plotly(o, forecast)
 
 
 # In[ ]:
-
-
-
-
