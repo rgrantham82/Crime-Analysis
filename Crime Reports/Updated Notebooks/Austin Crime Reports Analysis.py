@@ -11,7 +11,6 @@
 #     I. Introduction
 #     II. Data Scrubbing
 #     III. Exploratory Analysis 
-#     IV. Summary 
 #     
 #     Questions:
 # ><ul>
@@ -39,31 +38,32 @@
 
 
 # importing necessary libraries and configurations
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import folium
 from folium import plugins
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import warnings
 
-plt.style.use("fivethirtyeight")
-get_ipython().run_line_magic('matplotlib', 'inline')
-warnings.filterwarnings("ignore")
+plt.style.use("seaborn")
 pd.set_option("display.max_columns", None)
+warnings.filterwarnings("ignore")
+get_ipython().run_line_magic('matplotlib', 'inline')
 
 
 # In[2]:
 
 
 # loading the data
-df = pd.read_csv(r"C:\Users\Robert\Crime Reports Analysis\crime_reports.csv")
+df = pd.read_csv(
+    r"C:\Users\Robert\Crime Reports Analysis\Updated Notebooks\crime_reports.csv"
+)
 
 
 # In[3]:
 
 
 # examining the dataframe
-display(df.shape)
 display(df.info())
 display(df.isnull().sum())
 display(df.head())
@@ -81,7 +81,7 @@ def clean_data(df):
     drop_col = [
         "Incident Number",
         "Occurred Time",
-        "Occurred Date",
+        "Occurred Date Time",
         "Highest Offense Code",
         "Census Tract",
         "PRA",
@@ -93,12 +93,10 @@ def clean_data(df):
         "Y-coordinate",
         "Location",
     ]
-    clean_col = ["Occurred Date Time"]
     df.drop(drop_col, axis=1, inplace=True)
-    df.dropna(subset=clean_col, inplace=True)
     df.rename(columns=lambda x: x.strip().lower().replace(" ", "_"), inplace=True)
     df.replace(" ", np.nan, inplace=True)
-    date_col = ["occurred_date_time", "report_date_time", "clearance_date"]
+    date_col = ["occurred_date", "report_date_time", "clearance_date"]
     cat_col = [
         "highest_offense_description",
         "zip_code",
@@ -109,12 +107,11 @@ def clean_data(df):
     ]
     df[date_col] = df[date_col].astype("datetime64")
     df[cat_col] = df[cat_col].astype("category")
-    df["year"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.year
-    df["month"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.month
-    df["week"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.week
-    df["day"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.day
-    df["hour"] = pd.to_datetime(df["occurred_date_time"], format="%m/%d/%Y").dt.hour
-    df.set_index(["occurred_date_time"], inplace=True)
+    df["year"] = pd.to_datetime(df["occurred_date"], format="%m/%d/%Y").dt.year
+    df["month"] = pd.to_datetime(df["occurred_date"], format="%m/%d/%Y").dt.month
+    df["week"] = pd.to_datetime(df["occurred_date"], format="%m/%d/%Y").dt.week
+    df["day"] = pd.to_datetime(df["occurred_date"], format="%m/%d/%Y").dt.day
+    df.set_index(["occurred_date"], inplace=True)
     df.sort_index(inplace=True)
     return df
 
@@ -126,8 +123,8 @@ df = clean_data(df)
 
 
 # reexamining the dataframe
-display(df.shape)
 display(df.info())
+display(df.index)
 display(df.isnull().sum())
 display(df.head())
 display(df.tail())
@@ -141,15 +138,13 @@ display(df.tail())
 # In[6]:
 
 
-# Create and show dataframe for crime rates by zipcode and then as percentages
-zip_codes = df.zip_code.value_counts().head(25)
-display(zip_codes)
-print("----------------------------------")
+# Create and show dataframe for crime rates by zipcode and as percentages
+display(df.zip_code.value_counts().head(25))
 display(df.zip_code.value_counts(normalize=True).head(25))
 
 # Visualizing the top 25 areas for crime
-df.zip_code.value_counts().head(25).plot.bar(
-    rot=60, title="Top 25 zip codes, overall crime (2003-present)", figsize=(8, 5)
+df.zip_code.value_counts().head(25).plot.barh(
+    title="Top 25 zip codes, overall crime (2003-present)", figsize=(8, 9)
 )
 
 
@@ -167,7 +162,6 @@ df_01_off = df_01.highest_offense_description.value_counts().head(24)
 
 # Display the different crime values & then as percentages
 display(df_01_off)
-print("----------------------------------")
 display(df_01.highest_offense_description.value_counts(normalize=True).head(24))
 df_01_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78701)")
 
@@ -186,7 +180,7 @@ df_53_off = df_53.highest_offense_description.value_counts().head(22)
 
 # Display the different crime values & then as percentages
 display(df_53_off)
-print("----------------------------------")
+display("----------------------------------")
 display(df_53.highest_offense_description.value_counts(normalize=True).head(22))
 df_53_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78753)")
 
@@ -205,7 +199,7 @@ df_41_off = df_41.highest_offense_description.value_counts().head(21)
 
 # Display the different crime values & then as percentages
 display(df_41_off)
-print("----------------------------------")
+display("----------------------------------")
 display(df_41.highest_offense_description.value_counts(normalize=True).head(21))
 df_41_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78741)")
 
@@ -224,7 +218,7 @@ df_45_off = df_45.highest_offense_description.value_counts().head(22)
 
 # Display the different crime values & then as percentages
 display(df_45_off)
-print("----------------------------------")
+display("----------------------------------")
 display(df_45.highest_offense_description.value_counts(normalize=True).head(22))
 df_45_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78745)")
 
@@ -243,7 +237,7 @@ df_05_off = df_05.highest_offense_description.value_counts().head(22)
 
 # Display the different crime values & then as percentages
 display(df_05_off)
-print("----------------------------------")
+display("----------------------------------")
 display(df_05.highest_offense_description.value_counts(normalize=True).head(22))
 df_05_off.plot.pie(figsize=(8, 8), title="Crime Distribution (78705)")
 
@@ -285,36 +279,12 @@ df_viol_mur_20 = df_viol_mur[df_viol_mur.year == 2020]
 # In[13]:
 
 
-# Top 25 crime types
-df.highest_offense_description.value_counts().head(25).sort_values().plot.barh(
-    figsize=(6, 6), title="Top 25 crime types (2003-Present)"
+fig, axs = plt.subplots(figsize=(16, 11), ncols=2)
+df_viol.zip_code.value_counts().head(25).plot.barh(
+    title="Top 25 Zipcodes for Violent Crime", ax=axs[0]
 )
-plt.show()
-
-# Visualizing trends (overall and violent)
-fig, axs = plt.subplots(ncols=2, figsize=(20, 6.25))
-df.resample("M").size().plot(ax=axs[0])
-df.resample("M").size().rolling(12).sum().plot(
-    title="Overall crime trend", rot=60, ax=axs[0]
-)
-axs[0].legend(["Monthly trend", "Monthly trend as a moving average"])
-df_viol.resample("M").size().plot(ax=axs[1])
-df_viol.resample("M").size().rolling(12).sum().plot(
-    title="Violent crime trend", rot=60, ax=axs[1]
-)
-axs[1].legend(["Monthly trend", "Monthly trend as a moving average"])
-plt.show()
-
-
-# In[14]:
-
-
-fig, axs = plt.subplots(figsize=(20, 6.25), ncols=2)
-df_viol.zip_code.value_counts().head(25).plot.bar(
-    title="Top 25 Zipcodes for Violent Crime", rot=60, ax=axs[0]
-)
-df_viol_mur.zip_code.value_counts().head(25).plot.bar(
-    title="Top 25 Zipcodes for Murder", rot=60, ax=axs[1]
+df_viol_mur.zip_code.value_counts().head(25).plot.barh(
+    title="Top 25 Zipcodes for Murder", ax=axs[1]
 )
 plt.show()
 
@@ -336,7 +306,7 @@ plt.show()
 
 # #### Distribution of violent crime and murders across council districts, APD Districts, and APD sectors 
 
-# In[15]:
+# In[14]:
 
 
 pd.crosstab(df_viol.council_district, df_viol.highest_offense_description).plot.bar(
@@ -372,7 +342,7 @@ plt.show()
 
 # #### Violent crime and murder distribution by location type
 
-# In[16]:
+# In[15]:
 
 
 viol_loc = pd.crosstab(df_viol.location_type, df_viol.highest_offense_description)
@@ -398,10 +368,9 @@ plt.show()
 # 
 # #### Aggravated assault 
 
-# In[17]:
+# In[16]:
 
 
-# Aggravated assault as a heatmap
 agg_asslt_coords_heat = df_agg_asslt[
     (df_agg_asslt["latitude"].isnull() == False)
     & (df_agg_asslt["longitude"].isnull() == False)
@@ -420,7 +389,7 @@ k
 
 # #### Armed robbery 
 
-# In[18]:
+# In[17]:
 
 
 agg_robbery_coords_heat = df_agg_robbery[
@@ -444,10 +413,9 @@ k
 # <a id='q8'></a>
 # #### Murder  
 
-# In[19]:
+# In[18]:
 
 
-# As a heatmap
 mur_coords_heat = df_viol_mur[
     (df_viol_mur["latitude"].isnull() == False)
     & (df_viol_mur["longitude"].isnull() == False)
@@ -467,33 +435,21 @@ k
 # <a id='q10'></a>
 # ### J. Question 10. Are there any addresses where violent crime and murder occurs frequently?
 
-# In[20]:
+# In[19]:
 
 
 # Show addresses with 50 or more reported violent crimes
 df_viol.address.value_counts().head(13)
 
 
-# In[21]:
+# In[20]:
 
 
 # Show addresses with 2 or more reported murders
 df_viol_mur.address.value_counts().head(31)
 
 
-# ## IV. Summary 
-# 
-# Between 2003 and now, crime peaked in 2008 and continued a downward trend until 2019 when it rose again. Since we're still in 2020, we have to wait until the end of the year to see what 2020 yields. 
-# 
-# Out of all the areas in Austin, 78741 has the highest percentage of overall crime at 9.05%. This is a significant 1.23 percentage points higher than the number 2 area 78753 which hosts 7.82% of overall crime.
-# 
-# As we can see, violent crime spiked tremendously after 2018, and especially for 2020 so far.
-# 
-# Years 2010 and 2016 had the most number of murders. However, and alarmingly, as of 11/23/2020, we've now had more murders this year than any other since 2003. Presently, the murder count for 2020 is at 39!!
-# 
-# So, you're most likely to get murdered in July, between 1 and 2am, in the 78753 zip code, with 78741 coming in as a very strong alternate. Good to know!
-
-# In[22]:
+# In[21]:
 
 
 df_clean = df.copy()
@@ -522,10 +478,4 @@ df_53.to_csv("df_53.csv")
 df_41.to_csv("df_41.csv")
 df_45.to_csv("df_45.csv")
 df_05.to_csv("df_05.csv")
-
-
-# In[ ]:
-
-
-
 
