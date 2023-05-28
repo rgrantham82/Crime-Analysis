@@ -1,10 +1,18 @@
+
 # Austin Crimes Analysis
 
-***This project is ongoing & will be updated frequently***
+**Note: This project is ongoing and will be regularly updated.**
 
 ## Introduction
-I conceptualized this project beginning in  January 2020. The goal is to analyze hate crimes trends for Austin, TX, from 2017 to present. In particular, I'm focusing on the effects of hate crime on the LGBT community. 
 
-So far, I am using datasets provided by the Austin PD's publicly available databases, found at data.austintexas.gov. 
+The Austin Crimes Analysis project was initiated in January 2020 with the objective of examining hate crime trends in Austin, TX, specifically focusing on the impact on the LGBT community. The analysis utilizes datasets obtained from the publicly available databases of the Austin Police Department, accessible at data.austintexas.gov.
 
-Originally, my plan was to complete this project solely in Python. The final product for the Austin portion, however, included such a small dataset that I decided to complete the analysis part in Excel. (DUCKS FOR COVER!!!) :D just kidding...I hope :P 
+Initially, the plan was to complete the entire project using Python. However, due to the limited size of the Austin dataset, the final analysis was conducted using Excel for efficiency.
+
+We are dedicated to delivering accurate and comprehensive insights through our analysis. The project aims to shed light on the occurrence and patterns of hate crimes, ultimately contributing to a better understanding of these issues in Austin.
+
+Please note that this README file provides an overview of the project. For more detailed and updated information, please refer to the repository.
+
+Thank you for your interest in the Austin Crimes Analysis project.
+
+*Author: [Your Name]*
